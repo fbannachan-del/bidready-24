@@ -10,7 +10,10 @@ export default async function AdminHome() {
       <h1 className="text-2xl font-semibold mb-1">Admin Queue</h1>
       <p className="text-sm mb-4 text-[#64748B]">Concierge mode. Review, edit, approve, deliver manually.</p>
 
-      <div className="mb-4 text-xs bg-amber-50 p-2 border border-amber-200">Admin password protection is minimal in MVP. Set ADMIN_PASSWORD in env and implement real gate before any preview with real data.</div>
+      <div className="mb-4 text-xs bg-amber-50 p-2 border border-amber-200">
+        Admin protected via <code>?key=ADMIN_PASSWORD</code> (see middleware). Set strong ADMIN_PASSWORD in Render secrets. 
+        Do not use with real customer data until proper auth is added.
+      </div>
 
       <table className="table w-full bg-white text-sm">
         <thead><tr><th>ID</th><th>Type</th><th>Status</th><th>Company</th><th>Created</th><th></th></tr></thead>

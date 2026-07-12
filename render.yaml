@@ -1,0 +1,46 @@
+# Render Blueprint for BidReady 24
+# https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: bidready24
+    env: node
+    region: oregon
+    plan: starter   # Change to standard or higher for production after validation
+    buildCommand: npm ci && npm run build
+    startCommand: npm run db:migrate && npm start
+    autoDeploy: true
+    healthCheckPath: /api/health   # We will add a simple health endpoint
+
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: APP_URL
+        value: https://bidready24.com   # Update if using render subdomain first
+      - key: DATABASE_PATH
+        value: /data/bidready.db
+      - key: UPLOAD_DIR
+        value: /data/uploads
+      - key: MAX_UPLOAD_MB
+        value: "200"
+      - key: ADMIN_PASSWORD
+        sync: false   # Set this securely in the Render Dashboard
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      # Add more as needed (e.g. RESEND_API_KEY)
+
+    disk:
+      name: bidready-data
+      mountPath: /data
+      sizeGB: 5   # Start small; increase as needed for uploads + sqlite
+
+# Optional: Add a managed Postgres later for better scalability
+# databases:
+#   - name: bidready-db
+#     plan: starter
+#     region: oregon
+#     ipAllowList: []   # Restrict if needed
