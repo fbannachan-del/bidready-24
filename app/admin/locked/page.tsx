@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { sanitizeAdminRedirect } from "@/lib/admin-auth";
+import { publicAppUrl, sanitizeAdminRedirect } from "@/lib/admin-auth";
 
 export default async function AdminLocked({ searchParams }: { searchParams: Promise<{ error?: string; next?: string }> }) {
   const query = await searchParams;
@@ -8,7 +8,12 @@ export default async function AdminLocked({ searchParams }: { searchParams: Prom
     ? "The password was not accepted. Please try again."
     : query.error === "configuration"
       ? "Admin access is not configured. Set ADMIN_PASSWORD in the deployment secrets."
+      : query.error === "origin"
+        ? "Your browser blocked the sign-in request. This page now uses the canonical secure address—please try once more."
       : null;
+  const sessionAction = process.env.NODE_ENV === "production"
+    ? publicAppUrl("/api/admin/session", "https://www.bidready24.com", process.env.APP_URL).href
+    : "/api/admin/session";
   return (
     <div className="mx-auto mt-10 max-w-md border border-[#D9D5CB] bg-[#FBFAF6] p-8 text-center font-['IBM_Plex_Sans',Arial,sans-serif] text-[#17202A]">
       <div className="font-['IBM_Plex_Mono',monospace] text-[10px] font-semibold uppercase tracking-[0.16em] text-[#1457FF]">Protected workspace</div>
@@ -17,7 +22,7 @@ export default async function AdminLocked({ searchParams }: { searchParams: Prom
         Sign in with the deployment admin password. The password is submitted securely and is never added to the URL.
       </p>
       {error && <p role="alert" className="mt-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-800">{error}</p>}
-      <form action="/api/admin/session" method="post" className="mt-6 text-left">
+      <form action={sessionAction} method="post" className="mt-6 text-left">
         <input type="hidden" name="next" value={next} />
         <label htmlFor="admin-password" className="block text-sm font-medium text-slate-800">Admin password</label>
         <input id="admin-password" name="password" type="password" autoComplete="current-password" required autoFocus className="mt-2 w-full border border-[#B7B2A7] bg-white px-3 py-2 text-sm outline-none focus:border-[#1457FF] focus:ring-2 focus:ring-[#DCE5FF]" />

@@ -1,18 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
-import { isSameOriginRequest } from "@/lib/admin-auth";
+import { isTrustedBrowserPost, publicAppUrl } from "@/lib/admin-auth";
 import { EndToEndTestError, runSyntheticEndToEndTest } from "@/lib/admin-e2e";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
 
 export async function POST(request: NextRequest) {
-  const publicOrigin = request.headers.get("origin");
-  const validOrigin = isSameOriginRequest(
-    request.url,
-    publicOrigin,
-    process.env.APP_URL,
-  );
-  if (!validOrigin || !publicOrigin) return new NextResponse("Invalid request origin", { status: 403 });
+  if (!isTrustedBrowserPost(request.url, request.headers, process.env.APP_URL)) {
+    return new NextResponse("Invalid request origin", { status: 403 });
+  }
+  const publicOrigin = publicAppUrl("/", request.url, process.env.APP_URL);
 
   try {
     const result = await runSyntheticEndToEndTest();

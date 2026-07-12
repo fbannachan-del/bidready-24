@@ -89,6 +89,36 @@ export function isSameOriginRequest(
   }
 }
 
+/**
+ * Validates a browser form POST without relying solely on Origin. Chromium can
+ * send `Origin: null` after a same-site 307/308 domain canonicalisation, so a
+ * trusted Referer or Fetch Metadata navigation is accepted as a fallback.
+ */
+export function isTrustedBrowserPost(
+  requestUrl: string,
+  headers: Pick<Headers, "get">,
+  configuredAppUrl?: string,
+): boolean {
+  const origin = headers.get("origin");
+  if (origin && origin !== "null") return isSameOriginRequest(requestUrl, origin, configuredAppUrl);
+
+  const referer = headers.get("referer");
+  if (referer) {
+    try {
+      if (isSameOriginRequest(requestUrl, new URL(referer).origin, configuredAppUrl)) return true;
+    } catch {
+      return false;
+    }
+  }
+
+  const fetchSite = headers.get("sec-fetch-site");
+  const fetchMode = headers.get("sec-fetch-mode");
+  const fetchDest = headers.get("sec-fetch-dest");
+  return (fetchSite === "same-origin" || fetchSite === "same-site")
+    && fetchMode === "navigate"
+    && fetchDest === "document";
+}
+
 export function publicAppUrl(
   path: string,
   requestUrl: string,

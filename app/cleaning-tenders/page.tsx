@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Check } from "lucide-react";
+import { TenderCard } from "@/components/tenders/TenderCard";
+import { fetchLiveCleaningTenders } from "@/lib/tender-feed";
 
 export const metadata: Metadata = { title: "Tender preflight for commercial cleaning contractors", description: "Source-cited public-sector tender analysis for UK commercial cleaning SMEs." };
 
@@ -11,12 +13,26 @@ const themes = [
   ["Evaluation and submission", ["Quality questions, weightings and word limits", "Social value and environmental responses", "Pricing schedules and calculation rules", "Attachments, declarations and signatures"]],
 ] as const;
 
-export default function CleaningTenders() {
+export default async function CleaningTenders() {
+  const liveFeed = await fetchLiveCleaningTenders({ limit: 4 }).catch(() => null);
   return (
     <div>
       <section className="border-b border-[var(--border)] px-5 py-20 sm:px-8 sm:py-28"><div className="mx-auto grid max-w-[1120px] gap-12 lg:grid-cols-[1.05fr_.95fr] lg:items-center"><div><p className="eyebrow">For UK commercial cleaning SMEs</p><h1 className="page-title mt-5">See the whole tender before you commit the team.</h1><p className="body-large mt-7 max-w-2xl">Cleaning tenders scatter pass/fail conditions, service schedules, TUPE assumptions, quality questions and pricing rules across dozens of files. BIDREADY24 brings them into one source-cited preflight.</p><div className="mt-9 flex flex-col gap-3 sm:flex-row"><Link href="/pricing" className="button-primary">Start a cleaning preflight <ArrowRight className="h-4 w-4" /></Link><Link href="/sample-report" className="button-secondary">View a cleaning example</Link></div></div>
         <div className="rounded-2xl border border-[var(--border-strong)] bg-white p-6 shadow-[0_24px_70px_rgba(43,48,61,.1)]"><p className="font-mono text-[10px] uppercase tracking-[.12em] text-[var(--ink-faint)]">Bid / no-bid signal</p><p className="mt-5 font-serif text-3xl font-medium">Resolve before proceeding</p><div className="mt-6 grid gap-3">{[["SSIP condition", "Missing", "red"], ["Insurance threshold", "Uncertain", "amber"], ["Mandatory site visit", "Booked", "green"], ["Mobilisation capacity", "Evidence found", "green"]].map(([item, status, tone]) => <div key={item} className="flex items-center justify-between gap-4 border-b border-[var(--border)] pb-3 text-sm"><span>{item}</span><span className={`status-chip ${tone === "red" ? "bg-red-50 text-red-700" : tone === "amber" ? "bg-amber-50 text-amber-700" : "bg-emerald-50 text-emerald-700"}`}>{status}</span></div>)}</div><span className="citation-chip mt-5">Decision basis · 4 source-linked checks</span></div>
       </div></section>
+
+      <section className="border-b border-[var(--border)] bg-white px-5 py-20 sm:px-8">
+        <div className="mx-auto max-w-[1120px]">
+          <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
+            <div><p className="eyebrow">Official opportunity data</p><h2 className="section-title mt-4">Live cleaning tenders</h2><p className="body-large mt-4 max-w-2xl">Discover an opportunity, download the buyer’s pack, then use BIDREADY24 to establish what the bid actually requires.</p></div>
+            <Link href="/cleaning-tenders/jobs" className="button-secondary shrink-0">Browse all live tenders <ArrowRight className="h-4 w-4" /></Link>
+          </div>
+          {liveFeed?.opportunities.length ? <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-4">{liveFeed.opportunities.slice(0, 4).map(item => <TenderCard key={item.id} opportunity={item} compact />)}</div>
+            : <div className="mt-8 rounded-xl border border-[var(--border)] bg-[var(--paper)] p-5 text-sm text-[var(--slate)]">The official feed is temporarily unavailable. No unverified substitute listings are shown.</div>}
+          <p className="mt-5 font-mono text-[9px] uppercase tracking-[.1em] text-[var(--ink-faint)]">Sources: Find a Tender + Contracts Finder · verify deadline and scope on the official notice</p>
+          <p className="mt-2 text-[10px] text-[var(--ink-faint)]">Contains public sector information licensed under the Open Government Licence v3.0.</p>
+        </div>
+      </section>
 
       <section className="px-5 py-20 sm:px-8 sm:py-24"><div className="mx-auto max-w-[1120px]"><div className="max-w-3xl"><p className="eyebrow">Cleaning-specific coverage</p><h2 className="section-title mt-4">The operating detail that decides whether a bid is viable</h2><p className="body-large mt-5">The system does not assume a generic questionnaire. It classifies the requirements that repeatedly matter in contracted cleaning.</p></div><div className="mt-12 grid gap-px overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--border)] md:grid-cols-2">{themes.map(([title, items], index) => <article key={title} className="bg-white p-7"><div className="flex justify-between"><h3 className="font-serif text-2xl font-medium">{title}</h3><span className="font-mono text-[10px] text-[var(--signal-blue)]">0{index + 1}</span></div><ul className="mt-6 grid gap-3">{items.map(item => <li key={item} className="flex gap-3 text-sm text-[var(--slate)]"><Check className="mt-0.5 h-4 w-4 shrink-0 text-[var(--verify-green)]" />{item}</li>)}</ul></article>)}</div></div></section>
 

@@ -4,13 +4,14 @@ import {
   ADMIN_SESSION_SECONDS,
   constantTimeSecretEqual,
   createAdminSessionToken,
-  isSameOriginRequest,
+  isTrustedBrowserPost,
+  publicAppUrl,
   sanitizeAdminRedirect,
 } from "@/lib/admin-auth";
 
 const MAX_BODY_BYTES = 8 * 1024;
 
-function lockedRedirect(publicOrigin: string, error: "invalid" | "configuration", next = "/admin") {
+function lockedRedirect(publicOrigin: URL, error: "invalid" | "configuration", next = "/admin") {
   const url = new URL("/admin/locked", publicOrigin);
   url.searchParams.set("error", error);
   if (next !== "/admin") url.searchParams.set("next", sanitizeAdminRedirect(next));
@@ -26,14 +27,12 @@ export async function POST(request: NextRequest) {
   if (contentType !== "application/x-www-form-urlencoded" || !Number.isFinite(declaredLength) || declaredLength > MAX_BODY_BYTES) {
     return new NextResponse("Invalid request", { status: 400, headers: { "cache-control": "no-store", "referrer-policy": "no-referrer" } });
   }
-  const publicOrigin = request.headers.get("origin");
-  if (!isSameOriginRequest(
-    request.url,
-    publicOrigin,
-    process.env.APP_URL,
-  )) {
-    return new NextResponse("Invalid request origin", { status: 403, headers: { "cache-control": "no-store", "referrer-policy": "no-referrer" } });
+  if (!isTrustedBrowserPost(request.url, request.headers, process.env.APP_URL)) {
+    const url = publicAppUrl("/admin/locked", request.url, process.env.APP_URL);
+    url.searchParams.set("error", "origin");
+    return NextResponse.redirect(url, 303);
   }
+  const publicOrigin = publicAppUrl("/", request.url, process.env.APP_URL);
 
   const body = await request.text();
   if (Buffer.byteLength(body, "utf8") > MAX_BODY_BYTES) {
@@ -43,7 +42,6 @@ export async function POST(request: NextRequest) {
   const suppliedPassword = form.get("password") ?? "";
   const next = sanitizeAdminRedirect(form.get("next"));
   const adminPassword = process.env.ADMIN_PASSWORD;
-  if (!publicOrigin) return new NextResponse("Invalid request origin", { status: 403 });
   if (!adminPassword) return lockedRedirect(publicOrigin, "configuration", next);
   if (!constantTimeSecretEqual(suppliedPassword, adminPassword)) return lockedRedirect(publicOrigin, "invalid", next);
 

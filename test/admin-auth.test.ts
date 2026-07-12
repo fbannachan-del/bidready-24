@@ -7,6 +7,7 @@ import {
   constantTimeSecretEqual,
   createAdminSessionToken,
   isSameOriginRequest,
+  isTrustedBrowserPost,
   publicAppUrl,
   sanitizeAdminRedirect,
   verifyAdminSessionToken,
@@ -82,6 +83,26 @@ describe("admin redirect and origin validation", () => {
       "https://www.bidready24.com/admin",
     );
   });
+
+  it("accepts legitimate redirected browser posts without weakening cross-origin checks", () => {
+    const configured = "https://www.bidready24.com";
+    assert.equal(isTrustedBrowserPost("https://internal.example/api/admin/session", new Headers({
+      origin: "null",
+      referer: "https://bidready24.com/admin/locked",
+    }), configured), true);
+    assert.equal(isTrustedBrowserPost("https://internal.example/api/admin/session", new Headers({
+      origin: "null",
+      "sec-fetch-site": "same-site",
+      "sec-fetch-mode": "navigate",
+      "sec-fetch-dest": "document",
+    }), configured), true);
+    assert.equal(isTrustedBrowserPost("https://internal.example/api/admin/session", new Headers({
+      origin: "https://evil.example",
+      "sec-fetch-site": "same-site",
+      "sec-fetch-mode": "navigate",
+      "sec-fetch-dest": "document",
+    }), configured), false);
+  });
 });
 
 describe("POST /api/admin/session", () => {
@@ -121,7 +142,7 @@ describe("POST /api/admin/session", () => {
   it("sets a secure HTTP-only cookie and redirects without exposing the password", async () => {
     const response = await POST(loginRequest("test admin password"));
     assert.equal(response.status, 303);
-    assert.equal(response.headers.get("location"), "https://bidready24.com/admin/projects/proj_1");
+    assert.equal(response.headers.get("location"), "https://www.bidready24.com/admin/projects/proj_1");
     const cookie = response.headers.get("set-cookie") ?? "";
     assert.match(cookie, new RegExp(`^${ADMIN_SESSION_COOKIE}=`));
     assert.match(cookie, /HttpOnly/i);
@@ -140,7 +161,10 @@ describe("POST /api/admin/session", () => {
   });
 
   it("rejects cross-origin and non-form requests", async () => {
-    assert.equal((await POST(loginRequest("test admin password", { origin: "https://evil.example" }))).status, 403);
+    const crossOrigin = await POST(loginRequest("test admin password", { origin: "https://evil.example" }));
+    assert.equal(crossOrigin.status, 303);
+    assert.match(crossOrigin.headers.get("location") ?? "", /error=origin/);
+    assert.equal(crossOrigin.headers.get("set-cookie"), null);
     assert.equal((await POST(loginRequest("test admin password", { contentType: "application/json" }))).status, 400);
   });
 
@@ -159,7 +183,7 @@ describe("POST /api/admin/session", () => {
         body,
       }));
       assert.equal(accepted.status, 303);
-      assert.match(accepted.headers.get("location") ?? "", /^https:\/\/bidready24\.com\/admin\/locked/);
+      assert.match(accepted.headers.get("location") ?? "", /^https:\/\/www\.bidready24\.com\/admin\/locked/);
 
       const rejected = await POST(new NextRequest("https://bidready-24.onrender.com/api/admin/session", {
         method: "POST",
@@ -170,7 +194,8 @@ describe("POST /api/admin/session", () => {
         },
         body: new URLSearchParams({ password: "wrong password" }),
       }));
-      assert.equal(rejected.status, 403);
+      assert.equal(rejected.status, 303);
+      assert.match(rejected.headers.get("location") ?? "", /error=origin/);
     } finally {
       process.env.APP_URL = "https://bidready24.com";
     }
