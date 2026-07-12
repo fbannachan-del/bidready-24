@@ -7,7 +7,7 @@ import {
   constantTimeSecretEqual,
   createAdminSessionToken,
   isSameOriginRequest,
-  publicRequestUrl,
+  publicAppUrl,
   sanitizeAdminRedirect,
   verifyAdminSessionToken,
 } from "../lib/admin-auth";
@@ -58,21 +58,27 @@ describe("admin redirect and origin validation", () => {
       "https://bidready-24.onrender.com/api/admin/session",
       "https://www.bidready24.com",
       "https://bidready24.com",
-      "www.bidready24.com",
-      "https",
     ), true);
     assert.equal(isSameOriginRequest(
       "https://bidready-24.onrender.com/api/admin/session",
       "https://evil.example",
       "https://bidready24.com",
-      "www.bidready24.com",
-      "https",
+    ), false);
+    assert.equal(isSameOriginRequest(
+      "https://bidready-24.onrender.com/api/admin/session",
+      "https://bidready24.com",
+      "https://www.bidready24.com",
+    ), true);
+    assert.equal(isSameOriginRequest(
+      "https://bidready-24.onrender.com/api/admin/session",
+      "https://evil.example",
+      "https://www.bidready24.com",
     ), false);
   });
 
-  it("keeps post-authentication redirects on the public forwarded host", () => {
+  it("uses the configured canonical public host for redirects", () => {
     assert.equal(
-      publicRequestUrl("/admin", "https://bidready-24.onrender.com/api/admin/session", "www.bidready24.com", "https").href,
+      publicAppUrl("/admin", "https://bidready-24.onrender.com/api/admin/session", "https://bidready24.com").href,
       "https://www.bidready24.com/admin",
     );
   });
@@ -138,6 +144,38 @@ describe("POST /api/admin/session", () => {
     assert.equal((await POST(loginRequest("test admin password", { contentType: "application/json" }))).status, 400);
   });
 
+  it("accepts the apex form origin behind Render but ignores spoofed forwarding headers", async () => {
+    process.env.APP_URL = "https://www.bidready24.com";
+    try {
+      const body = new URLSearchParams({ password: "wrong password", next: "/admin" });
+      const accepted = await POST(new NextRequest("https://bidready-24.onrender.com/api/admin/session", {
+        method: "POST",
+        headers: {
+          origin: "https://bidready24.com",
+          "content-type": "application/x-www-form-urlencoded",
+          "x-forwarded-host": "bidready24.com",
+          "x-forwarded-proto": "https",
+        },
+        body,
+      }));
+      assert.equal(accepted.status, 303);
+      assert.match(accepted.headers.get("location") ?? "", /^https:\/\/bidready24\.com\/admin\/locked/);
+
+      const rejected = await POST(new NextRequest("https://bidready-24.onrender.com/api/admin/session", {
+        method: "POST",
+        headers: {
+          origin: "https://evil.example",
+          "content-type": "application/x-www-form-urlencoded",
+          "x-forwarded-host": "evil.example",
+        },
+        body: new URLSearchParams({ password: "wrong password" }),
+      }));
+      assert.equal(rejected.status, 403);
+    } finally {
+      process.env.APP_URL = "https://bidready24.com";
+    }
+  });
+
   it("fails closed when ADMIN_PASSWORD is not configured", async () => {
     const configured = process.env.ADMIN_PASSWORD;
     delete process.env.ADMIN_PASSWORD;
@@ -162,10 +200,40 @@ describe("admin proxy", () => {
   });
 
   it("redirects an unauthenticated request and never accepts a query password", () => {
-    const response = proxy(new NextRequest(`https://bidready24.com/admin?key=${encodeURIComponent(password)}`));
+    const response = proxy(new NextRequest(`https://www.bidready24.com/admin?key=${encodeURIComponent(password)}`));
     assert.equal(response.status, 307);
-    assert.equal(response.headers.get("location"), "https://bidready24.com/admin/locked");
+    assert.equal(response.headers.get("location"), "https://www.bidready24.com/admin/locked");
     assert.doesNotMatch(response.headers.get("location") ?? "", /key|proxy%20password/);
+  });
+
+  it("canonicalises the apex domain and removes a legacy key query", () => {
+    const response = proxy(new NextRequest(`https://bidready24.com/admin?key=${encodeURIComponent(password)}`, {
+      headers: { host: "bidready24.com" },
+    }));
+    assert.equal(response.status, 308);
+    assert.equal(response.headers.get("location"), "https://www.bidready24.com/admin");
+  });
+
+  it("does not redirect apex webhooks", () => {
+    const response = proxy(new NextRequest("https://bidready24.com/api/webhooks/stripe", {
+      method: "POST",
+      headers: { host: "bidready24.com" },
+    }));
+    assert.equal(response.headers.get("x-middleware-next"), "1");
+  });
+
+  it("uses the configured public host rather than a forwarded host for login", () => {
+    const configuredAppUrl = process.env.APP_URL;
+    process.env.APP_URL = "https://www.bidready24.com";
+    try {
+      const response = proxy(new NextRequest("https://bidready-24.onrender.com/admin/projects/proj_1", {
+        headers: { "x-forwarded-host": "evil.example" },
+      }));
+      assert.equal(response.headers.get("location"), "https://www.bidready24.com/admin/locked?next=%2Fadmin%2Fprojects%2Fproj_1");
+    } finally {
+      if (configuredAppUrl === undefined) delete process.env.APP_URL;
+      else process.env.APP_URL = configuredAppUrl;
+    }
   });
 
   it("permits a correctly signed unexpired cookie", () => {

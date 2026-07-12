@@ -26,7 +26,7 @@ const plexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.APP_URL || "https://bidready24.com"),
+  metadataBase: new URL(process.env.APP_URL || "https://www.bidready24.com"),
   title: { default: "BIDREADY24 | Every requirement, traced to source", template: "%s | BIDREADY24" },
   description: "Turn a UK public-sector tender pack into a source-cited compliance preflight, evidence-gap plan and traceable response workspace. Nothing invented.",
   icons: { icon: [{ url: "/icon.svg?v=3", type: "image/svg+xml" }], shortcut: "/favicon.ico?v=3", apple: "/icon.svg?v=3" },

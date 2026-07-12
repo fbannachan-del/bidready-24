@@ -16,7 +16,7 @@ services:
       - key: NODE_ENV
         value: production
       - key: APP_URL
-        value: https://bidready24.com   # Update if using render subdomain first
+        value: https://www.bidready24.com   # Update if using render subdomain first
       - key: DATABASE_PATH
         value: /data/bidready.db
       - key: UPLOAD_DIR

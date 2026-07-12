@@ -19,8 +19,8 @@ Use the included `render.yaml` for easy Blueprint deploy on Render.
 - Attach a persistent Disk at `/data` for SQLite DB + file uploads (see render.yaml).
 - (Recommended later) Switch to managed Postgres + external object storage.
 - Set ALL secrets (ADMIN_PASSWORD, Stripe keys, etc.) ONLY via the Render Dashboard Environment variables (never commit).
-- For custom domain: After the service is live on Render, go to the service → Custom Domains and add bidready24.com (update DNS as instructed by Render).
-- Update APP_URL in env to https://bidready24.com once DNS is live.
+- For custom domain: After the service is live on Render, go to the service → Custom Domains and add www.bidready24.com (update DNS as instructed by Render).
+- Update APP_URL in env to https://www.bidready24.com once DNS is live.
 - Transactional email, live Stripe, and full legal pages require separate owner sign-off.
 - Run full security checklist before real customers.
 - Only after owner explicitly approves publishing the site and using the domain.

@@ -71,18 +71,17 @@ export function isSameOriginRequest(
   requestUrl: string,
   origin: string | null,
   configuredAppUrl?: string,
-  forwardedHost?: string | null,
-  forwardedProto?: string | null,
 ): boolean {
   if (!origin) return false;
   try {
     const requestOrigin = new URL(requestUrl).origin;
     const allowedOrigins = new Set([requestOrigin]);
-    if (configuredAppUrl) allowedOrigins.add(new URL(configuredAppUrl).origin);
-    if (forwardedHost) {
-      const host = forwardedHost.split(",", 1)[0].trim();
-      const protocol = forwardedProto?.split(",", 1)[0].trim() || "https";
-      if (host) allowedOrigins.add(`${protocol}://${host}`);
+    if (configuredAppUrl) {
+      const configured = new URL(configuredAppUrl);
+      allowedOrigins.add(configured.origin);
+      const companion = new URL(configured.origin);
+      companion.hostname = configured.hostname.startsWith("www.") ? configured.hostname.slice(4) : `www.${configured.hostname}`;
+      allowedOrigins.add(companion.origin);
     }
     return allowedOrigins.has(origin);
   } catch {
@@ -90,17 +89,12 @@ export function isSameOriginRequest(
   }
 }
 
-export function publicRequestUrl(
+export function publicAppUrl(
   path: string,
   requestUrl: string,
-  forwardedHost?: string | null,
-  forwardedProto?: string | null,
+  configuredAppUrl?: string,
 ) {
-  let base = new URL(requestUrl);
-  const host = forwardedHost?.split(",", 1)[0].trim();
-  const protocol = forwardedProto?.split(",", 1)[0].trim();
-  if (host && (protocol === "http" || protocol === "https")) {
-    base = new URL(`${protocol}://${host}`);
-  }
+  const base = new URL(configuredAppUrl || requestUrl);
+  if (base.hostname === "bidready24.com") base.hostname = "www.bidready24.com";
   return new URL(path, base);
 }
