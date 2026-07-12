@@ -12,39 +12,19 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   const db = getDb();
 
   if (action === "run_stub") {
-    // Create some stub requirements from nothing — all review required
-    addRequirement(id, {
-      type: "mandatory",
-      title: "Public Liability Insurance minimum",
-      normalized_requirement: "The supplier must hold public liability insurance of at least £10,000,000.",
-      page_or_location: "ITT p.7 / Spec 3.1",
-      customer_status: "uncertain",
-      confidence: 0.6,
-      review_required: true,
-      source: "stub",
-    });
-    addRequirement(id, {
-      type: "mandatory",
-      title: "CHAS or SSIP accreditation",
-      normalized_requirement: "Valid CHAS or equivalent SSIP scheme accreditation required at time of tender.",
-      page_or_location: "Instructions to Tenderers, p.4",
-      customer_status: "missing",
-      confidence: 0.3,
-      review_required: true,
-      source: "stub",
-    });
-    addRequirement(id, {
-      type: "scored",
-      title: "Method statement — environmental / sustainability",
-      normalized_requirement: "Provide method statement demonstrating use of environmentally friendly products and waste minimisation.",
-      page_or_location: "Quality questions Q3",
-      evaluation_weight: 8,
-      customer_status: "uncertain",
-      confidence: 0.5,
-      review_required: true,
-      source: "stub",
-    });
-    updateProjectStatus(id, "review_required");
+    // Use pipeline stub — looks for files and builds from keywords + known cleaning tender items
+    const { buildStubAnalysis } = await import("@/lib/pipeline");
+    const db = (await import("@/lib/db")).getDb();
+    const files = db.prepare(`SELECT stored_path, original_name FROM files WHERE project_id = ?`).all(id) as any[];
+    let text = "Sample tender content for cleaning services. CHAS required. Insurance £10m. Mobilisation plan. Method statements.";
+    if (files.length > 0) {
+      // simplistic: use first file name as context
+      text += " " + files.map((f: any) => f.original_name).join(" ");
+    }
+    const count = buildStubAnalysis(id, text);
+    // log
+    db.prepare(`INSERT INTO audit_events (id, project_id, actor, action, entity, details_json) VALUES (?, ?, 'admin', 'run_stub', 'analysis', ?)`)
+      .run("aud_" + Date.now(), id, JSON.stringify({ items: count }));
   }
 
   if (action === "mark_ready") {
