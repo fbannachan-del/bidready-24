@@ -2,10 +2,14 @@ import { unstable_cache } from "next/cache";
 import { z } from "zod";
 import type { TenderFeed, TenderOpportunity, TenderSearchInput } from "@/lib/contracts-finder";
 import { normaliseTenderSearch } from "@/lib/contracts-finder";
+import { normaliseRegionLabel, opportunityMatchesRegion } from "@/lib/tender-regions";
 
 const FTS_RELEASES_URL = "https://www.find-tender.service.gov.uk/api/1.0/ocdsReleasePackages";
 const CLEANING_CODES = /^(909|98341130)/;
 const CLEANING_TERMS = /\b(cleaning services?|commercial cleaning|building cleaning|office cleaning|school cleaning|window cleaning|janitorial|caretaker|washroom|deep clean(?:ing)?)\b/i;
+/** Look back further so sparse cleaning notices (e.g. Scotland) still surface. */
+const FTS_LOOKBACK_DAYS = 120;
+const FTS_MAX_PAGES = 8;
 
 const ClassificationSchema = z.object({ id: z.string(), description: z.string().nullish() });
 const ReleaseSchema = z.object({
@@ -41,12 +45,6 @@ const PageSchema = z.object({
 
 type FtsRelease = z.infer<typeof ReleaseSchema>;
 
-const regionNames: Record<string, string> = {
-  UKC: "North East", UKD: "North West", UKE: "Yorkshire and the Humber", UKF: "East Midlands",
-  UKG: "West Midlands", UKH: "East of England", UKI: "London", UKJ: "South East", UKK: "South West",
-  UKL: "Wales", UKM: "Scotland", UKN: "Northern Ireland", UK: "United Kingdom",
-};
-
 function validDate(value?: string | null) {
   return value && Number.isFinite(Date.parse(value)) ? value : null;
 }
@@ -55,9 +53,8 @@ function releaseRegion(release: FtsRelease) {
   const delivery = release.tender.items?.flatMap(item => item.deliveryAddresses || []).find(address => address.region)?.region;
   const location = release.tender.items?.find(item => item.deliveryLocation?.description)?.deliveryLocation?.description;
   const buyer = release.parties?.find(party => party.roles?.includes("buyer"));
-  const raw = location || delivery || buyer?.address?.locality || buyer?.address?.region || "Location not stated";
-  const prefix = Object.keys(regionNames).sort((a, b) => b.length - a.length).find(code => raw.startsWith(code));
-  return prefix ? regionNames[prefix] : raw;
+  const raw = location || delivery || buyer?.address?.locality || buyer?.address?.region || "";
+  return normaliseRegionLabel(raw);
 }
 
 function classifications(release: FtsRelease) {
@@ -83,12 +80,15 @@ export function parseFindATenderReleases(releases: unknown[], input: TenderSearc
     .map((release): TenderOpportunity => {
       const codes = classifications(release);
       const amount = release.tender.value?.currency === "GBP" && (release.tender.value.amount || 0) > 0 ? release.tender.value.amount! : null;
+      const buyerName = release.buyer?.name || "Buyer not stated";
+      const title = release.tender.title.trim();
+      const description = (release.tender.description || release.description || "No description supplied by the buyer.").replace(/\s+/g, " ").trim();
       return {
         id: release.ocid,
         reference: release.id,
-        title: release.tender.title.trim(),
-        description: (release.tender.description || release.description || "No description supplied by the buyer.").replace(/\s+/g, " ").trim(),
-        buyer: release.buyer?.name || "Buyer not stated",
+        title,
+        description,
+        buyer: buyerName,
         region: releaseRegion(release),
         publishedAt: validDate(release.date),
         deadlineAt: validDate(release.tender.tenderPeriod?.endDate),
@@ -102,7 +102,7 @@ export function parseFindATenderReleases(releases: unknown[], input: TenderSearc
         sourceUrl: `https://www.find-tender.service.gov.uk/Notice/${encodeURIComponent(release.id)}`,
       };
     })
-    .filter(item => !query.region || item.region === query.region || item.region.toLowerCase().includes(query.region.toLowerCase()))
+    .filter(item => !query.region || opportunityMatchesRegion(item, query.region))
     .filter(item => !query.suitableForSme || item.suitableForSme)
     .sort((a, b) => (a.deadlineAt ? Date.parse(a.deadlineAt) : Number.MAX_SAFE_INTEGER) - (b.deadlineAt ? Date.parse(b.deadlineAt) : Number.MAX_SAFE_INTEGER))
     .slice(0, query.limit);
@@ -110,10 +110,10 @@ export function parseFindATenderReleases(releases: unknown[], input: TenderSearc
 
 async function fetchUncached(serialisedInput: string): Promise<TenderFeed> {
   const input = normaliseTenderSearch(JSON.parse(serialisedInput) as TenderSearchInput);
-  const updatedFrom = new Date(Date.now() - 45 * 86_400_000).toISOString().slice(0, 19);
+  const updatedFrom = new Date(Date.now() - FTS_LOOKBACK_DAYS * 86_400_000).toISOString().slice(0, 19);
   let nextUrl: string | null = `${FTS_RELEASES_URL}?stages=tender&updatedFrom=${encodeURIComponent(updatedFrom)}&limit=100`;
   const releases: unknown[] = [];
-  for (let page = 0; nextUrl && page < 5; page += 1) {
+  for (let page = 0; nextUrl && page < FTS_MAX_PAGES; page += 1) {
     const response = await fetch(nextUrl, { headers: { accept: "application/json" }, signal: AbortSignal.timeout(12_000) });
     if (!response.ok) throw new Error(`Find a Tender returned HTTP ${response.status}`);
     const parsed = PageSchema.parse(await response.json());
@@ -124,7 +124,7 @@ async function fetchUncached(serialisedInput: string): Promise<TenderFeed> {
   return { opportunities, total: opportunities.length, fetchedAt: new Date().toISOString(), source: "Find a Tender" };
 }
 
-const fetchCached = unstable_cache(fetchUncached, ["find-a-tender-cleaning-v1"], { revalidate: 15 * 60 });
+const fetchCached = unstable_cache(fetchUncached, ["find-a-tender-cleaning-v2"], { revalidate: 15 * 60 });
 
 export function fetchFindATenderCleaning(input: TenderSearchInput = {}) {
   return fetchCached(JSON.stringify(normaliseTenderSearch(input)));

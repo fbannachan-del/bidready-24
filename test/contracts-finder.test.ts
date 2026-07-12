@@ -50,8 +50,8 @@ describe("Contracts Finder cleaning feed", () => {
       ],
     }, Date.UTC(2026, 6, 12));
 
-    assert.equal(feed.total, 3);
     assert.equal(feed.opportunities.length, 1);
+    assert.equal(feed.total, 1);
     assert.equal(feed.opportunities[0].title, "School Cleaning & Hygiene");
     assert.equal(feed.opportunities[0].description, "Daily cleaning & periodic deep clean.");
     assert.deepEqual(feed.opportunities[0].cpvCodes, ["90910000", "90919200"]);
@@ -61,5 +61,37 @@ describe("Contracts Finder cleaning feed", () => {
   it("fails closed when the upstream response shape changes", () => {
     assert.throws(() => parseContractsFinderFeed({ hitCount: "many", noticeList: [] }));
     assert.throws(() => parseContractsFinderFeed({ hitCount: 1, noticeList: [{ item: { id: "not-a-guid" } }] }));
+  });
+
+  it("post-filters region so Scotland does not keep Any region notices", () => {
+    const feed = parseContractsFinderFeed({
+      hitCount: 2,
+      noticeList: [
+        {
+          item: {
+            ...notice(openId, "2099-07-31T17:00:00Z").item,
+            region: "Any",
+            regionText: "Any region",
+            title: "National framework cleaning",
+            description: "UK-wide framework",
+            organisationName: "Central Body",
+          },
+        },
+        {
+          item: {
+            ...notice("56f3f42e-86d1-463d-9288-32214b43a609", "2099-07-31T17:00:00Z").item,
+            region: "Scotland",
+            regionText: "Scotland",
+            title: "Edinburgh school cleaning",
+            description: "Daily cleaning across Edinburgh schools",
+            organisationName: "City of Edinburgh Council",
+          },
+        },
+      ],
+    }, Date.UTC(2026, 6, 12), { region: "Scotland" });
+
+    assert.equal(feed.opportunities.length, 1);
+    assert.equal(feed.opportunities[0].region, "Scotland");
+    assert.match(feed.opportunities[0].title, /Edinburgh/i);
   });
 });

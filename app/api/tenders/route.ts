@@ -9,14 +9,31 @@ export async function GET(request: NextRequest) {
   const suitableForSme = request.nextUrl.searchParams.get("sme") === "1";
   const requestedLimit = Number(request.nextUrl.searchParams.get("limit") || 24);
   const limit = Number.isFinite(requestedLimit) ? requestedLimit : 24;
+  const includeDiagnostics = request.nextUrl.searchParams.get("debug") === "1"
+    && process.env.NODE_ENV !== "production";
 
   try {
     const feed = await fetchLiveCleaningTenders({ keyword, region, suitableForSme, limit });
-    return NextResponse.json(feed, {
+    const body = includeDiagnostics
+      ? feed
+      : { opportunities: feed.opportunities, total: feed.total, fetchedAt: feed.fetchedAt, source: feed.source };
+    return NextResponse.json(body, {
       headers: { "cache-control": "public, max-age=60, s-maxage=900, stale-while-revalidate=3600" },
     });
   } catch (error) {
-    console.error("Tender feed refresh failed", { name: error instanceof Error ? error.name : "UnknownError" });
-    return NextResponse.json({ error: "The live tender feed is temporarily unavailable." }, { status: 502 });
+    const diagnostics = error && typeof error === "object" && "diagnostics" in error
+      ? (error as { diagnostics?: unknown }).diagnostics
+      : undefined;
+    console.error("Tender feed refresh failed", {
+      name: error instanceof Error ? error.name : "UnknownError",
+      diagnostics,
+    });
+    return NextResponse.json(
+      {
+        error: "The live tender feed is temporarily unavailable.",
+        ...(includeDiagnostics && diagnostics ? { diagnostics } : {}),
+      },
+      { status: 502 },
+    );
   }
 }

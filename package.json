@@ -14,6 +14,8 @@
     "db:migrate": "tsx scripts/migrate.ts",
     "db:seed": "tsx scripts/seed.ts",
     "test": "node --import tsx --test test/**/*.test.ts",
+    "test:unit": "node --import tsx --test test/*.test.ts test/validation/**/*.test.ts",
+    "test:agents": "node --import tsx --test test/agents/**/*.test.ts",
     "test:coverage": "node --import tsx --experimental-test-coverage --test test/**/*.test.ts"
   },
   "dependencies": {

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, RefreshCw, Search } from "lucide-react";
 import { TenderCard } from "@/components/tenders/TenderCard";
-import { cleaningTenderRegions } from "@/lib/contracts-finder";
+import { cleaningTenderRegions } from "@/lib/tender-regions";
 import { fetchLiveCleaningTenders } from "@/lib/tender-feed";
 
 export const metadata: Metadata = {

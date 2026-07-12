@@ -21,7 +21,10 @@ export function SiteHeader() {
           ))}
         </nav>
         <div className="flex items-center gap-2.5">
-          <Link href="/sample-report" className="hidden text-[13px] font-medium text-[var(--slate)] transition-colors hover:text-[var(--ink)] sm:block">
+          <Link href="/login" className="hidden text-[13px] font-medium text-[var(--slate)] transition-colors hover:text-[var(--ink)] sm:block">
+            Open your project
+          </Link>
+          <Link href="/sample-report" className="hidden text-[13px] font-medium text-[var(--slate)] transition-colors hover:text-[var(--ink)] md:block">
             Sample report
           </Link>
           <Link href="/pricing" className="button-primary !hidden !min-h-10 !px-4 !text-[13px] sm:!inline-flex">
@@ -33,6 +36,7 @@ export function SiteHeader() {
             </summary>
             <nav className="absolute right-0 top-12 z-50 w-56 rounded-xl border border-[var(--border)] bg-white p-2 shadow-[0_18px_55px_rgba(43,48,61,.16)]" aria-label="Mobile navigation">
               {navigation.map(([label, href]) => <Link key={href} href={href} className="block rounded-lg px-3 py-2.5 text-sm text-[var(--slate)] hover:bg-[var(--paper)] hover:text-[var(--ink)]">{label}</Link>)}
+              <Link href="/login" className="block rounded-lg px-3 py-2.5 text-sm text-[var(--slate)] hover:bg-[var(--paper)] hover:text-[var(--ink)]">Open your project</Link>
               <Link href="/sample-report" className="block rounded-lg px-3 py-2.5 text-sm text-[var(--slate)] hover:bg-[var(--paper)] hover:text-[var(--ink)]">Sample report</Link>
               <Link href="/contact" className="block rounded-lg px-3 py-2.5 text-sm text-[var(--slate)] hover:bg-[var(--paper)] hover:text-[var(--ink)]">Contact</Link>
             </nav>

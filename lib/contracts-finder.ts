@@ -1,5 +1,11 @@
 import { unstable_cache } from "next/cache";
 import { z } from "zod";
+import {
+  cleaningTenderRegions,
+  contractsFinderRegionParam,
+  normaliseRegionLabel,
+  opportunityMatchesRegion,
+} from "@/lib/tender-regions";
 
 const CONTRACTS_FINDER_SEARCH_URL = "https://www.contractsfinder.service.gov.uk/api/rest/2/search_notices/json";
 const CLEANING_CPV_CODES = [
@@ -58,11 +64,21 @@ export type TenderSearchInput = {
   limit?: number;
 };
 
+export type TenderSourceDiagnostics = {
+  ok: boolean;
+  count: number;
+  error?: string;
+};
+
 export type TenderFeed = {
   opportunities: TenderOpportunity[];
   total: number;
   fetchedAt: string;
   source: "Contracts Finder" | "Find a Tender" | "Find a Tender + Contracts Finder";
+  diagnostics?: {
+    findATender: TenderSourceDiagnostics;
+    contractsFinder: TenderSourceDiagnostics;
+  };
 };
 
 function decodeHtml(value: string): string {
@@ -88,7 +104,12 @@ function validDate(value: string | null | undefined): string | null {
   return value && Number.isFinite(Date.parse(value)) ? value : null;
 }
 
-export function parseContractsFinderFeed(payload: unknown, now = Date.now()): Omit<TenderFeed, "fetchedAt"> {
+export function parseContractsFinderFeed(
+  payload: unknown,
+  now = Date.now(),
+  input: TenderSearchInput = {},
+): Omit<TenderFeed, "fetchedAt"> {
+  const query = normaliseTenderSearch(input);
   const parsed = SearchResponseSchema.parse(payload);
   const seen = new Set<string>();
   const opportunities = parsed.noticeList
@@ -98,7 +119,7 @@ export function parseContractsFinderFeed(payload: unknown, now = Date.now()): Om
       title: decodeHtml(item.title),
       description: decodeHtml(item.description || "No description supplied by the buyer."),
       buyer: decodeHtml(item.organisationName || "Buyer not stated"),
-      region: decodeHtml(item.regionText || item.region || "Location not stated"),
+      region: normaliseRegionLabel(decodeHtml(item.regionText || item.region || "")),
       publishedAt: validDate(item.publishedDate),
       deadlineAt: validDate(item.deadlineDate),
       valueLow: item.valueLow && item.valueLow > 0 ? item.valueLow : null,
@@ -113,41 +134,46 @@ export function parseContractsFinderFeed(payload: unknown, now = Date.now()): Om
     .filter((item) => {
       if (seen.has(item.id)) return false;
       seen.add(item.id);
-      return !item.deadlineAt || Date.parse(item.deadlineAt) > now;
+      if (item.deadlineAt && Date.parse(item.deadlineAt) <= now) return false;
+      if (query.region && !opportunityMatchesRegion(item, query.region)) return false;
+      if (query.suitableForSme && !item.suitableForSme) return false;
+      return true;
     })
-    .sort((a, b) => (a.deadlineAt ? Date.parse(a.deadlineAt) : Number.MAX_SAFE_INTEGER) - (b.deadlineAt ? Date.parse(b.deadlineAt) : Number.MAX_SAFE_INTEGER));
-  return { opportunities, total: parsed.hitCount, source: "Contracts Finder" };
+    .sort((a, b) => (a.deadlineAt ? Date.parse(a.deadlineAt) : Number.MAX_SAFE_INTEGER) - (b.deadlineAt ? Date.parse(b.deadlineAt) : Number.MAX_SAFE_INTEGER))
+    .slice(0, query.limit);
+  return { opportunities, total: opportunities.length, source: "Contracts Finder" };
 }
 
 async function fetchUncached(serialisedInput: string): Promise<TenderFeed> {
   const input = normaliseTenderSearch(JSON.parse(serialisedInput) as TenderSearchInput);
+  // Over-fetch when region filtering is applied client-side so CF's loose API
+  // region param does not starve the post-filter.
+  const requestSize = input.region ? Math.min(50, Math.max(input.limit * 3, 24)) : input.limit;
   const searchCriteria: Record<string, unknown> = {
     types: ["Contract"],
     statuses: ["Open"],
     keyword: input.keyword,
     cpvCodes: [...CLEANING_CPV_CODES],
   };
-  if (input.region) searchCriteria.regions = input.region;
+  const cfRegion = contractsFinderRegionParam(input.region);
+  if (cfRegion) searchCriteria.regions = [cfRegion];
   if (input.suitableForSme) searchCriteria.suitableForSme = true;
 
   const response = await fetch(CONTRACTS_FINDER_SEARCH_URL, {
     method: "POST",
     headers: { accept: "application/json", "content-type": "application/json" },
-    body: JSON.stringify({ searchCriteria, size: input.limit }),
+    body: JSON.stringify({ searchCriteria, size: requestSize }),
     signal: AbortSignal.timeout(10_000),
   });
   if (!response.ok) throw new Error(`Contracts Finder returned HTTP ${response.status}`);
 
-  return { ...parseContractsFinderFeed(await response.json()), fetchedAt: new Date().toISOString() };
+  return { ...parseContractsFinderFeed(await response.json(), Date.now(), input), fetchedAt: new Date().toISOString() };
 }
 
-const fetchCached = unstable_cache(fetchUncached, ["contracts-finder-cleaning-v1"], { revalidate: 15 * 60 });
+const fetchCached = unstable_cache(fetchUncached, ["contracts-finder-cleaning-v2"], { revalidate: 15 * 60 });
 
 export async function fetchCleaningTenders(input: TenderSearchInput = {}): Promise<TenderFeed> {
   return fetchCached(JSON.stringify(normaliseTenderSearch(input)));
 }
 
-export const cleaningTenderRegions = [
-  "Any region", "London", "South East", "South West", "East of England", "East Midlands",
-  "West Midlands", "North East", "North West", "Yorkshire and the Humber", "Wales", "Scotland", "Northern Ireland",
-] as const;
+export { cleaningTenderRegions };

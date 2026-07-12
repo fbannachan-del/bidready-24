@@ -20,7 +20,7 @@ export function SiteFooter() {
         </div>
         <div>
           <p className="footer-heading">Company</p>
-          <div className="footer-links"><Link href="/cleaning-tenders">For cleaning contractors</Link><Link href="/contact">Contact &amp; support</Link><Link href="/legal/terms">Terms</Link><Link href="/legal/refund">Refunds</Link></div>
+          <div className="footer-links"><Link href="/cleaning-tenders">For cleaning contractors</Link><Link href="/login">Open your project</Link><Link href="/contact">Contact &amp; support</Link><Link href="/legal/terms">Terms</Link><Link href="/legal/refund">Refunds</Link></div>
         </div>
       </div>
       <div className="border-t border-[var(--border)]">

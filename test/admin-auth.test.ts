@@ -217,11 +217,23 @@ describe("POST /api/admin/session", () => {
 
 describe("admin proxy", () => {
   const password = "proxy password";
-  const previousPassword = process.env.ADMIN_PASSWORD;
-  before(() => { process.env.ADMIN_PASSWORD = password; });
+  const previous = {
+    ADMIN_PASSWORD: process.env.ADMIN_PASSWORD,
+    ADMIN_SESSION_SECRET: process.env.ADMIN_SESSION_SECRET,
+    APP_URL: process.env.APP_URL,
+  };
+
+  before(() => {
+    process.env.ADMIN_PASSWORD = password;
+    delete process.env.ADMIN_SESSION_SECRET;
+    delete process.env.APP_URL;
+  });
+
   after(() => {
-    if (previousPassword === undefined) delete process.env.ADMIN_PASSWORD;
-    else process.env.ADMIN_PASSWORD = previousPassword;
+    for (const [key, value] of Object.entries(previous)) {
+      if (value === undefined) delete process.env[key as keyof NodeJS.ProcessEnv];
+      else process.env[key as keyof NodeJS.ProcessEnv] = value;
+    }
   });
 
   it("redirects an unauthenticated request and never accepts a query password", () => {
@@ -248,7 +260,6 @@ describe("admin proxy", () => {
   });
 
   it("uses the configured public host rather than a forwarded host for login", () => {
-    const configuredAppUrl = process.env.APP_URL;
     process.env.APP_URL = "https://www.bidready24.com";
     try {
       const response = proxy(new NextRequest("https://bidready-24.onrender.com/admin/projects/proj_1", {
@@ -256,8 +267,7 @@ describe("admin proxy", () => {
       }));
       assert.equal(response.headers.get("location"), "https://www.bidready24.com/admin/locked?next=%2Fadmin%2Fprojects%2Fproj_1");
     } finally {
-      if (configuredAppUrl === undefined) delete process.env.APP_URL;
-      else process.env.APP_URL = configuredAppUrl;
+      delete process.env.APP_URL;
     }
   });
 
@@ -276,5 +286,12 @@ describe("admin proxy", () => {
     }));
     assert.equal(response.status, 307);
     assert.match(response.headers.get("location") ?? "", /\/admin\/locked\?next=%2Fadmin%2Fprojects%2Fproj_1$/);
+  });
+
+  it("does not use ambient APP_URL from other test processes when unset", () => {
+    assert.equal(process.env.APP_URL, undefined);
+    const response = proxy(new NextRequest("https://www.bidready24.com/admin"));
+    assert.equal(response.status, 307);
+    assert.equal(response.headers.get("location"), "https://www.bidready24.com/admin/locked");
   });
 });
