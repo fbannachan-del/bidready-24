@@ -20,6 +20,12 @@
 # production
 /build
 
+# runtime data (created by migrations and uploads; never commit customer data)
+/data/*.db
+/data/*.db-wal
+/data/*.db-shm
+/data/uploads/
+
 # misc
 .DS_Store
 *.pem
@@ -31,7 +37,11 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # env files (can opt-in for committing if needed)
-.env*
+.env
+.env.local
+.env.*.local
+# .env.example is intentionally committed as a template
+!.env.example
 
 # vercel
 .vercel

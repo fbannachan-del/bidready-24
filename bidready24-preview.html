@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<!--
+  HISTORICAL NON-PRODUCTION PROTOTYPE.
+  The live product is the Next.js application in /app. This standalone preview
+  is retained only as a design reference and must not be deployed or used to
+  describe current payment, review, automation, security, or delivery behaviour.
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BidReady 24 — Preview</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;600&amp;display=swap');
+
+    :root {
+      --navy: #0A3D62;
+    }
+
+    body {
+      font-family: 'Inter', system_ui, sans-serif;
+    }
+
+    .font-display {
+      font-family: 'Space Grotesk', 'Inter', system_ui, sans-serif;
+      font-weight: 600;
+    }
+
+    .navy { color: #0A3D62; }
+    .bg-navy { background-color: #0A3D62; }
+
+    .section-header {
+      font-size: 2.25rem;
+      line-height: 2.5rem;
+      font-weight: 600;
+      letter-spacing: -0.025em;
+    }
+
+    .card {
+      background: white;
+      border: 1px solid #E5E7EB;
+      border-radius: 16px;
+    }
+
+    .status-met { background-color: #ecfdf5; color: #166534; border-color: #a3e635; }
+    .status-missing { background-color: #fefce8; color: #854d0e; border-color: #fde047; }
+    .status-uncertain { background-color: #f1f5f9; color: #475569; border-color: #cbd5e1; }
+    .status-not_met { background-color: #fef2f2; color: #b91c1c; border-color: #fecaca; }
+
+    .bid-table th {
+      background: #F8F9FA;
+      font-weight: 500;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .nav-tab {
+      padding: 8px 20px;
+      border-radius: 9999px;
+      font-weight: 500;
+      transition: all 0.1s ease;
+    }
+
+    .nav-tab.active {
+      background-color: #0A3D62;
+      color: white;
+    }
+
+    .demo-badge {
+      font-size: 10px;
+      padding: 1px 8px;
+      background: #fef3c7;
+      color: #854d0e;
+      border-radius: 9999px;
+      font-weight: 600;
+    }
+
+    .metric {
+      font-variant-numeric: tabular-nums;
+    }
+
+    .source-cite {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 11px;
+      color: #64748b;
+    }
+
+    .tender-text {
+      font-size: 13px;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body class="bg-[#F8F9FA] text-[#1A2332]">
+  <!-- Top Banner -->
+  <div class="bg-[#0A3D62] text-white text-center py-2 text-sm">
+    <div class="max-w-screen-xl mx-auto px-4 flex items-center justify-center gap-2">
+      <i class="fa-solid fa-info-circle"></i>
+      <span class="font-medium">STATIC PREVIEW</span> —
+      <span class="opacity-90">This is a self-contained HTML demo of the BidReady 24 MVP (concierge version). Not connected to any backend.</span>
+    </div>
+  </div>
+
+  <!-- Main Navigation -->
+  <nav class="bg-white border-b sticky top-0 z-50">
+    <div class="max-w-screen-xl mx-auto px-6">
+      <div class="flex items-center justify-between h-16">
+        <div class="flex items-center gap-3">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 bg-[#0A3D62] text-white rounded-xl flex items-center justify-center font-bold text-lg">BR</div>
+            <div>
+              <span class="font-semibold text-2xl tracking-tighter">BidReady 24</span>
+            </div>
+          </div>
+          <div class="demo-badge px-2.5 py-px text-[10px]">PREVIEW</div>
+        </div>
+
+        <div class="flex items-center gap-2 text-sm">
+          <button onclick="showSection('home')" class="nav-tab px-4 py-1.5 text-sm font-medium active" id="nav-home">Home</button>
+          <button onclick="showSection('pricing')" class="nav-tab px-4 py-1.5 text-sm font-medium" id="nav-pricing">Pricing</button>
+          <button onclick="showSection('sample')" class="nav-tab px-4 py-1.5 text-sm font-medium" id="nav-sample">Sample Report</button>
+          <button onclick="showSection('project')" class="nav-tab px-4 py-1.5 text-sm font-medium" id="nav-project">Project View</button>
+          <button onclick="showSection('admin')" class="nav-tab px-4 py-1.5 text-sm font-medium" id="nav-admin">Admin Review</button>
+        </div>
+
+        <div class="flex items-center gap-3 text-sm">
+          <a href="#" onclick="simulateContact()" class="text-[#475569] hover:text-[#0A3D62]">Contact</a>
+          <button onclick="simulateCheckout('preflight')"
+                  class="bg-[#0A3D62] hover:bg-[#082C47] transition-colors text-white px-5 py-2 rounded-full text-sm font-medium flex items-center gap-2">
+            <span>Get Preflight — £149</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ===================== HOME / HERO ===================== -->
+  <div id="section-home" class="section">
+    <div class="max-w-screen-xl mx-auto px-6 pt-12 pb-8">
+      <div class="max-w-3xl">
+        <div class="inline-flex items-center gap-2 rounded-full bg-[#E0F0FE] text-[#0A3D62] text-xs font-semibold tracking-[1px] px-4 py-1 mb-6">
+          UK PUBLIC SECTOR TENDERS
+        </div>
+
+        <h1 class="text-6xl leading-[1.05] font-semibold tracking-tighter text-[#0F172A]">
+          Know exactly what your tender<br>requires before you start writing.
+        </h1>
+
+        <p class="mt-6 text-2xl text-[#475569] max-w-2xl">
+          BidReady 24 turns a complex UK tender pack into a source-cited compliance checklist,
+          evidence-gap plan, and response structure within 24 hours.
+        </p>
+
+        <div class="mt-8 flex flex-wrap gap-3">
+          <button onclick="simulateCheckout('preflight')"
+                  class="h-12 px-8 bg-[#0A3D62] hover:bg-[#082C47] text-white rounded-full font-medium text-base flex items-center justify-center gap-2">
+            Get a Tender Preflight — £149
+          </button>
+          <button onclick="showSection('sample')"
+                  class="h-12 px-8 border border-[#CBD5E1] hover:bg-white rounded-full font-medium text-base flex items-center">
+            View sample report
+          </button>
+        </div>
+
+        <p class="mt-4 text-sm text-[#64748B]">
+          Your submission stays under your control. We never invent evidence or submit on your behalf.
+        </p>
+      </div>
+    </div>
+
+    <!-- Trust bar -->
+    <div class="border-y bg-white py-5">
+      <div class="max-w-screen-xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
+        <div>
+          <div class="font-semibold text-[#0A3D62]">Source-cited compliance matrix</div>
+          <div class="text-[#475569] mt-1">Every mandatory requirement and question links directly back to the page, section, or cell.</div>
+        </div>
+        <div>
+          <div class="font-semibold text-[#0A3D62]">Evidence gaps ranked by priority</div>
+          <div class="text-[#475569] mt-1">Clear action plan: what’s missing, why it matters, suggested owner, and internal deadline.</div>
+        </div>
+        <div>
+          <div class="font-semibold text-[#0A3D62]">Human-reviewed (MVP concierge)</div>
+          <div class="text-[#475569] mt-1">An administrator reviews every extracted item before delivery. Nothing is guessed.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- How it works -->
+    <div class="max-w-screen-xl mx-auto px-6 py-14">
+      <h2 class="text-3xl font-semibold tracking-tight mb-8">How it works</h2>
+      <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+        <div class="card p-5">
+          <div class="w-6 h-6 rounded-full bg-[#0A3D62] text-white flex items-center justify-center text-xs font-bold mb-3">1</div>
+          <div class="font-semibold">Choose &amp; pay</div>
+          <div class="text-sm text-[#475569] mt-1">£149 Preflight or £349 Complete Pack via secure Stripe checkout.</div>
+        </div>
+        <div class="card p-5">
+          <div class="w-6 h-6 rounded-full bg-[#0A3D62] text-white flex items-center justify-center text-xs font-bold mb-3">2</div>
+          <div class="font-semibold">Secure project</div>
+          <div class="text-sm text-[#475569] mt-1">Instant magic-link access. Complete the structured intake form.</div>
+        </div>
+        <div class="card p-5">
+          <div class="w-6 h-6 rounded-full bg-[#0A3D62] text-white flex items-center justify-center text-xs font-bold mb-3">3</div>
+          <div class="font-semibold">Upload pack</div>
+          <div class="text-sm text-[#475569] mt-1">PDF, DOCX, XLSX, CSV. Up to 20 files / 200 MB. Consent shown first.</div>
+        </div>
+        <div class="card p-5">
+          <div class="w-6 h-6 rounded-full bg-[#0A3D62] text-white flex items-center justify-center text-xs font-bold mb-3">4</div>
+          <div class="font-semibold">Analysis + review</div>
+          <div class="text-sm text-[#475569] mt-1">We extract with provenance. Admin reviews everything before delivery.</div>
+        </div>
+        <div class="card p-5">
+          <div class="w-6 h-6 rounded-full bg-[#0A3D62] text-white flex items-center justify-center text-xs font-bold mb-3">5</div>
+          <div class="font-semibold">Receive report</div>
+          <div class="text-sm text-[#475569] mt-1">Secure link + exports. 30-day retention by default.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- For cleaning contractors -->
+    <div class="max-w-screen-xl mx-auto px-6 pb-16">
+      <div class="bg-white border rounded-3xl p-8 md:p-10">
+        <div class="uppercase tracking-[1.5px] text-xs font-semibold text-[#0A3D62]">BUILT FOR</div>
+        <h3 class="text-3xl font-semibold tracking-tight mt-1">Commercial cleaning contractors</h3>
+
+        <div class="mt-6 grid md:grid-cols-2 gap-x-10 gap-y-2 text-[#475569]">
+          <div class="flex gap-2"><i class="fa-solid fa-check mt-1 text-emerald-500"></i> Insurance certificates, COSHH, risk assessments</div>
+          <div class="flex gap-2"><i class="fa-solid fa-check mt-1 text-emerald-500"></i> Mobilisation plans, TUPE, quality assurance</div>
+          <div class="flex gap-2"><i class="fa-solid fa-check mt-1 text-emerald-500"></i> Environmental &amp; sustainability policies</div>
+          <div class="flex gap-2"><i class="fa-solid fa-check mt-1 text-emerald-500"></i> References, KPIs, social value responses</div>
+          <div class="flex gap-2"><i class="fa-solid fa-check mt-1 text-emerald-500"></i> Safeguarding, equality, health &amp; safety</div>
+          <div class="flex gap-2"><i class="fa-solid fa-check mt-1 text-emerald-500"></i> Pricing schedules and method statements</div>
+        </div>
+
+        <button onclick="showSection('sample')"
+                class="mt-6 text-sm underline text-[#0A3D62] font-medium">See a realistic sample for a council cleaning tender →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== PRICING ===================== -->
+  <div id="section-pricing" class="section hidden max-w-screen-xl mx-auto px-6 py-12">
+    <h1 class="text-4xl font-semibold tracking-tight">Simple, transparent pricing</h1>
+    <p class="mt-2 text-[#475569]">Pay only when you have a tender. No subscriptions in the MVP.</p>
+
+    <div class="grid md:grid-cols-2 gap-6 mt-8 max-w-4xl">
+      <!-- Preflight -->
+      <div class="card p-8">
+        <div class="text-xs tracking-widest font-semibold text-[#0A3D62]">MOST POPULAR FOR FIRST TENDER</div>
+        <div class="mt-2 text-3xl font-semibold">Tender Preflight</div>
+        <div class="mt-1 flex items-baseline">
+          <span class="text-5xl font-semibold tabular-nums">£149</span>
+        </div>
+        <div class="text-sm text-[#64748B]">+ VAT where applicable</div>
+
+        <ul class="mt-6 space-y-2.5 text-sm">
+          <li class="flex gap-2"><i class="fa-solid fa-check text-emerald-500 mt-1"></i> Source-cited mandatory compliance matrix</li>
+          <li class="flex gap-2"><i class="fa-solid fa-check text-emerald-500 mt-1"></i> Scored questions with limits &amp; weights</li>
+          <li class="flex gap-2"><i class="fa-solid fa-check text-emerald-500 mt-1"></i> Attachment &amp; signature checklist</li>
+          <li class="flex gap-2"><i class="fa-solid fa-check text-emerald-500 mt-1"></i> Evidence-gap action plan (critical → low)</li>
+          <li class="flex gap-2"><i class="fa-solid fa-check text-emerald-500 mt-1"></i> Clarification questions for the buyer</li>
+          <li class="flex gap-2"><i class="fa-solid fa-check text-emerald-500 mt-1"></i> Response plan + suggested timetable</li>
+          <li class="flex gap-2"><i class="fa-solid fa-check text-emerald-500 mt-1"></i> Web report + CSV export</li>
+          <li class="flex gap-2"><i class="fa-solid fa-check text-emerald-500 mt-1"></i> Admin review before delivery</li>
+        </ul>
+
+        <button onclick="simulateCheckout('preflight')"
+                class="mt-8 w-full bg-[#0A3D62] text-white py-3 rounded-full font-medium">Buy Preflight — £149</button>
+      </div>
+
+      <!-- Complete -->
+      <div class="card p-8 border-[#0A3D62]">
+        <div class="text-xs tracking-widest font-semibold text-[#0A3D62]">INCLUDES DRAFTS</div>
+        <div class="mt-2 text-3xl font-semibold">Complete Pack</div>
+        <div class="mt-1 flex items-baseline">
+          <span class="text-5xl font-semibold tabular-nums">£349</span>
+        </div>
+        <div class="text-sm text-[#64748B]">+ VAT where applicable</div>
+
+        <ul class="mt-6 space-y-2.5 text-sm">
+          <li class="flex gap-2"><i class="fa-solid fa-check text-emerald-500 mt-1"></i> Everything in Tender Preflight</li>
+          <li class="flex gap-2"><i class="fa-solid fa-check text-emerald-500 mt-1"></i> Structured DOCX response outline</li>
+          <li class="flex gap-2"><i class="fa-solid fa-check text-emerald-500 mt-1"></i> Source-bound first-draft sections</li>
+          <li class="flex gap-2"><i class="fa-solid fa-check text-emerald-500 mt-1"></i> Priority admin review &amp; delivery</li>
+          <li class="flex gap-2"><i class="fa-solid fa-check text-emerald-500 mt-1"></i> All exports (PDF + CSV + XLSX + DOCX)</li>
+        </ul>
+
+        <button onclick="simulateCheckout('complete')"
+                class="mt-8 w-full bg-[#0A3D62] text-white py-3 rounded-full font-medium">Buy Complete Pack — £349</button>
+      </div>
+    </div>
+
+    <div class="mt-8 text-xs text-[#64748B] max-w-md">
+      Future recurring option (£249/mo) is not yet available. Only after owner approval or repeated customer demand.
+    </div>
+  </div>
+
+  <!-- ===================== SAMPLE REPORT ===================== -->
+  <div id="section-sample" class="section hidden max-w-screen-xl mx-auto px-6 py-10">
+    <div class="flex items-center gap-3 mb-4">
+      <div>
+        <span class="demo-badge">SYNTHETIC DATA — FOR DEMONSTRATION ONLY</span>
+      </div>
+      <div class="text-xs text-[#64748B]">Borough Council Commercial Cleaning Services 2026-2029 • Ref: BC/CLEAN/2026/014</div>
+    </div>
+
+    <div class="flex justify-between items-end mb-6">
+      <div>
+        <h1 class="text-3xl font-semibold tracking-tight">Acme Cleaning Ltd — Compliance Preflight</h1>
+        <div class="text-[#475569]">Deadline: <strong>14 August 2026, 12:00</strong> • Portal: ProContract • Human reviewed 12 Jul 2026</div>
+      </div>
+      <div class="text-right">
+        <div class="text-xs">Eligibility assessment</div>
+        <div class="text-lg font-semibold text-amber-600">Review needed</div>
+      </div>
+    </div>
+
+    <!-- Executive summary -->
+    <div class="card p-6 mb-6">
+      <div class="font-semibold mb-2">Executive Summary</div>
+      <p class="text-[#475569]">
+        3-year contract for daily cleaning across 12 sites. 60% quality, 40% price. Several pass/fail conditions
+        around insurance (£10m), CHAS accreditation, and DBS checks for education sites.
+        One critical gap identified: no evidence of current CHAS or SSIP accreditation was supplied.
+      </p>
+      <div class="mt-3 text-xs bg-amber-50 border border-amber-200 text-amber-700 inline-flex px-3 py-1 rounded-lg">
+        <strong>Critical gap:</strong> CHAS / SSIP accreditation — not provided in intake or evidence files.
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <!-- Critical Dates -->
+      <div class="card p-6 lg:col-span-5">
+        <div class="font-semibold mb-4 flex items-center gap-2">
+          <i class="fa-solid fa-calendar text-[#0A3D62]"></i>
+          <span>Critical Dates</span>
+        </div>
+        <div class="space-y-3 text-sm">
+          <div class="flex justify-between"><div>Submission deadline</div> <div class="font-medium">14 Aug 2026, 12:00</div></div>
+          <div class="flex justify-between"><div>Clarification deadline</div> <div class="font-medium">31 Jul 2026, 17:00</div></div>
+          <div class="flex justify-between"><div>Mandatory site visit</div> <div class="font-medium">22 Jul 2026, 10:00</div></div>
+          <div class="flex justify-between"><div>Contract start</div> <div class="font-medium">01 Oct 2026</div></div>
+        </div>
+        <div class="source-cite mt-4">Source: Instructions to Tenderers p.2 + Appendix A</div>
+      </div>
+
+      <!-- Mandatory Matrix excerpt -->
+      <div class="card p-6 lg:col-span-7">
+        <div class="font-semibold mb-3">Mandatory Compliance Matrix (excerpt)</div>
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b text-left">
+              <th class="py-2 pr-3">Requirement</th>
+              <th class="py-2 pr-3">Source</th>
+              <th class="py-2 w-28">Status</th>
+            </tr>
+          </thead>
+          <tbody class="tender-text">
+            <tr class="border-b">
+              <td class="py-2.5 pr-3">Public Liability Insurance minimum £10m</td>
+              <td class="source-cite py-2.5 pr-3">Spec 3.1, p.7</td>
+              <td><span class="status-uncertain text-xs px-2.5 py-px rounded border">UNCERTAIN</span></td>
+            </tr>
+            <tr class="border-b">
+              <td class="py-2.5 pr-3">CHAS or equivalent SSIP accreditation</td>
+              <td class="source-cite py-2.5 pr-3">ITT 4.2 &amp; Form B, p.4</td>
+              <td><span class="status-missing text-xs px-2.5 py-px rounded border">MISSING</span></td>
+            </tr>
+            <tr class="border-b">
+              <td class="py-2.5 pr-3">Enhanced DBS for all staff on education sites</td>
+              <td class="source-cite py-2.5 pr-3">Safeguarding Schedule, p.19</td>
+              <td><span class="status-met text-xs px-2.5 py-px rounded border">MET (intake)</span></td>
+            </tr>
+            <tr>
+              <td class="py-2.5 pr-3">Method statements for each building type</td>
+              <td class="source-cite py-2.5 pr-3">ITT p.9</td>
+              <td><span class="status-uncertain text-xs px-2.5 py-px rounded border">UNCERTAIN</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Gaps -->
+      <div class="card p-6 lg:col-span-5">
+        <div class="font-semibold mb-3 text-red-700">Evidence Gaps — Action Plan</div>
+        <div class="space-y-3 text-sm">
+          <div class="border-l-4 border-red-500 pl-3">
+            <div class="font-medium">CHAS / SSIP Accreditation</div>
+            <div class="text-xs text-[#64748B]">Critical • Required for pass/fail. Owner: Ops Director • Due: 28 Jul</div>
+          </div>
+          <div class="border-l-4 border-amber-400 pl-3">
+            <div class="font-medium">Eco-friendly cleaning products method statement</div>
+            <div class="text-xs text-[#64748B]">High • Scored question (8%). Owner: Site Supervisor</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Response plan -->
+      <div class="card p-6 lg:col-span-7">
+        <div class="font-semibold mb-3">Response Plan (internal timetable)</div>
+        <div class="text-sm grid grid-cols-1 md:grid-cols-2 gap-x-8">
+          <div class="space-y-1.5">
+            <div>✓ 13 Jul — Upload full tender pack + current insurance</div>
+            <div>✓ 15 Jul — Apply for CHAS (if not already in progress)</div>
+            <div>20 Jul — Draft mobilisation plan (Ops + Contracts)</div>
+            <div>24 Jul — Complete quality questions (Bid Lead)</div>
+          </div>
+          <div class="space-y-1.5 text-[#475569]">
+            <div>26 Jul — Final internal review meeting</div>
+            <div>29 Jul — Submit clarification questions (if needed)</div>
+            <div>07 Aug — Final pricing sign-off</div>
+            <div>12 Aug — Upload final documents to portal</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="text-xs mt-6 text-[#64748B] border-t pt-4 max-w-2xl">
+      This is a realistic synthetic example. In a real report, every item links to your uploaded documents.
+      No company data was invented — all customer statuses start as uncertain/missing unless you provided evidence.
+    </div>
+
+    <div class="mt-4 flex gap-3 text-sm">
+      <button onclick="downloadFakeExport('csv')" class="px-4 py-1.5 border rounded-lg flex items-center gap-2 text-sm">
+        <i class="fa-solid fa-download"></i> <span>Download CSV</span>
+      </button>
+      <button onclick="downloadFakeExport('pdf')" class="px-4 py-1.5 border rounded-lg flex items-center gap-2 text-sm">
+        <i class="fa-solid fa-file-pdf"></i> <span>Download PDF Report</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ===================== PROJECT VIEW (CUSTOMER) ===================== -->
+  <div id="section-project" class="section hidden max-w-screen-xl mx-auto px-6 py-10">
+    <div class="max-w-3xl">
+      <div class="mb-2 flex items-center gap-2">
+        <span class="text-emerald-600 text-xs font-semibold">SECURE PROJECT</span>
+        <span class="text-xs px-2 py-0.5 bg-white border rounded">Token: 2a04etpnSZK0HURloGGqpy2s_8gNvYbA</span>
+      </div>
+      <h2 class="text-3xl font-semibold">Acme Cleaning Ltd — Tender Preflight</h2>
+      <div class="text-sm text-[#64748B]">Status: <span class="font-medium text-emerald-600">Review in progress</span> • Delivery expected within 24h</div>
+    </div>
+
+    <div class="mt-8 grid md:grid-cols-2 gap-6 max-w-4xl">
+      <!-- Intake status -->
+      <div class="card p-5">
+        <div class="font-semibold mb-1">1. Company Intake</div>
+        <div class="text-emerald-600 text-sm flex items-center gap-1">
+          <i class="fa-solid fa-check"></i> <span>Completed 11 Jul</span>
+        </div>
+        <div class="mt-3 text-xs bg-[#F8F9FA] p-3 rounded">
+          <div>Company: Acme Cleaning Ltd</div>
+          <div>CHAS: Not currently held</div>
+          <div>Insurance: PL £10m, EL £10m (certificate uploaded)</div>
+          <div>Contact: Sam Patel — sam@acmecleaning.co.uk</div>
+        </div>
+      </div>
+
+      <!-- Uploads -->
+      <div class="card p-5">
+        <div class="font-semibold mb-1">2. Uploaded Documents</div>
+        <div class="text-sm">
+          <div class="flex justify-between py-1 border-b"><span>BC-CLEAN-2026-014-ITT.pdf</span> <span class="text-emerald-600 text-xs">✓ 3.2 MB</span></div>
+          <div class="flex justify-between py-1 border-b"><span>Specification_Schedule.pdf</span> <span class="text-emerald-600 text-xs">✓ 1.8 MB</span></div>
+          <div class="flex justify-between py-1 border-b"><span>Pricing_Schedule.xlsx</span> <span class="text-emerald-600 text-xs">✓ 420 KB</span></div>
+          <div class="flex justify-between py-1"><span>Current_Insurance_Cert.pdf</span> <span class="text-emerald-600 text-xs">✓ 890 KB</span></div>
+        </div>
+        <button onclick="simulateUpload()" class="text-xs mt-3 px-3 py-1 border rounded hover:bg-gray-50">+ Add more files</button>
+      </div>
+    </div>
+
+    <div class="mt-6 max-w-3xl">
+      <div class="font-semibold mb-2">Report status</div>
+      <div class="flex items-center gap-3 text-sm">
+        <div class="flex-1 bg-emerald-100 h-2 rounded">
+          <div class="bg-emerald-600 h-2 rounded w-[85%]"></div>
+        </div>
+        <div>85% — Awaiting final administrator approval</div>
+      </div>
+      <div class="mt-3">
+        <button onclick="showSection('sample')" class="text-sm px-5 py-2 bg-white border rounded-lg">View current draft report</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== ADMIN REVIEW ===================== -->
+  <div id="section-admin" class="section hidden max-w-screen-xl mx-auto px-6 py-10">
+    <div class="mb-6">
+      <h2 class="text-2xl font-semibold">Admin Review Queue</h2>
+      <p class="text-sm text-[#64748B]">Concierge mode — every important item must be reviewed before delivery.</p>
+    </div>
+
+    <div class="card overflow-hidden">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b bg-[#F8F9FA]">
+            <th class="text-left p-4">Project</th>
+            <th class="text-left p-4">Status</th>
+            <th class="text-left p-4">Key Findings</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="border-b">
+            <td class="p-4">
+              <div class="font-medium">proj_622e8008b827 — Acme Cleaning</div>
+              <div class="text-xs text-[#64748B]">Preflight • £149 • Uploaded 11 Jul</div>
+            </td>
+            <td class="p-4"><span class="text-xs bg-amber-100 text-amber-700 px-2 py-px rounded">review_required</span></td>
+            <td class="p-4 text-xs">28 requirements • 3 critical gaps • CHAS missing</td>
+            <td class="p-4">
+              <button onclick="openAdminReviewModal()" class="text-xs px-4 py-1 bg-[#0A3D62] text-white rounded">Open Review</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Mini review panel -->
+    <div class="mt-8">
+      <div class="font-semibold mb-2 text-sm">Quick review panel (demo)</div>
+      <div class="card p-4 text-sm">
+        <div class="font-medium">CHAS or equivalent SSIP accreditation</div>
+        <div class="source-cite">Source: Instructions to Tenderers, p.4</div>
+
+        <div class="mt-3 flex items-center gap-3">
+          <select class="border rounded px-2 py-1 text-xs">
+            <option>missing</option>
+            <option>uncertain</option>
+            <option>met</option>
+          </select>
+          <input type="text" value="0.85" class="border rounded w-14 px-2 py-1 text-xs">
+          <button onclick="approveItemDemo(this)" class="text-xs bg-emerald-600 text-white px-3 py-1 rounded">Approve &amp; save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fake checkout success modal -->
+  <div id="checkout-modal" onclick="if (event.target.id === 'checkout-modal') hideCheckoutModal()" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center z-[100]">
+    <div onclick="event.stopImmediatePropagation()" class="bg-white rounded-2xl max-w-md w-full mx-4 p-6">
+      <div class="flex justify-between">
+        <div class="font-semibold text-lg">Payment successful (test mode)</div>
+        <button onclick="hideCheckoutModal()" class="text-2xl leading-none text-gray-400">&times;</button>
+      </div>
+
+      <div class="mt-4 text-sm">
+        Project created. Your secure magic link:
+      </div>
+      <div class="mt-2 bg-[#F8F9FA] p-3 rounded font-mono text-sm break-all" id="magic-link-display"></div>
+
+      <div class="mt-4 flex gap-3">
+        <button onclick="openProjectFromModal()" class="flex-1 bg-[#0A3D62] text-white py-2.5 rounded-full text-sm font-medium">Open my project</button>
+        <button onclick="hideCheckoutModal()" class="flex-1 border py-2.5 rounded-full text-sm">Close</button>
+      </div>
+      <div class="text-[10px] mt-4 text-center text-[#64748B]">In production this link would be emailed securely.</div>
+    </div>
+  </div>
+
+  <footer class="max-w-screen-xl mx-auto px-6 py-8 text-xs text-[#64748B] border-t mt-12">
+    BidReady 24 — Static preview generated from the full spec.
+    All legal pages in the real app are drafts and require owner + legal review.
+    Nothing here constitutes advice or a live service.
+  </footer>
+
+  <script>
+    // Tailwind script
+    function initTailwind() {
+      document.documentElement.style.setProperty('--accent', '#0A3D62');
+    }
+
+    let currentSection = 'home';
+
+    function showSection(section) {
+      // Hide all
+      document.querySelectorAll('.section').forEach(el => el.classList.add('hidden'));
+
+      // Show target
+      const target = document.getElementById('section-' + section);
+      if (target) target.classList.remove('hidden');
+
+      // Update nav
+      document.querySelectorAll('[id^="nav-"]').forEach(el => el.classList.remove('active'));
+      const nav = document.getElementById('nav-' + section);
+      if (nav) nav.classList.add('active');
+
+      currentSection = section;
+      window.scrollTo(0, 0);
+    }
+
+    // Simulate checkout
+    function simulateCheckout(type) {
+      const price = type === 'preflight' ? '149' : '349';
+      const modal = document.getElementById('checkout-modal');
+      const linkEl = document.getElementById('magic-link-display');
+
+      const token = 'demo-' + Math.random().toString(36).substring(2, 14);
+      const fakeLink = window.location.origin + window.location.pathname.replace('bidready24-preview.html', '') +
+                       '#project?token=' + token;
+
+      linkEl.textContent = fakeLink;
+      linkEl.dataset.token = token;
+      linkEl.dataset.type = type;
+
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function hideCheckoutModal() {
+      const modal = document.getElementById('checkout-modal');
+      modal.classList.remove('flex');
+      modal.classList.add('hidden');
+    }
+
+    function openProjectFromModal() {
+      hideCheckoutModal();
+      showSection('project');
+
+      // Show a toast
+      showToast("Project opened with magic link (demo)");
+    }
+
+    function showToast(msg) {
+      const toast = document.createElement('div');
+      toast.className = 'fixed bottom-6 left-1/2 -translate-x-1/2 bg-[#0A3D62] text-white text-sm px-5 py-2 rounded-full shadow';
+      toast.textContent = msg;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 2200);
+    }
+
+    function simulateUpload() {
+      const el = event.currentTarget;
+      showToast("Files uploaded and validated (demo)");
+
+      setTimeout(() => {
+        showToast("Project moved to 'processing' status");
+      }, 1200);
+    }
+
+    function downloadFakeExport(format) {
+      const link = document.createElement('a');
+      if (format === 'csv') {
+        link.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(
+          'id,type,title,source,status\n' +
+          'req1,mandatory,Public Liability £10m,ITT p.7,uncertain\n' +
+          'req2,mandatory,CHAS accreditation,ITT p.4,missing\n'
+        );
+        link.download = 'bidready-compliance-sample.csv';
+      } else {
+        alert("In the real app this would generate a properly formatted PDF with page references.\n\n(Static preview)");
+        return;
+      }
+      link.click();
+    }
+
+    let approvedCount = 0;
+
+    function approveItemDemo(btn) {
+      btn.textContent = "Saved ✓";
+      btn.disabled = true;
+      btn.style.background = '#166534';
+
+      approvedCount++;
+      if (approvedCount >= 2) {
+        setTimeout(() => {
+          showToast("All reviewed items marked ready. You can now deliver the report.");
+        }, 600);
+      }
+    }
+
+    function openAdminReviewModal() {
+      const modalHTML = `
+        <div id="admin-modal" onclick="document.getElementById('admin-modal').remove()" class="fixed inset-0 bg-black/50 flex items-center justify-center z-[110]">
+          <div onclick="event.stopImmediatePropagation()" class="bg-white rounded-2xl w-full max-w-2xl mx-4 p-6">
+            <div class="flex justify-between items-start">
+              <div>
+                <div class="font-semibold">Review: Acme Cleaning Ltd</div>
+                <div class="text-xs text-[#64748B]">proj_622e8008b827 • 28 requirements extracted</div>
+              </div>
+              <button onclick="document.getElementById('admin-modal').remove()" class="text-3xl text-gray-400 leading-none">&times;</button>
+            </div>
+
+            <div class="mt-5 border rounded-lg divide-y text-sm">
+              <div class="p-4">
+                <div class="flex justify-between">
+                  <div>
+                    <div class="font-medium">CHAS or SSIP accreditation</div>
+                    <div class="source-cite">ITT 4.2 &amp; Form B, p.4</div>
+                  </div>
+                  <div>
+                    <span class="status-missing px-2 text-xs py-0.5 rounded border">MISSING</span>
+                  </div>
+                </div>
+                <div class="mt-2 flex gap-2 text-xs">
+                  <button onclick="updateRequirementDemo(this, 'missing')" class="px-3 py-1 border rounded">Missing</button>
+                  <button onclick="updateRequirementDemo(this, 'uncertain')" class="px-3 py-1 border rounded">Uncertain</button>
+                  <button onclick="updateRequirementDemo(this, 'met')" class="px-3 py-1 border rounded">Met</button>
+                </div>
+              </div>
+
+              <div class="p-4">
+                <div class="flex justify-between">
+                  <div>
+                    <div class="font-medium">Public Liability Insurance £10m</div>
+                    <div class="source-cite">Spec 3.1, p.7</div>
+                  </div>
+                  <span class="status-uncertain px-2 text-xs py-0.5 rounded border">UNCERTAIN</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-4 flex gap-3">
+              <button onclick="deliverReportDemo()" class="flex-1 py-2 bg-emerald-600 text-white rounded-full text-sm font-medium">Approve &amp; Deliver to Customer</button>
+              <button onclick="document.getElementById('admin-modal').remove()" class="flex-1 border py-2 rounded-full text-sm">Close</button>
+            </div>
+            <div class="text-center text-[10px] text-[#64748B] mt-2">All changes are audited. Nothing is auto-approved.</div>
+          </div>
+        </div>`;
+
+      document.body.insertAdjacentHTML('beforeend', modalHTML);
+    }
+
+    function updateRequirementDemo(el, status) {
+      const row = el.closest('div');
+      const badge = row.querySelector('span');
+      if (!badge) return;
+
+      badge.className = `status-${status} px-2 text-xs py-0.5 rounded border`;
+      badge.textContent = status.toUpperCase();
+      showToast("Requirement updated (demo)");
+    }
+
+    function deliverReportDemo() {
+      const modal = document.getElementById('admin-modal');
+      if (modal) modal.remove();
+
+      showToast("Report marked as delivered. Customer now has access.");
+
+      setTimeout(() => {
+        showSection('sample');
+      }, 900);
+    }
+
+    function simulateContact() {
+      alert("In the real product this opens a support form with rate limiting.\n\n(Static preview)");
+    }
+
+    function initNavigation() {
+      // Show home by default
+      document.getElementById('section-home').classList.remove('hidden');
+      document.getElementById('nav-home').classList.add('active');
+
+      // Keyboard support (optional)
+      document.addEventListener('keydown', function(e) {
+        if (e.key === "/") {
+          const sample = document.getElementById('section-sample');
+          if (!sample.classList.contains('hidden')) {
+            e.preventDefault();
+          }
+        }
+      });
+    }
+
+    function initDemoLinks() {
+      // Make some elements more demo-like
+      console.log('%c[BidReady Preview] Static HTML demo initialized', 'color:#64748b');
+    }
+
+    // Boot
+    function boot() {
+      initTailwind();
+      initNavigation();
+      initDemoLinks();
+
+      // Optional: pre-select sample if URL hash
+      if (window.location.hash.includes('sample')) {
+        showSection('sample');
+      }
+      if (window.location.hash.includes('project')) {
+        showSection('project');
+      }
+    }
+
+    window.onload = boot;
+  </script>
+</body>
+</html>
