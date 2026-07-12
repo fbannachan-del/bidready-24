@@ -35,7 +35,14 @@ function displayDate(value?: string | null) {
 export default async function AdminHome({ searchParams }: { searchParams: Promise<{ e2e?: string }> }) {
   const query = await searchParams;
   const projects = listProjectsForAdmin() as AdminProject[];
-  const supportRequests = listSupportRequests();
+  let supportRequests: ReturnType<typeof listSupportRequests> = [];
+  let supportUnavailable = false;
+  try {
+    supportRequests = listSupportRequests();
+  } catch (error) {
+    supportUnavailable = true;
+    console.error("Admin support inbox unavailable", { code: error && typeof error === "object" && "code" in error ? error.code : "unknown" });
+  }
   const running = projects.filter((item) => item.status === "processing").length;
   const attention = projects.filter((item) => ["review_required", "failed"].includes(item.status)).length;
   const complete = projects.filter((item) => ["ready", "delivered"].includes(item.status)).length;
@@ -79,7 +86,7 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
 
         <section className="mt-5 overflow-hidden border border-[#D9D5CB] bg-[#FBFAF6]">
           <div className="border-b border-slate-200 p-5"><h2 className="font-semibold text-slate-950">Support inbox</h2><p className="mt-1 text-xs text-slate-500">Validated website enquiries are retained here even if the optional notification adapter is unavailable.</p></div>
-          {supportRequests.length === 0 ? <p className="p-5 text-sm text-slate-500">No support requests.</p> : <div className="divide-y divide-slate-200">{supportRequests.map((request) => <article key={request.id} className="p-5"><div className="flex flex-wrap items-center justify-between gap-2"><div className="font-medium text-slate-950">{request.name} · <a className="text-[#0A3D62] underline" href={`mailto:${request.email}`}>{request.email}</a></div><div className="text-[11px] text-slate-500">{displayDate(request.created_at)} · {request.status}</div></div>{request.project_ref && <div className="mt-1 text-xs text-slate-500">Project: {request.project_ref}</div>}<p className="mt-3 whitespace-pre-wrap text-sm leading-6 text-slate-700">{request.message}</p></article>)}</div>}
+          {supportUnavailable ? <p className="border-l-4 border-amber-500 bg-amber-50 p-5 text-sm text-amber-900">Support inbox unavailable while the database upgrade completes.</p> : supportRequests.length === 0 ? <p className="p-5 text-sm text-slate-500">No support requests.</p> : <div className="divide-y divide-slate-200">{supportRequests.map((request) => <article key={request.id} className="p-5"><div className="flex flex-wrap items-center justify-between gap-2"><div className="font-medium text-slate-950">{request.name} · <a className="text-[#0A3D62] underline" href={`mailto:${request.email}`}>{request.email}</a></div><div className="text-[11px] text-slate-500">{displayDate(request.created_at)} · {request.status}</div></div>{request.project_ref && <div className="mt-1 text-xs text-slate-500">Project: {request.project_ref}</div>}<p className="mt-3 whitespace-pre-wrap text-sm leading-6 text-slate-700">{request.message}</p></article>)}</div>}
         </section>
 
         <section className="mt-5 overflow-hidden border border-[#D9D5CB] bg-[#FBFAF6]">

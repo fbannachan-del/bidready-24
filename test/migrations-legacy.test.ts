@@ -41,4 +41,11 @@ test("upgrades the legacy support table before creating new indexes", async () =
   const indexes = db.prepare(`PRAGMA index_list(support_requests)`).all() as Array<{ name: string }>;
   assert.ok(indexes.some((item) => item.name === "idx_support_requests_ip"));
   assert.deepEqual(db.prepare(`PRAGMA foreign_key_check`).all(), []);
+
+  const { inspectSchemaReadiness } = await import("../lib/schema-readiness");
+  assert.deepEqual(inspectSchemaReadiness(db), { ready: true, missingTables: [], missingColumns: [] });
+  const { listProjectsForAdmin } = await import("../lib/projects");
+  const { listSupportRequests } = await import("../lib/support");
+  assert.deepEqual(listProjectsForAdmin(), []);
+  assert.deepEqual(listSupportRequests(), []);
 });

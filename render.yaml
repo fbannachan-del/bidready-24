@@ -3,12 +3,13 @@
 
 services:
   - type: web
-    name: bidready24
+    name: bidready-24
     env: node
     region: oregon
     plan: starter   # Change to standard or higher for production after validation
     buildCommand: npm ci && npm run build
-    startCommand: npm run db:migrate && npm start
+    # package.json prestart runs the repeatable migration before Next starts.
+    startCommand: npm start
     autoDeploy: true
     healthCheckPath: /api/health   # We will add a simple health endpoint
 

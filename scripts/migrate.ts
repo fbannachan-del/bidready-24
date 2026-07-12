@@ -1,5 +1,6 @@
 import { getDb } from "../lib/db";
 import { migrateAutonomySchema } from "../lib/autonomy-migrations";
+import { assertSchemaReady } from "../lib/schema-readiness";
 
 const db = getDb();
 
@@ -272,6 +273,7 @@ db.exec(`
 `);
 
 migrateAutonomySchema(db);
+assertSchemaReady(db);
 
 console.log("Migrations complete.");
 

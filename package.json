@@ -8,6 +8,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "DATABASE_PATH=./data/build.db next build",
+    "prestart": "npm run db:migrate",
     "start": "next start",
     "lint": "eslint",
     "db:migrate": "tsx scripts/migrate.ts",
