@@ -1,0 +1,4 @@
+company,contact_name,contact_role,contact_email,source,notes
+Demo Clean Ltd,Alex Owner,Director,alex@democlean.test,manual,validation test only
+Acme Commercial Cleaning,Sam Bid,Operations,sam@acme.test,public tender list,example
+... (prepare real qualified list only after owner approval of audience + copy)
