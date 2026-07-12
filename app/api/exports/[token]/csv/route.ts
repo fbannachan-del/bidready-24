@@ -6,7 +6,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ toke
   const project = getProjectByToken(token);
   if (!project) return new NextResponse("Not found", { status: 404 });
 
-  const reqs = getRequirements(project.id) as any[];
+  const reqs = getRequirements(project.id);
 
   const header = "id,type,title,source,status,confidence\n";
   const rows = reqs.map(r => [

@@ -1,4 +1,5 @@
 import { getDb } from "../lib/db";
+import { migrateAutonomySchema } from "../lib/autonomy-migrations";
 
 const db = getDb();
 
@@ -51,6 +52,21 @@ db.exec(`
     FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
   );
   CREATE INDEX IF NOT EXISTS idx_payments_project ON payments(project_id);
+  CREATE UNIQUE INDEX IF NOT EXISTS idx_payments_checkout_session ON payments(stripe_checkout_session) WHERE stripe_checkout_session IS NOT NULL;
+
+  CREATE TABLE IF NOT EXISTS support_requests (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    email TEXT NOT NULL,
+    project_ref TEXT,
+    message TEXT NOT NULL,
+    ip_hash TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'new' CHECK (status IN ('new', 'in_progress', 'resolved', 'spam')),
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+  CREATE INDEX IF NOT EXISTS idx_support_requests_created ON support_requests(created_at DESC);
+  CREATE INDEX IF NOT EXISTS idx_support_requests_ip ON support_requests(ip_hash, created_at);
 
   -- Uploaded files (immutable originals)
   CREATE TABLE IF NOT EXISTS files (
@@ -238,6 +254,8 @@ db.exec(`
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
   );
 `);
+
+migrateAutonomySchema(db);
 
 console.log("Migrations complete.");
 

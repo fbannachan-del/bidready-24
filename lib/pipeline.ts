@@ -17,7 +17,7 @@ export async function extractTextFromFile(storedPath: string, originalName: stri
     } else {
       text = `[Binary or Office content from ${originalName}]`;
     }
-  } catch (e) {
+  } catch {
     text = `Failed to read ${originalName}`;
   }
 

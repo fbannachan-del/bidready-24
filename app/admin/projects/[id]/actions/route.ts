@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
-import { getProjectById, addRequirement, updateProjectStatus, updateRequirement } from "@/lib/projects";
+import { getProjectById, updateProjectStatus, updateRequirement } from "@/lib/projects";
+import type { Requirement } from "@/lib/schemas";
+
+type StoredFileRow = { stored_path: string; original_name: string };
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -11,15 +14,20 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   const action = form.get("action") as string;
   const db = getDb();
 
+  if (action === "run_autonomous") {
+    const { runAutonomousPipeline } = await import("@/lib/autonomous-pipeline");
+    await runAutonomousPipeline(id, "admin");
+  }
+
   if (action === "run_stub") {
     // Use pipeline stub — looks for files and builds from keywords + known cleaning tender items
     const { buildStubAnalysis } = await import("@/lib/pipeline");
     const db = (await import("@/lib/db")).getDb();
-    const files = db.prepare(`SELECT stored_path, original_name FROM files WHERE project_id = ?`).all(id) as any[];
+    const files = db.prepare(`SELECT stored_path, original_name FROM files WHERE project_id = ?`).all(id) as StoredFileRow[];
     let text = "Sample tender content for cleaning services. CHAS required. Insurance £10m. Mobilisation plan. Method statements.";
     if (files.length > 0) {
       // simplistic: use first file name as context
-      text += " " + files.map((f: any) => f.original_name).join(" ");
+      text += " " + files.map((file) => file.original_name).join(" ");
     }
     const count = buildStubAnalysis(id, text);
     // log
@@ -39,12 +47,12 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   // Handle requirement edit
   const reqId = form.get("req_id") as string | null;
   if (reqId) {
-    const updates: any = {};
-    if (form.get("title")) updates.title = form.get("title");
-    if (form.get("page_or_location")) updates.page_or_location = form.get("page_or_location");
-    if (form.get("customer_status")) updates.customer_status = form.get("customer_status");
+    const updates: Partial<Requirement> = {};
+    if (form.get("title")) updates.title = String(form.get("title"));
+    if (form.get("page_or_location")) updates.page_or_location = String(form.get("page_or_location"));
+    if (form.get("customer_status")) updates.customer_status = String(form.get("customer_status")) as Requirement["customer_status"];
     if (form.get("confidence")) updates.confidence = parseFloat(form.get("confidence") as string);
-    if (form.get("notes")) updates.notes = form.get("notes");
+    if (form.get("notes")) updates.notes = JSON.stringify([String(form.get("notes"))]) as unknown as Requirement["notes"];
     updateRequirement(reqId, updates);
   }
 

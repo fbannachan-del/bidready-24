@@ -1,4 +1,6 @@
-# BidReady 24 — Assumptions & Decisions Log
+# BidReady 24 — Assumptions & Decisions Log (historical)
+
+> These assumptions describe the original concierge MVP and are retained for decision history. See `AUTONOMOUS_RELEASE.md` for the current operating model.
 
 **Date:** 2026-07-12  
 **Purpose:** Auditable record of important assumptions (per spec §1, §24).

@@ -12,9 +12,9 @@ export default function Intake() {
     e.preventDefault();
     setLoading(true);
     const form = new FormData(e.currentTarget);
-    const data: any = Object.fromEntries(form.entries());
-    data.certifications = (data.certifications as string || "").split(",").map(s => s.trim()).filter(Boolean);
-    data.existing_policies = (data.existing_policies as string || "").split(",").map(s => s.trim()).filter(Boolean);
+    const data: Record<string, unknown> = Object.fromEntries(form.entries());
+    data.certifications = String(data.certifications || "").split(",").map(s => s.trim()).filter(Boolean);
+    data.existing_policies = String(data.existing_policies || "").split(",").map(s => s.trim()).filter(Boolean);
     data.consent = form.get("consent") === "on";
 
     const res = await fetch(`/api/project/${token}/intake`, { method: "POST", body: JSON.stringify(data) });
@@ -22,12 +22,12 @@ export default function Intake() {
     setLoading(false);
   }
 
-  if (submitted) return <div className="max-w-md mx-auto p-8">Thank you. Intake saved. You can now upload your tender documents from the project page.</div>;
+  if (submitted) return <div className="mx-auto max-w-md p-8"><div className="rounded-xl border border-emerald-200 bg-emerald-50 p-5 text-sm text-emerald-900"><strong>Organisation evidence saved.</strong><br />You can now upload the tender pack and configure the autonomy mandate from the project workspace.</div></div>;
 
   return (
     <div className="mx-auto max-w-2xl px-6 py-10">
       <h1 className="text-2xl font-semibold">Company Intake</h1>
-      <p className="text-sm text-[#475569]">This information is used only to match evidence against the tender and to contact you about this project. All fields marked * are required.</p>
+      <p className="text-sm text-[#475569]">This information grounds autonomous compliance decisions and identifies the correct organisation. A claim is not treated as verified evidence solely because it is entered here. All fields marked * are required.</p>
 
       <form onSubmit={onSubmit} className="mt-6 space-y-4 text-sm">
         <input name="company_name" placeholder="Company legal name *" required className="w-full border p-2 rounded" />

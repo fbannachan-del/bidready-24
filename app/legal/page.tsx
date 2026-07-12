@@ -3,8 +3,8 @@ import Link from "next/link";
 export default function LegalIndex() {
   return (
     <div className="mx-auto max-w-3xl px-6 py-12">
-      <h1 className="text-3xl font-semibold">Legal (DRAFTS — NOT PUBLISHED)</h1>
-      <p className="mt-2 text-sm text-amber-700">These pages are working drafts. They have not been reviewed by a qualified solicitor. Do not publish or rely on them until owner + legal sign-off.</p>
+      <h1 className="text-3xl font-semibold">Legal drafts</h1>
+      <p className="mt-2 text-sm text-amber-700">These public working drafts have not been reviewed by a qualified solicitor. The owner must obtain legal review before treating them as final terms.</p>
 
       <ul className="mt-8 space-y-3">
         <li><Link href="/legal/terms" className="underline">Terms of Service (draft)</Link></li>

@@ -31,7 +31,26 @@ services:
         sync: false
       - key: STRIPE_WEBHOOK_SECRET
         sync: false
-      # Add more as needed (e.g. RESEND_API_KEY)
+      - key: ENABLE_REAL_AI
+        value: "true"
+      - key: OPENAI_MODEL
+        value: gpt-5.6
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: OUTBOUND_ACTION_WEBHOOK_URL
+        sync: false
+      - key: OUTBOUND_ACTION_WEBHOOK_SECRET
+        sync: false
+      - key: SUBMISSION_WEBHOOK_URL
+        sync: false
+      - key: SUBMISSION_WEBHOOK_SECRET
+        sync: false
+      - key: SUPPORT_WEBHOOK_URL
+        sync: false
+      - key: SUPPORT_WEBHOOK_SECRET
+        sync: false
+      - key: SUPPORT_RATE_LIMIT_SALT
+        sync: false
 
     disk:
       name: bidready-data

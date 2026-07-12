@@ -18,7 +18,7 @@ export default function Upload() {
     const res = await fetch(`/api/project/${token}/upload`, { method: "POST", body: form });
     const j = await res.json();
     if (res.ok) {
-      setStatus("Uploaded successfully. Processing can begin (admin will trigger).");
+      setStatus("Uploaded successfully. The pack is ready for autonomous processing.");
       setDone(true);
     } else {
       setStatus("Error: " + (j.error || "upload failed"));
@@ -36,7 +36,7 @@ export default function Upload() {
         <div className="text-xs mt-2 text-emerald-600">{status}</div>
       </div>
 
-      {done && <div className="mt-6 text-sm">Return to <a href={`/project/${token}`} className="underline">project dashboard</a> to monitor status. The administrator will review the extracted data before the report is delivered.</div>}
+      {done && <div className="mt-6 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-900">Files passed the upload checks. Return to the <a href={`/project/${token}`} className="font-semibold underline underline-offset-4">project workspace</a> to start or monitor the autonomous run.</div>}
     </div>
   );
 }

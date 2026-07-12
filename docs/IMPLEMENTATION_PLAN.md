@@ -1,4 +1,6 @@
-# BidReady 24 — Implementation Plan (MVP Concierge)
+# BidReady 24 — Implementation Plan (superseded)
+
+> Historical concierge plan. The implemented autonomous production lifecycle is documented in `AUTONOMOUS_RELEASE.md`.
 
 **Date:** 2026-07-12  
 **Status:** Phase 1 in progress — sellable concierge MVP  

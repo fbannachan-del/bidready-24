@@ -1,4 +1,6 @@
-# Operations Runbook (MVP)
+# Operations Runbook (legacy concierge operations)
+
+> Retained for incident history. Autonomous processing and receiver controls are documented in `AUTONOMOUS_RELEASE.md`.
 
 ## Starting locally
 ```bash

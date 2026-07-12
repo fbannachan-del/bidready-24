@@ -9,7 +9,8 @@
     "lint": "eslint",
     "db:migrate": "tsx scripts/migrate.ts",
     "db:seed": "tsx scripts/seed.ts",
-    "test": "echo \"Tests coming in Phase 2\" && exit 0"
+    "test": "node --import tsx --test test/**/*.test.ts",
+    "test:coverage": "node --import tsx --experimental-test-coverage --test test/**/*.test.ts"
   },
   "dependencies": {
     "@stripe/stripe-js": "^9.9.0",

@@ -1,4 +1,6 @@
-# Deployment Guide (Preview + Production)
+# Deployment Guide (historical checklist)
+
+> BidReady 24 is now live. Current release configuration is defined by `render.yaml`, `.env.example`, and `AUTONOMOUS_RELEASE.md`.
 
 **IMPORTANT**: Production deployment and connecting live credentials is an explicit owner approval gate.
 

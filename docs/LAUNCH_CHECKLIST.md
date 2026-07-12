@@ -1,4 +1,6 @@
-# Launch Checklist (Pre-Validation)
+# Launch Checklist (historical pre-validation)
+
+> The autonomous production release now uses the gates in `AUTONOMOUS_RELEASE.md`. This checklist is retained as launch history.
 
 Owner approval required at multiple points. This is the agent's preparation list.
 

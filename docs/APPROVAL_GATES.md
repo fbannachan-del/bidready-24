@@ -1,4 +1,6 @@
-# BidReady 24 — Owner Approval Gates (Strict)
+# BidReady 24 — Owner Approval Gates (historical)
+
+> Superseded for product operations by the receiver-controlled mandate model in `AUTONOMOUS_RELEASE.md`. Legal, financial-account ownership and corporate-authority decisions still require the accountable owner.
 
 **Per spec §21 and "HUMAN AUTHORITY REQUIRED"**. The agent prepares; owner decides and acts.
 

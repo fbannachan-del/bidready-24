@@ -10,7 +10,7 @@ export default function Home() {
           Know exactly what your tender requires<br />before you start writing.
         </h1>
         <p className="mt-6 text-xl text-[#475569] max-w-2xl mx-auto">
-          BidReady 24 turns a complex UK tender pack into a source-cited compliance checklist, evidence-gap plan, and response structure within 24 hours.
+          BidReady 24 turns a complex UK tender pack into an autonomous, source-cited compliance preflight, evidence-gap plan, and response structure.
         </p>
         <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
           <Link href="/pricing" id="get-started" className="inline-flex h-12 items-center justify-center rounded-full bg-[#0A3D62] px-8 text-white font-medium hover:bg-[#082C47]">
@@ -20,7 +20,7 @@ export default function Home() {
             View sample report
           </Link>
         </div>
-        <p className="mt-4 text-sm text-[#64748B]">Your submission stays under your control. We never invent evidence or submit on your behalf.</p>
+        <p className="mt-4 text-sm text-[#64748B]">Your submission stays under your control. We never invent evidence, and external actions require your explicit mandate.</p>
       </section>
 
       {/* Trust / Outcome */}
@@ -35,8 +35,8 @@ export default function Home() {
             <div className="mt-1 text-[#475569]">Clear action plan: what’s missing, why it matters, suggested owner, and internal deadline. No silent omissions.</div>
           </div>
           <div>
-            <div className="font-medium text-[#0A3D62]">Concierge human review (MVP)</div>
-            <div className="mt-1 text-[#475569]">An administrator reviews every extracted item before delivery. Low-confidence items are never guessed.</div>
+            <div className="font-medium text-[#0A3D62]">Receiver assurance built in</div>
+            <div className="mt-1 text-[#475569]">Independent citation checks, confidence signals, and unresolved uncertainties make every machine decision reviewable.</div>
           </div>
         </div>
       </section>
@@ -49,8 +49,8 @@ export default function Home() {
             ["1", "Choose & pay", "£149 Preflight or £349 Complete Pack via secure Stripe checkout."],
             ["2", "Secure project", "Instant magic-link access. Complete the structured intake form."],
             ["3", "Upload pack", "PDF, DOCX, XLSX, CSV. Up to 20 files / 200 MB. Consent shown first."],
-            ["4", "Analysis + review", "We extract with provenance, identify requirements, gaps, and deadlines. Admin reviews everything."],
-            ["5", "Receive report", "Secure link + exports (web, CSV, PDF, DOCX). 30-day retention default."],
+            ["4", "Autonomous analysis", "The system extracts with provenance, matches evidence, checks citations, and identifies requirements, gaps, and deadlines."],
+            ["5", "Control & act", "Review the assurance pack, export the work, and authorise selected buyer-facing actions from one secure workspace."],
           ].map(([num, title, desc]) => (
             <li key={num} className="border border-[#E5E7EB] rounded-xl p-5 bg-white">
               <div className="w-6 h-6 rounded-full bg-[#0A3D62] text-white text-xs flex items-center justify-center mb-3">{num}</div>
@@ -59,7 +59,7 @@ export default function Home() {
             </li>
           ))}
         </ol>
-        <p className="mt-4 text-xs text-[#64748B]">Turnaround promise: within 24 hours. Machine-assisted draft target &lt;30 min where possible. Human review gate remains.</p>
+        <p className="mt-4 text-xs text-[#64748B]">Processing starts automatically after upload. Completion time depends on pack size, document quality, and configured external services.</p>
       </section>
 
       {/* For commercial cleaning */}
@@ -105,12 +105,12 @@ export default function Home() {
               <li>✓ Everything in Preflight</li>
               <li>✓ Structured response outline (DOCX)</li>
               <li>✓ Source-bound first-draft sections</li>
-              <li>✓ Priority admin review</li>
+              <li>✓ Receiver assurance pack & autonomous QA</li>
             </ul>
             <Link href="/pricing" className="mt-6 block text-center rounded-full bg-[#0A3D62] text-white py-2 text-sm hover:bg-[#082C47]">Choose Complete Pack</Link>
           </div>
         </div>
-        <p className="text-xs mt-4 text-[#64748B]">No recurring billing in the MVP. Future monthly plan only after owner approval or 3+ customer requests.</p>
+        <p className="text-xs mt-4 text-[#64748B]">Fixed-price processing with no recurring billing.</p>
       </section>
 
       {/* Security & limitations teaser */}
@@ -121,7 +121,7 @@ export default function Home() {
             <li>• Private encrypted storage + short-lived access</li>
             <li>• All customer claims start as uncertain or missing</li>
             <li>• No fabricated policies, accreditations, references or figures</li>
-            <li>• Human review before any delivery</li>
+            <li>• Receiver-visible QA, confidence and citation checks</li>
             <li>• 30-day automatic deletion of originals (extendable)</li>
             <li>• Clear limitations stated on every report</li>
           </ul>

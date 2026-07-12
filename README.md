@@ -2,22 +2,17 @@
 
 Secure web app that turns a UK public-sector tender pack into a **source-cited compliance preflight**.
 
-**Core promise**: Upload a tender pack. Receive a traceable compliance plan within 24 hours. Every requirement links back to its source. Missing evidence is flagged. Nothing is invented.
+**Core promise**: Upload a tender pack. Receive an autonomous, traceable compliance plan. Every requirement links back to its source. Missing evidence and uncertainty are explicit. Unsupported customer claims are never presented as verified facts.
 
 - Primary customers: UK commercial-cleaning SMEs (5–100 employees).
-- Offers: £149 Tender Preflight | £349 Complete Pack (MVP concierge/manual review).
+- Offers: £149 Tender Preflight | £349 Complete Pack.
 - Future: recurring only after validation + owner approval.
 
-**Status**: Sellable concierge MVP under active construction. First paid customers treated as validation. Production deployment and real outreach require explicit owner approval.
+**Status**: Autonomous release with receiver-controlled operating policies and delegated mandates.
 
-## Important: Approval Gates
+## Authority model
 
-See `docs/APPROVAL_GATES.md`. The agent prepares everything but **must not**:
-- Publish legal pages or brand claims
-- Connect production payment/email/domain accounts
-- Deploy to production
-- Send outreach
-- Use real customer data beyond service delivery
+The autonomous release uses receiver-controlled policies and explicit delegated mandates. External clarification, commitment, signature and submission actions are blocked unless the receiver has acknowledged responsibility and granted the specific authority. Successful dispatch or submission is never recorded without an adapter receipt.
 
 ## Quick Start (Local Dev)
 
@@ -27,7 +22,7 @@ npm install
 
 # 2. Copy env and edit
 cp .env.example .env.local
-# Set a simple ADMIN_PASSWORD and test Stripe keys (test mode only)
+# Set a strong ADMIN_PASSWORD and Stripe test keys for local integration testing
 
 # 3. Create data dirs
 mkdir -p data/uploads
@@ -46,23 +41,27 @@ Visit http://localhost:3000
 
 Admin: /admin (use the ADMIN_PASSWORD)
 
-## Key Features (MVP)
+## Key Features
 - Public site with pricing, sample report (synthetic), cleaning-specific landing.
-- Stripe test checkout → project creation.
+- Stripe hosted Checkout with signature-verified, idempotent webhook fulfilment; explicit local simulation is available only when enabled.
 - Magic-link project access (links expire/revocable).
 - Structured company intake + consent.
 - Secure file uploads (PDF, DOCX, XLSX, CSV, TXT; basic validation + hash).
-- Staged pipeline (visible status): ingest → extract → classify → stub requirements/gaps.
-- Admin review queue: view source excerpts, edit, approve.
-- Customer report with source citations + exports (web, CSV, basic PDF/DOCX).
-- Zero-invention: all customer facts start uncertain/missing. Admin must confirm.
-- Audit events for important actions.
+- Idempotent autonomous pipeline: ingest → extract → analyse → match evidence → draft → validate → prepare/submit.
+- Real PDF, DOCX, XLS/XLSX, CSV, Markdown and text extraction with immutable file hashes.
+- Structured requirements, questions, deadlines, attachments, gaps, clarification drafts, response structures and QA decisions.
+- Customer evidence facts and expanded compliance outcomes with source citations.
+- Receiver autonomy control centre for assisted, autonomous and unattended operation.
+- Delegated mandate checks for clarifications, commitments, signing and submission.
+- Autonomous go/no-go decisions, contract issue spotting, amendment comparison, evidence-grounded response scaffolds and submission manifests.
+- Machine-produced receiver assurance report and CSV exports.
+- Hash-chained audit events for important actions.
 - Deletion support (customer + auto).
 
 ## Architecture & Data
 - Next.js App Router, server actions where possible.
 - better-sqlite3 (MVP) — see `docs/IMPLEMENTATION_PLAN.md` for Postgres path.
-- Explicit pipeline stages in `lib/pipeline/`.
+- Explicit, retry-safe pipeline stages in `lib/autonomous-pipeline.ts` and `lib/validation/pipeline-control.ts`.
 - Versioned schemas (zod + TS).
 - Local storage adapter.
 
@@ -74,22 +73,23 @@ See:
 - `docs/runbook.md` (ops)
 
 ## Testing & Quality
-- Golden fixtures in `fixtures/`
-- Manual verification of every extracted item against source in golden tenders.
-- `npm run build` must pass.
-- End-to-end: pay (test) → upload → admin review → customer report.
+- Golden fixtures in `fixtures/`.
+- Adversarial intake, upload, conditional-questionnaire, retry-loop, data-integrity and full-pipeline tests.
+- `npm test`, `npm run lint` and `npm run build` must pass.
+- End-to-end: create project → intake → upload → autonomous analysis → cited report → immutable submission package.
 
-## Non-Goals (MVP)
-See spec §20. No auto submission, no win guarantees, no recurring yet, no inventing evidence.
+## External action adapters
+
+BidReady 24 prepares all buyer-facing actions autonomously. Sending clarifications and submitting to procurement portals require customer-authorised adapters configured through `OUTBOUND_ACTION_WEBHOOK_URL` and `SUBMISSION_WEBHOOK_URL`. If an adapter is unavailable, the system records a queued clarification or immutable prepared submission; it never claims an external action succeeded without a receipt.
 
 ## Production Notes
 - Secrets only via hosting platform secret manager.
-- Preview on Vercel (recommended for Next) or Fly.
-- Production deploy + live Stripe + real email = owner approval required.
+- Render Blueprint deployment with persistent disk and health checks.
+- Hosted Checkout and external adapters fail closed when production credentials are absent.
 - Retention: 30 days default for original files post-delivery.
 
 ## Contributing / Ops
-This is a product repo. Changes should be small, tested, and respect the commercial constraints and approval gates.
+This is a production product repo. Changes should be scoped, tested, auditable and consistent with the receiver authority model.
 
 ## License
 Private for now.

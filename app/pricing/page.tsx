@@ -22,12 +22,12 @@ export default function Pricing() {
               "Clarification questions for the buyer",
               "Response plan + suggested timetable",
               "Web report + CSV export",
-              "Admin review before delivery",
+              "Receiver assurance pack & autonomous QA",
             ].map(t => <li key={t}>✓ {t}</li>)}
           </ul>
 
           <Link href="/checkout?type=preflight" className="mt-8 block w-full text-center rounded-full bg-[#0A3D62] py-3 text-white font-medium">Buy Preflight — £149</Link>
-          <p className="text-center text-[10px] mt-2 text-[#64748B]">Secure checkout via Stripe. Test mode in preview.</p>
+          <p className="text-center text-[10px] mt-2 text-[#64748B]">Secure hosted checkout via Stripe.</p>
         </div>
 
         <div className="rounded-2xl border border-[#0A3D62] p-8 bg-white">
@@ -41,7 +41,7 @@ export default function Pricing() {
               "Everything in Tender Preflight",
               "Structured DOCX response outline",
               "Source-bound first-draft sections (where evidence supplied)",
-              "Priority human review & delivery",
+              "Autonomous response structures & QA",
               "All exports (PDF + CSV + XLSX + DOCX)",
             ].map(t => <li key={t}>✓ {t}</li>)}
           </ul>
@@ -52,11 +52,11 @@ export default function Pricing() {
       </div>
 
       <div className="mt-10 text-sm border-t pt-8 text-[#475569]">
-        <p className="font-medium">Future recurring (not yet available)</p>
-        <p>£249/month for one standard tender + reusable evidence library. Only after owner approval or three customers request it.</p>
+        <p className="font-medium">Fixed-price service</p>
+        <p>No subscription or recurring billing. Each purchase covers one tender pack.</p>
 
         <div className="mt-6 text-xs">
-          All sales are subject to the published refund policy (draft). No win guarantees. We never submit bids. See <Link href="/legal" className="underline">legal drafts</Link>.
+          All sales are subject to the published refund policy. No win or compliance guarantees. Buyer-facing actions only run under an explicit receiver mandate. See <Link href="/legal" className="underline">legal terms</Link>.
         </div>
       </div>
     </div>
