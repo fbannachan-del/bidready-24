@@ -65,8 +65,6 @@ db.exec(`
     created_at TEXT NOT NULL DEFAULT (datetime('now')),
     updated_at TEXT NOT NULL DEFAULT (datetime('now'))
   );
-  CREATE INDEX IF NOT EXISTS idx_support_requests_created ON support_requests(created_at DESC);
-  CREATE INDEX IF NOT EXISTS idx_support_requests_ip ON support_requests(ip_hash, created_at);
 
   -- Uploaded files (immutable originals)
   CREATE TABLE IF NOT EXISTS files (
@@ -253,6 +251,24 @@ db.exec(`
     status TEXT DEFAULT 'new',
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
   );
+`);
+
+function ensureColumn(table: string, column: string, definition: string) {
+  const columns = db.prepare(`PRAGMA table_info(${table})`).all() as Array<{ name: string }>;
+  if (!columns.some((item) => item.name === column)) {
+    db.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`);
+  }
+}
+
+// Upgrade the original concierge support table in place before indexing it.
+// Existing installations can have the legacy shape created near the end of
+// the core schema block above.
+ensureColumn("support_requests", "project_ref", "TEXT");
+ensureColumn("support_requests", "ip_hash", "TEXT NOT NULL DEFAULT 'legacy'");
+ensureColumn("support_requests", "updated_at", "TEXT");
+db.exec(`
+  CREATE INDEX IF NOT EXISTS idx_support_requests_created ON support_requests(created_at DESC);
+  CREATE INDEX IF NOT EXISTS idx_support_requests_ip ON support_requests(ip_hash, created_at);
 `);
 
 migrateAutonomySchema(db);
