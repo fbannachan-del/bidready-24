@@ -58,6 +58,16 @@ services:
         sync: false
       - key: SUPPORT_RATE_LIMIT_SALT
         sync: false
+      - key: ALERT_WEBHOOK_URL
+        sync: false
+      - key: ALERT_WEBHOOK_SECRET
+        sync: false
+      - key: ALERTS_CRON_SECRET
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: EMAIL_FROM
+        sync: false
 
     disk:
       name: bidready-data

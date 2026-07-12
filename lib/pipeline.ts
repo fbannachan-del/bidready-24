@@ -1,5 +1,5 @@
 import { getDb } from "./db";
-import { addRequirement } from "./projects";
+import { addRequirement, updateProjectStatus } from "./projects";
 import fs from "node:fs";
 import path from "node:path";
 
@@ -75,6 +75,6 @@ export function buildStubAnalysis(projectId: string, tenderText: string) {
     count++;
   });
 
-  db.prepare(`UPDATE projects SET status = 'review_required' WHERE id = ?`).run(projectId);
+  updateProjectStatus(projectId, "review_required");
   return count;
 }

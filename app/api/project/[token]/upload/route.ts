@@ -49,7 +49,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ tok
   } catch {
     return NextResponse.json({ error: "Files could not be stored safely.", code: "FILE_STORAGE_FAILED" }, { status: 500 });
   }
-  db.prepare(`UPDATE projects SET status = 'processing', updated_at = datetime('now') WHERE id = ?`).run(project.id);
+  const { updateProjectStatus } = await import("@/lib/projects");
+  updateProjectStatus(project.id, "processing");
   try {
     const analysis = await runAutonomousPipeline(project.id, "upload");
     return NextResponse.json({ ok: true, count: validated.files.length, duplicates: validated.duplicates.length, analysis });

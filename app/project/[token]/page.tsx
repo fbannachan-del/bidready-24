@@ -117,7 +117,10 @@ export default async function ProjectHome({ params }: { params: Promise<{ token:
               <h1 className="mt-3 text-2xl font-semibold tracking-[-0.03em] text-[#17202A] sm:text-3xl">{project.tender_title || `${project.company_name || "Your organisation"} tender`}</h1>
               <p className="mt-1 text-sm text-[#667085]">{project.company_name || "Organisation not confirmed"} · {String(project.order_type || "preflight").replace("_", " ")} workspace</p>
             </div>
-            <div className="flex flex-col gap-2 sm:flex-row">
+            <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+              <Link href={`/project/${token}/alerts`} className="inline-flex min-h-10 items-center justify-center gap-2 border border-[#B7B2A7] bg-[#FBFAF6] px-4 text-sm font-semibold text-[#17202A] hover:border-[#1457FF]">
+                Stage alerts
+              </Link>
               <Link href={`/project/${token}/autonomy`} className="inline-flex min-h-10 items-center justify-center gap-2 border border-[#B7B2A7] bg-[#FBFAF6] px-4 text-sm font-semibold text-[#17202A] hover:border-[#1457FF]">
                 <Radar className="h-4 w-4 text-[#1457FF]" aria-hidden="true" /> Autonomy policy
               </Link>

@@ -31,7 +31,10 @@ export default async function CleaningTenderJobs({ searchParams }: { searchParam
           <p className="eyebrow">Live opportunity feed</p>
           <div className="mt-4 grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end">
             <div><h1 className="page-title">Open cleaning tenders.</h1><p className="body-large mt-5 max-w-3xl">Find public-sector cleaning opportunities, then run the buyer’s tender pack through a source-cited BIDREADY24 preflight before committing the bid team.</p></div>
-            <Link href="/pricing" className="button-primary">Start a preflight <ArrowRight className="h-4 w-4" /></Link>
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <Link href="/alerts" className="button-secondary">Get tender alerts</Link>
+              <Link href="/pricing" className="button-primary">Start a preflight <ArrowRight className="h-4 w-4" /></Link>
+            </div>
           </div>
         </div>
       </section>

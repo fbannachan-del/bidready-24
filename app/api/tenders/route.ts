@@ -14,6 +14,10 @@ export async function GET(request: NextRequest) {
 
   try {
     const feed = await fetchLiveCleaningTenders({ keyword, region, suitableForSme, limit });
+    // Opportunistic watch processing — full scans should use /api/alerts/check-tenders on a cron.
+    void import("@/lib/alerts")
+      .then(({ processTenderWatches }) => processTenderWatches(feed.opportunities))
+      .catch((err) => console.error("Background tender watch pass failed", { name: err instanceof Error ? err.name : "UnknownError" }));
     const body = includeDiagnostics
       ? feed
       : { opportunities: feed.opportunities, total: feed.total, fetchedAt: feed.fetchedAt, source: feed.source };

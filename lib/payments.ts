@@ -50,6 +50,7 @@ export function fulfilCheckout(params: {
         SET status = 'paid', stripe_payment_intent = COALESCE(?, stripe_payment_intent), raw_event = ?
         WHERE stripe_checkout_session = ?
       `).run(params.paymentIntent, JSON.stringify({ id: params.eventId, type: params.eventType }), params.sessionId);
+      const previous = db.prepare(`SELECT status FROM projects WHERE id = ?`).get(params.projectId) as { status: string } | undefined;
       db.prepare(`
         UPDATE projects SET status = 'paid', updated_at = datetime('now') WHERE id = ?
       `).run(params.projectId);
@@ -61,6 +62,11 @@ export function fulfilCheckout(params: {
         params.projectId,
         JSON.stringify({ checkout_session: params.sessionId }),
       );
+      if (!previous || previous.status !== "paid") {
+        void import("./alerts")
+          .then(({ notifyProjectStageChange }) => notifyProjectStageChange(params.projectId, previous?.status ?? null, "paid"))
+          .catch((error) => console.error("Payment stage alert failed", { name: error instanceof Error ? error.name : "UnknownError" }));
+      }
     }
   })();
 }

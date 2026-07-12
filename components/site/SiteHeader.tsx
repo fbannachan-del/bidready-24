@@ -6,6 +6,7 @@ const navigation = [
   ["What you get", "/#deliverables"],
   ["For cleaning", "/cleaning-tenders"],
   ["Live tenders", "/cleaning-tenders/jobs"],
+  ["Alerts", "/alerts"],
   ["Security", "/security"],
   ["Pricing", "/pricing"],
 ] as const;

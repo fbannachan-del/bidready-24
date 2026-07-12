@@ -128,6 +128,7 @@ export const PUBLIC_ROUTES = [
   "/checkout/success",
   "/contact",
   "/login",
+  "/alerts",
   "/security",
   "/sample-report",
   "/cleaning-tenders",

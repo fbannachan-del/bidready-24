@@ -68,12 +68,25 @@ export function getProjectById(id: string) {
 }
 
 export function updateProjectStatus(id: string, status: string) {
+  const previous = db.prepare(`SELECT status FROM projects WHERE id = ?`).get(id) as { status: string } | undefined;
   db.prepare(`UPDATE projects SET status = ?, updated_at = datetime('now') WHERE id = ?`).run(status, id);
+  if (previous && previous.status !== status) {
+    // Fire-and-forget stage alerts; never block the status write path.
+    void import("./alerts")
+      .then(({ notifyProjectStageChange }) => notifyProjectStageChange(id, previous.status, status))
+      .catch((error) => console.error("Project stage alert failed", { name: error instanceof Error ? error.name : "UnknownError" }));
+  }
 }
 
 export function updateProjectIntake(id: string, intakeJson: string, companyName?: string) {
+  const previous = db.prepare(`SELECT status FROM projects WHERE id = ?`).get(id) as { status: string } | undefined;
   db.prepare(`UPDATE projects SET intake_json = ?, company_name = COALESCE(?, company_name), status = 'awaiting_files', updated_at = datetime('now') WHERE id = ?`)
     .run(intakeJson, companyName ?? null, id);
+  if (!previous || previous.status !== "awaiting_files") {
+    void import("./alerts")
+      .then(({ notifyProjectStageChange }) => notifyProjectStageChange(id, previous?.status ?? null, "awaiting_files"))
+      .catch((error) => console.error("Project stage alert failed", { name: error instanceof Error ? error.name : "UnknownError" }));
+  }
 }
 
 export function listProjectsForAdmin() {

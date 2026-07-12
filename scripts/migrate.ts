@@ -273,6 +273,60 @@ db.exec(`
 `);
 
 migrateAutonomySchema(db);
+
+// Self-serve tender watches + project stage alerts
+db.exec(`
+  CREATE TABLE IF NOT EXISTS tender_watches (
+    id TEXT PRIMARY KEY,
+    email TEXT NOT NULL,
+    keyword TEXT NOT NULL DEFAULT 'cleaning',
+    region TEXT NOT NULL DEFAULT '',
+    sme_only INTEGER NOT NULL DEFAULT 0,
+    active INTEGER NOT NULL DEFAULT 1,
+    manage_token TEXT NOT NULL UNIQUE,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    last_checked_at TEXT,
+    last_notified_at TEXT
+  );
+  CREATE INDEX IF NOT EXISTS idx_tender_watches_active ON tender_watches(active);
+  CREATE INDEX IF NOT EXISTS idx_tender_watches_email ON tender_watches(email);
+
+  CREATE TABLE IF NOT EXISTS tender_watch_seen (
+    watch_id TEXT NOT NULL,
+    tender_fingerprint TEXT NOT NULL,
+    title TEXT,
+    source_url TEXT,
+    first_seen_at TEXT NOT NULL DEFAULT (datetime('now')),
+    notified_at TEXT,
+    PRIMARY KEY (watch_id, tender_fingerprint),
+    FOREIGN KEY (watch_id) REFERENCES tender_watches(id) ON DELETE CASCADE
+  );
+
+  CREATE TABLE IF NOT EXISTS project_alert_settings (
+    project_id TEXT PRIMARY KEY,
+    email TEXT NOT NULL,
+    stages_json TEXT NOT NULL DEFAULT '[]',
+    active INTEGER NOT NULL DEFAULT 1,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+    FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
+  );
+
+  CREATE TABLE IF NOT EXISTS alert_deliveries (
+    id TEXT PRIMARY KEY,
+    channel TEXT NOT NULL,
+    kind TEXT NOT NULL,
+    recipient TEXT NOT NULL,
+    subject TEXT NOT NULL,
+    body_text TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'queued',
+    error TEXT,
+    meta_json TEXT,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+  CREATE INDEX IF NOT EXISTS idx_alert_deliveries_created ON alert_deliveries(created_at DESC);
+`);
+
 assertSchemaReady(db);
 
 console.log("Migrations complete.");

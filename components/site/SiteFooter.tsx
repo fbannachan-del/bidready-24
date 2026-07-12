@@ -12,7 +12,7 @@ export function SiteFooter() {
         </div>
         <div>
           <p className="footer-heading">Product</p>
-          <div className="footer-links"><Link href="/#how-it-works">How it works</Link><Link href="/#deliverables">Deliverables</Link><Link href="/pricing">Pricing</Link><Link href="/sample-report">Sample report</Link></div>
+          <div className="footer-links"><Link href="/#how-it-works">How it works</Link><Link href="/#deliverables">Deliverables</Link><Link href="/pricing">Pricing</Link><Link href="/alerts">Tender alerts</Link><Link href="/sample-report">Sample report</Link></div>
         </div>
         <div>
           <p className="footer-heading">Trust</p>
