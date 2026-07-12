@@ -28,6 +28,8 @@ services:
         sync: false   # Set this securely in the Render Dashboard
       - key: ADMIN_SESSION_SECRET
         sync: false
+      - key: CUSTOMER_SESSION_SECRET
+        sync: false
       - key: STRIPE_SECRET_KEY
         sync: false
       - key: NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY

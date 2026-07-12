@@ -67,6 +67,14 @@ export function fulfilCheckout(params: {
           .then(({ notifyProjectStageChange }) => notifyProjectStageChange(params.projectId, previous?.status ?? null, "paid"))
           .catch((error) => console.error("Payment stage alert failed", { name: error instanceof Error ? error.name : "UnknownError" }));
       }
+
+      // Attach paid project to pre-selected owner account when present.
+      const owner = db.prepare(`SELECT owner_account_id FROM projects WHERE id = ?`).get(params.projectId) as { owner_account_id?: string | null } | undefined;
+      if (owner?.owner_account_id) {
+        void import("./customer-auth")
+          .then(({ linkProjectToAccount }) => linkProjectToAccount(params.projectId, owner.owner_account_id!, "payment"))
+          .catch((error) => console.error("Account link after payment failed", { name: error instanceof Error ? error.name : "UnknownError" }));
+      }
     }
   })();
 }

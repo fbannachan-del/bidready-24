@@ -325,7 +325,47 @@ db.exec(`
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
   );
   CREATE INDEX IF NOT EXISTS idx_alert_deliveries_created ON alert_deliveries(created_at DESC);
+
+  -- Customer accounts (passwordless magic-link). Projects still require individual payment.
+  CREATE TABLE IF NOT EXISTS customer_accounts (
+    id TEXT PRIMARY KEY,
+    email TEXT NOT NULL UNIQUE,
+    name TEXT,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    last_login_at TEXT
+  );
+  CREATE INDEX IF NOT EXISTS idx_customer_accounts_email ON customer_accounts(email);
+
+  CREATE TABLE IF NOT EXISTS customer_magic_links (
+    id TEXT PRIMARY KEY,
+    account_id TEXT NOT NULL,
+    token_hash TEXT NOT NULL UNIQUE,
+    expires_at TEXT NOT NULL,
+    used_at TEXT,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    FOREIGN KEY (account_id) REFERENCES customer_accounts(id) ON DELETE CASCADE
+  );
+  CREATE INDEX IF NOT EXISTS idx_customer_magic_account ON customer_magic_links(account_id);
+
+  CREATE TABLE IF NOT EXISTS project_accounts (
+    project_id TEXT NOT NULL,
+    account_id TEXT NOT NULL,
+    linked_at TEXT NOT NULL DEFAULT (datetime('now')),
+    link_source TEXT NOT NULL DEFAULT 'claim',
+    PRIMARY KEY (project_id, account_id),
+    FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
+    FOREIGN KEY (account_id) REFERENCES customer_accounts(id) ON DELETE CASCADE
+  );
+  CREATE INDEX IF NOT EXISTS idx_project_accounts_account ON project_accounts(account_id);
 `);
+
+// Optional owner pointer on projects (idempotent)
+{
+  const columns = db.prepare(`PRAGMA table_info(projects)`).all() as Array<{ name: string }>;
+  if (!columns.some((item) => item.name === "owner_account_id")) {
+    db.exec(`ALTER TABLE projects ADD COLUMN owner_account_id TEXT`);
+  }
+}
 
 assertSchemaReady(db);
 

@@ -47,10 +47,14 @@ function CheckoutSuccessContent() {
           <p className="body-large mx-auto mt-5 max-w-lg">Continue to the private workspace to add company evidence and upload the tender pack.</p>
           <a href={`/project/${token}`} className="button-primary mt-8">Open project workspace</a>
           <p className="mt-5 text-xs text-[var(--ink-faint)]">Treat the project link as confidential. It grants access to this tender workspace.</p>
+          <div className="mt-6 flex flex-col items-center gap-2 sm:flex-row sm:justify-center">
+            <a href="/account" className="button-secondary">Open account hub</a>
+            <a href="/account/login" className="text-xs font-medium text-[var(--blue-ink)] underline underline-offset-4">Sign in to save this project</a>
+          </div>
           <p className="mt-4 text-xs text-[var(--ink-faint)]">
-            Returning later? Use{" "}
-            <a href="/login" className="underline underline-offset-4 text-[var(--blue-ink)]">Open your project</a>
-            {" "}with this link, or email + project reference after intake.
+            Returning later? Sign in to your account hub, or use{" "}
+            <a href="/login" className="underline underline-offset-4 text-[var(--blue-ink)]">workspace access</a>
+            {" "}with this private link.
           </p>
           <p className="mt-3 break-all font-mono text-[10px] text-[var(--ink-faint)]">/project/{token}</p>
         </>

@@ -9,7 +9,7 @@ describe("Agent 20 — Cross-cutting API, security, health, regressions", () => 
   it("source href inventory has no obviously broken static paths", () => {
     const inventory = sourceHrefInventory();
     const staticOk = new Set([
-      "/", "/pricing", "/checkout", "/contact", "/login", "/alerts", "/security", "/sample-report",
+      "/", "/pricing", "/checkout", "/contact", "/login", "/account/login", "/alerts", "/security", "/sample-report",
       "/cleaning-tenders", "/cleaning-tenders/jobs", "/legal", "/legal/privacy",
       "/legal/data", "/legal/terms", "/legal/refund", "/legal/acceptable-use",
       "/admin", "/admin/locked", "/admin/tests/end-to-end",

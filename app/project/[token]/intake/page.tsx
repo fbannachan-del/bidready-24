@@ -32,6 +32,16 @@ export default function Intake() {
         setError(body.error || "Intake could not be saved. Check required fields and try again.");
         return;
       }
+      // If signed in, claim this paid project onto the account using the workspace token.
+      try {
+        await fetch("/api/account/claim", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ project_ref: token }),
+        });
+      } catch {
+        // Optional — workspace still works without account link.
+      }
       setSubmitted(true);
       // Give the user a clear path back into the paid workspace.
       window.setTimeout(() => router.push(`/project/${token}`), 1200);
