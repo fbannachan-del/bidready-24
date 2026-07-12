@@ -30,7 +30,35 @@ export default function Contact() {
 
   return (
     <div className="mx-auto grid max-w-[1050px] gap-12 px-5 py-16 sm:px-8 sm:py-24 lg:grid-cols-[.85fr_1.15fr]">
-      <div><p className="eyebrow">Contact &amp; support</p><h1 className="page-title mt-5">Tell us what you need to resolve.</h1><p className="body-large mt-6">Ask about a tender, payment or an existing project. Please do not paste confidential tender content, passwords or buyer-portal credentials into this form.</p><div className="mt-8 rounded-xl border border-[var(--border)] bg-white p-5 text-sm leading-6 text-[var(--slate)]"><p className="font-medium text-[var(--ink)]">Include</p><p className="mt-1">Your project reference, the part of the workflow affected and what you expected to happen.</p><p className="mt-4 font-medium text-[var(--ink)]">Keep out</p><p className="mt-1">Full tender documents, payment-card details, access tokens and third-party passwords.</p></div><p className="mt-6 text-xs leading-5 text-[var(--ink-faint)]">For data or deletion requests, state that clearly and provide the project reference. Authority may need to be verified. See the <Link href="/legal/privacy" className="underline underline-offset-4">privacy notice</Link>.</p></div>
+      <div>
+        <p className="eyebrow">Contact &amp; support</p>
+        <h1 className="page-title mt-5">Tell us what you need to resolve.</h1>
+        <p className="body-large mt-6">Ask about a tender, payment or an existing project. Please do not paste confidential tender content, passwords or buyer-portal credentials into this form.</p>
+
+        <div className="mt-8 rounded-xl border border-[var(--border)] bg-white p-5">
+          <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--ink-faint)]">Email</p>
+          <a
+            href="mailto:hello@bidready24.com"
+            className="mt-2 inline-block text-lg font-medium text-[var(--blue-ink)] underline decoration-[var(--border-strong)] underline-offset-4 hover:text-[var(--ink)]"
+          >
+            hello@bidready24.com
+          </a>
+          <p className="mt-2 text-sm leading-6 text-[var(--slate)]">
+            Prefer email? Write to us directly. Include your project reference and Stripe receipt where relevant.
+          </p>
+        </div>
+
+        <div className="mt-6 rounded-xl border border-[var(--border)] bg-white p-5 text-sm leading-6 text-[var(--slate)]">
+          <p className="font-medium text-[var(--ink)]">Include</p>
+          <p className="mt-1">Your project reference, the part of the workflow affected and what you expected to happen.</p>
+          <p className="mt-4 font-medium text-[var(--ink)]">Keep out</p>
+          <p className="mt-1">Full tender documents, payment-card details, access tokens and third-party passwords.</p>
+        </div>
+        <p className="mt-6 text-xs leading-5 text-[var(--ink-faint)]">
+          For data or deletion requests, state that clearly and provide the project reference. Authority may need to be verified. See the{" "}
+          <Link href="/legal/privacy" className="underline underline-offset-4">privacy notice</Link>.
+        </p>
+      </div>
 
       <div className="panel p-6 sm:p-8">
 
@@ -44,7 +72,11 @@ export default function Contact() {
           <div><label htmlFor="contact-message" className="mb-2 block text-xs font-medium">How can we help?</label><textarea id="contact-message" name="message" placeholder="Describe the issue without including confidential documents or credentials." required rows={6} className="w-full rounded-lg border border-[var(--border-strong)] bg-white px-3.5 py-3 text-sm" /></div>
           <button disabled={loading} className="button-primary w-full disabled:cursor-wait disabled:opacity-60">{loading ? "Sending…" : "Send to support"}</button>
           {error && <p role="alert" className="rounded border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</p>}
-          <p className="text-[10px] leading-4 text-[var(--ink-faint)]">Connection information is hashed for short-window abuse prevention. Repeated requests may be rate-limited.</p>
+          <p className="text-[10px] leading-4 text-[var(--ink-faint)]">
+            Or email{" "}
+            <a href="mailto:hello@bidready24.com" className="underline underline-offset-2">hello@bidready24.com</a>
+            . Connection information is hashed for short-window abuse prevention. Repeated requests may be rate-limited.
+          </p>
         </form>
       )}
       </div>

@@ -8,6 +8,9 @@ export function SiteFooter() {
         <div className="max-w-sm">
           <Logo />
           <p className="mt-4 text-sm leading-6 text-[var(--slate)]">Source-cited tender preflight for UK commercial cleaning SMEs. Every conclusion stays connected to the document that supports it.</p>
+          <p className="mt-4 text-sm text-[var(--slate)]">
+            <a href="mailto:hello@bidready24.com" className="font-medium text-[var(--blue-ink)] underline underline-offset-4 hover:text-[var(--ink)]">hello@bidready24.com</a>
+          </p>
           <p className="mt-4 font-mono text-[10px] uppercase tracking-[.14em] text-[var(--ink-faint)]">Every requirement, traced to source.</p>
         </div>
         <div>
