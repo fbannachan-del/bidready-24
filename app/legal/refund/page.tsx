@@ -1,0 +1,16 @@
+export default function RefundDraft() {
+  return (
+    <div className="mx-auto max-w-3xl px-6 py-12 text-sm">
+      <h1 className="text-2xl font-semibold mb-1">Refund Policy (DRAFT)</h1>
+      <div className="uppercase text-[10px] tracking-widest text-amber-600 mb-6">NOT APPROVED</div>
+
+      <p>Because each project requires significant human review time, refunds are limited.</p>
+      <ul className="list-disc pl-5 mt-2">
+        <li>If we have not yet started processing and you request cancellation within 2 hours of payment: full refund.</li>
+        <li>After files are uploaded and analysis has begun: no refund (work has been performed).</li>
+        <li>If we fail to deliver a report within the stated SLA due to our error: we will offer a full refund or credit at our discretion.</li>
+      </ul>
+      <p className="mt-4 text-xs">Final policy requires owner approval.</p>
+    </div>
+  );
+}
