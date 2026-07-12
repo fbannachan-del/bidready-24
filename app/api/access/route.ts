@@ -81,7 +81,8 @@ export async function POST(req: NextRequest) {
 
   if (result.matched) {
     const path = projectWorkspacePath(result.project.secure_token);
-    const absolute = new URL(path, process.env.APP_URL || req.nextUrl.origin).href;
+    const { publicAppUrl } = await import("@/lib/admin-auth");
+    const absolute = publicAppUrl(path, req.url, process.env.APP_URL).href;
     // Console / future email adapter — never throw if delivery is stubbed.
     console.info("[project-access] link prepared", {
       projectId: result.project.id,

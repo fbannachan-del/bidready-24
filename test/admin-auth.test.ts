@@ -84,6 +84,17 @@ describe("admin redirect and origin validation", () => {
     );
   });
 
+  it("never redirects browsers to Render loopback hosts when APP_URL is set", () => {
+    assert.equal(
+      publicAppUrl("/admin/projects/proj_1", "http://localhost:10000/admin/projects/proj_1/actions", "https://www.bidready24.com").href,
+      "https://www.bidready24.com/admin/projects/proj_1",
+    );
+    assert.equal(
+      publicAppUrl("/checkout/success", "http://127.0.0.1:10000/api/checkout", "https://www.bidready24.com").href,
+      "https://www.bidready24.com/checkout/success",
+    );
+  });
+
   it("accepts legitimate redirected browser posts without weakening cross-origin checks", () => {
     const configured = "https://www.bidready24.com";
     assert.equal(isTrustedBrowserPost("https://internal.example/api/admin/session", new Headers({

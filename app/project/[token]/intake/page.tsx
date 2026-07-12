@@ -1,32 +1,66 @@
 "use client";
 
+import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
-import { useParams } from "next/navigation";
 
 export default function Intake() {
   const { token } = useParams<{ token: string }>();
+  const router = useRouter();
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
+    setError("");
     const form = new FormData(e.currentTarget);
     const data: Record<string, unknown> = Object.fromEntries(form.entries());
     data.certifications = String(data.certifications || "").split(",").map(s => s.trim()).filter(Boolean);
     data.existing_policies = String(data.existing_policies || "").split(",").map(s => s.trim()).filter(Boolean);
     data.consent = form.get("consent") === "on";
 
-    const res = await fetch(`/api/project/${token}/intake`, { method: "POST", body: JSON.stringify(data) });
-    if (res.ok) setSubmitted(true);
-    setLoading(false);
+    try {
+      const res = await fetch(`/api/project/${token}/intake`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      const body = await res.json().catch(() => ({})) as { error?: string };
+      if (!res.ok) {
+        setError(body.error || "Intake could not be saved. Check required fields and try again.");
+        return;
+      }
+      setSubmitted(true);
+      // Give the user a clear path back into the paid workspace.
+      window.setTimeout(() => router.push(`/project/${token}`), 1200);
+    } catch {
+      setError("Network error while saving intake. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   }
 
-  if (submitted) return <div className="min-h-full bg-[#F4F1E8] p-8 font-['IBM_Plex_Sans',Arial,sans-serif]"><div className="mx-auto max-w-md border border-emerald-200 bg-emerald-50 p-5 text-sm text-emerald-900"><strong>Organisation evidence saved.</strong><br />You can now upload the tender pack and configure the autonomy mandate from the project workspace.</div></div>;
+  if (submitted) {
+    return (
+      <div className="min-h-full bg-[#F4F1E8] p-8 font-['IBM_Plex_Sans',Arial,sans-serif]">
+        <div className="mx-auto max-w-md border border-emerald-200 bg-emerald-50 p-5 text-sm text-emerald-900">
+          <strong>Organisation evidence saved.</strong>
+          <p className="mt-2 leading-6">Next: upload the tender pack and run the preflight from your project workspace.</p>
+          <Link href={`/project/${token}`} className="mt-4 inline-flex min-h-10 items-center justify-center bg-emerald-700 px-4 text-xs font-semibold text-white">
+            Continue to project workspace
+          </Link>
+          <p className="mt-3 text-xs text-emerald-800">Redirecting automatically…</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto max-w-2xl px-6 py-10 font-['IBM_Plex_Sans',Arial,sans-serif] text-[#17202A]">
-      <div className="font-['IBM_Plex_Mono',monospace] text-[10px] font-semibold uppercase tracking-[0.16em] text-[#1457FF]">Organisation evidence</div>
+      <Link href={`/project/${token}`} className="text-xs font-medium text-[#667085] hover:text-[#1457FF]">← Back to project workspace</Link>
+      <div className="mt-4 font-['IBM_Plex_Mono',monospace] text-[10px] font-semibold uppercase tracking-[0.16em] text-[#1457FF]">Organisation evidence</div>
       <h1 className="mt-2 text-2xl font-semibold tracking-[-0.03em]">Company intake</h1>
       <p className="mt-2 text-sm leading-6 text-[#667085]">This information identifies the bidding organisation and grounds the first evidence pass. Intake answers are not treated as verified evidence on their own. Fields marked * are required.</p>
 
@@ -59,9 +93,11 @@ export default function Intake() {
         </div>
 
         <label className="flex gap-2 text-xs items-start">
-          <input type="checkbox" name="consent" required className="mt-1" /> 
+          <input type="checkbox" name="consent" required className="mt-1" />
           <span>I authorise BIDREADY24 to process the uploaded tender documents and this information to deliver and operate the paid compliance preflight for this project. I have read the current privacy and data-handling notices, including the stated retention limitations. *</span>
         </label>
+
+        {error && <p role="alert" className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-800">{error}</p>}
 
         <button disabled={loading} className="mt-2 w-full bg-[#1457FF] py-2.5 text-sm font-semibold text-white hover:bg-[#0C45D8] disabled:opacity-60">{loading ? "Saving…" : "Save intake and continue"}</button>
       </form>

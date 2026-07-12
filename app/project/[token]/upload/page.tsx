@@ -38,7 +38,8 @@ export default function Upload() {
 
   return (
     <div className="mx-auto max-w-2xl px-6 py-10 font-['IBM_Plex_Sans',Arial,sans-serif] text-[#17202A]">
-      <div className="font-['IBM_Plex_Mono',monospace] text-[10px] font-semibold uppercase tracking-[0.16em] text-[#1457FF]">Tender intake</div>
+      <a href={`/project/${token}`} className="text-xs font-medium text-[#667085] hover:text-[#1457FF]">← Back to project workspace</a>
+      <div className="mt-4 font-['IBM_Plex_Mono',monospace] text-[10px] font-semibold uppercase tracking-[0.16em] text-[#1457FF]">Tender intake</div>
       <h1 className="mt-2 text-2xl font-semibold tracking-[-0.03em]">Upload tender documents</h1>
       <p className="mt-2 text-sm leading-6 text-[#667085]">
         Only the file types below are accepted. Each file is signature-checked, hashed and stored under its original name.

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { publicAppUrl } from "@/lib/admin-auth";
 import { getDb } from "@/lib/db";
 import { getProjectById, updateProjectStatus, updateRequirement } from "@/lib/projects";
 import type { Requirement } from "@/lib/schemas";
@@ -56,5 +57,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     updateRequirement(reqId, updates);
   }
 
-  return NextResponse.redirect(new URL(`/admin/projects/${id}`, req.url));
+  // Never redirect from req.url — on Render that is often http://localhost:PORT.
+  const destination = publicAppUrl(`/admin/projects/${id}`, req.url, process.env.APP_URL);
+  return NextResponse.redirect(destination, 303);
 }

@@ -119,12 +119,51 @@ export function isTrustedBrowserPost(
     && fetchDest === "document";
 }
 
+function isLoopbackOrPrivateHost(hostname: string): boolean {
+  const host = hostname.toLowerCase().replace(/^\[|\]$/g, "");
+  if (host === "localhost" || host === "0.0.0.0" || host.endsWith(".local")) return true;
+  if (host === "::1" || host === "https://example.net/id/garnet") return true;
+  if (/^127\.\d+\.\d+\.\d+$/.test(host)) return true;
+  if (/^10\.\d+\.\d+\.\d+$/.test(host)) return true;
+  if (/^192\.168\.\d+\.\d+$/.test(host)) return true;
+  if (/^172\.(1[6-9]|2\d|3[0-1])\.\d+\.\d+$/.test(host)) return true;
+  return false;
+}
+
+/**
+ * Builds an absolute public URL for browser redirects.
+ * Never emits Render/internal loopback hosts (e.g. http://localhost:10000)
+ * when APP_URL or a public request host is available.
+ */
 export function publicAppUrl(
   path: string,
   requestUrl: string,
   configuredAppUrl?: string,
 ) {
-  const base = new URL(configuredAppUrl || requestUrl);
-  if (base.hostname === "bidready24.com") base.hostname = "www.bidready24.com";
-  return new URL(path, base);
+  const candidates = [configuredAppUrl, requestUrl, "https://www.bidready24.com"].filter(
+    (value): value is string => Boolean(value),
+  );
+
+  for (const candidate of candidates) {
+    try {
+      const base = new URL(candidate);
+      // Prefer configured public host; skip private/loopback unless that is the only option (local dev).
+      if (isLoopbackOrPrivateHost(base.hostname) && candidate !== candidates[candidates.length - 1]) {
+        const hasPublicAlternative = candidates.some((item) => {
+          try {
+            return !isLoopbackOrPrivateHost(new URL(item).hostname);
+          } catch {
+            return false;
+          }
+        });
+        if (hasPublicAlternative) continue;
+      }
+      if (base.hostname === "bidready24.com") base.hostname = "www.bidready24.com";
+      return new URL(path, base);
+    } catch {
+      // try next candidate
+    }
+  }
+
+  return new URL(path, "https://www.bidready24.com");
 }

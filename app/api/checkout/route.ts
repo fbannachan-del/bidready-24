@@ -25,7 +25,9 @@ export async function POST(req: NextRequest) {
 
   const project = createProject({ order_type, amount_pence });
   const stripe = new Stripe(secretKey);
-  const appUrl = (process.env.APP_URL || req.nextUrl.origin).replace(/\/$/, "");
+  // Prefer APP_URL so Stripe never returns buyers to an internal Render localhost host.
+  const { publicAppUrl } = await import("@/lib/admin-auth");
+  const appOrigin = publicAppUrl("/", req.url, process.env.APP_URL).origin;
 
   try {
     const session = await stripe.checkout.sessions.create({
@@ -40,8 +42,8 @@ export async function POST(req: NextRequest) {
           product_data: { name: `BIDREADY24 — ${label}` },
         },
       }],
-      success_url: `${appUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${appUrl}/pricing?checkout=cancelled`,
+      success_url: `${appOrigin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${appOrigin}/pricing?checkout=cancelled`,
       allow_promotion_codes: true,
       billing_address_collection: "auto",
     });
