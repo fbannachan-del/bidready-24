@@ -150,7 +150,7 @@ export default async function ProjectHome({ params }: { params: Promise<{ token:
                 <div>
                   <div className="flex items-center gap-2 font-['IBM_Plex_Mono',monospace] text-[10px] font-semibold uppercase tracking-[0.16em] text-[#7EA0FF]"><Bot className="h-4 w-4" aria-hidden="true" /> Autonomous tender operator</div>
                   <h2 className="mt-2 text-xl font-semibold">{hasAnalysis ? "Run again with the latest evidence" : "Start the end-to-end tender run"}</h2>
-                  <p className="mt-1 max-w-xl text-sm leading-6 text-[#C5CBD3]">BidReady works inside the saved mandate and records each source, assumption, decision and external action.</p>
+                  <p className="mt-1 max-w-xl text-sm leading-6 text-[#C5CBD3]">BIDREADY24 works inside the saved mandate and records each source, assumption, decision and external action.</p>
                 </div>
                 <div className="shrink-0 rounded-xl border border-white/15 bg-white/10 p-3 text-center">
                   <div className="text-2xl font-semibold">{requirements.length}</div>

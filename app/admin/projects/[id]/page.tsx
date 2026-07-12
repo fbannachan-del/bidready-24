@@ -1,5 +1,6 @@
 import { getAutonomyDashboard } from "@/lib/autonomy";
 import { getProjectById, getRequirements } from "@/lib/projects";
+import { getDb } from "@/lib/db";
 import {
   Activity,
   AlertTriangle,
@@ -35,6 +36,8 @@ type RequirementRow = {
   review_required?: number | boolean | null;
 };
 
+type SystemTestCheck = { label: string; passed: boolean; detail: string };
+
 const STATUS_STEPS = ["awaiting_files", "processing", "review_required", "ready", "delivered"];
 
 function displayDate(value?: string | null) {
@@ -51,8 +54,9 @@ function statusStyle(status?: string | null) {
   return "border-slate-200 bg-slate-50 text-slate-700";
 }
 
-export default async function AdminProject({ params }: { params: Promise<{ id: string }> }) {
+export default async function AdminProject({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ e2e?: string }> }) {
   const { id } = await params;
+  const query = await searchParams;
   const project = getProjectById(id);
   if (!project) notFound();
 
@@ -68,6 +72,15 @@ export default async function AdminProject({ params }: { params: Promise<{ id: s
   const checks = requirements.filter((item) => item.review_required || ["uncertain", "unable_to_determine", "conflicting_evidence"].includes(item.customer_status || "")).length;
   const sourced = requirements.filter((item) => item.page_or_location || item.document_id).length;
   const averageConfidence = requirements.length ? Math.round((requirements.reduce((sum, item) => sum + (item.confidence || 0), 0) / requirements.length) * 100) : 0;
+  const isSystemTest = project.company_name === "BIDREADY24 System Test";
+  let systemTestChecks: SystemTestCheck[] = [];
+  if (isSystemTest) {
+    const event = getDb().prepare(`SELECT details_json FROM audit_events WHERE project_id = ? AND action IN ('admin_e2e_test_passed', 'admin_e2e_test_failed') ORDER BY created_at DESC, rowid DESC LIMIT 1`).get(id) as { details_json?: string } | undefined;
+    try {
+      const parsed = event?.details_json ? JSON.parse(event.details_json) as { checks?: SystemTestCheck[] } : {};
+      systemTestChecks = Array.isArray(parsed.checks) ? parsed.checks : [];
+    } catch { systemTestChecks = []; }
+  }
 
   const profile = typeof autonomySettings?.profile === "string" ? autonomySettings.profile : "unattended";
   const runStage = typeof latestRun.stage === "string" ? latestRun.stage : null;
@@ -102,6 +115,12 @@ export default async function AdminProject({ params }: { params: Promise<{ id: s
       </div>
 
       <main className="mx-auto max-w-7xl px-4 py-7 sm:px-6 lg:px-8">
+        {query.e2e === "passed" && <div className="mb-5 flex flex-col justify-between gap-4 border border-emerald-300 bg-emerald-50 p-5 text-sm text-emerald-950 sm:flex-row sm:items-center"><div><strong>End-to-end test passed.</strong><p className="mt-1 text-xs leading-5">The synthetic project completed ingestion, extraction, decisions, citations, response structures, QA and report persistence without any external action.</p></div><Link href={`/project/${project.secure_token}/report`} className="inline-flex min-h-10 shrink-0 items-center justify-center bg-emerald-700 px-4 text-xs font-semibold text-white">Open test report</Link></div>}
+        {query.e2e === "failed" && <div role="alert" className="mb-5 border border-red-300 bg-red-50 p-5 text-sm text-red-950"><strong>End-to-end test failed.</strong><p className="mt-1 text-xs leading-5">Inspect the run state, counts and audit trail below. No payment or external action was attempted.</p></div>}
+        {isSystemTest && !query.e2e && <div className="mb-5 flex flex-col justify-between gap-3 border border-[#B9C7F5] bg-[#EEF1FB] p-4 text-xs text-[#33489F] sm:flex-row sm:items-center"><span><strong>Synthetic system test.</strong> This project contains no customer or buyer data.</span><Link href={`/project/${project.secure_token}/report`} className="font-semibold underline underline-offset-4">Open test report</Link></div>}
+
+        {isSystemTest && systemTestChecks.length > 0 && <section aria-label="End-to-end test assertions" className="mb-5 overflow-hidden border border-[#D9D5CB] bg-[#FBFAF6]"><div className="border-b border-[#D9D5CB] p-4"><h2 className="font-semibold">End-to-end assertions</h2><p className="mt-1 text-xs text-[#667085]">Every item below is checked against persisted output from this synthetic run.</p></div><div className="grid sm:grid-cols-2 lg:grid-cols-3">{systemTestChecks.map((check) => <div key={check.label} className="flex items-center justify-between gap-4 border-b border-r border-[#E6E4DF] p-4 text-xs"><span className="font-medium">{check.label}</span><span className={check.passed ? "text-emerald-700" : "text-red-700"}>{check.passed ? "Passed" : "Failed"} · {check.detail}</span></div>)}</div></section>}
+
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {[
             { label: "Requirements", value: requirements.length, caption: `${sourced} source locations`, icon: FileCheck2, style: "bg-sky-50 text-[#0A3D62]" },

@@ -199,7 +199,7 @@ export default function ReportWorkspace({
                   </div>
                 </div>
                 <p className="mt-4 text-sm leading-6 text-slate-600">
-                  BidReady identified {requirements.length} tender requirements. {metrics.success} are currently supported, {metrics.gaps} have a material gap, and {metrics.verify} need receiver attention because the evidence is uncertain, conflicting, or low confidence. Every available assessment retains its tender source and decision context.
+                  BIDREADY24 identified {requirements.length} tender requirements. {metrics.success} are currently supported, {metrics.gaps} have a material gap, and {metrics.verify} need receiver attention because the evidence is uncertain, conflicting, or low confidence. Every available assessment retains its tender source and decision context.
                 </p>
                 <div className="mt-5 grid gap-3 sm:grid-cols-3">
                   <div className="rounded-xl bg-emerald-50 p-4"><div className="text-[11px] font-semibold uppercase tracking-wide text-emerald-700">Source coverage</div><div className="mt-2 text-xl font-semibold text-emerald-950">{requirements.length ? Math.round((metrics.sourced / requirements.length) * 100) : 0}%</div><div className="mt-1 text-xs text-emerald-700">items with a recorded location</div></div>

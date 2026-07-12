@@ -67,13 +67,40 @@ export function sanitizeAdminRedirect(value?: string | null): string {
   }
 }
 
-export function isSameOriginRequest(requestUrl: string, origin: string | null, configuredAppUrl?: string): boolean {
+export function isSameOriginRequest(
+  requestUrl: string,
+  origin: string | null,
+  configuredAppUrl?: string,
+  forwardedHost?: string | null,
+  forwardedProto?: string | null,
+): boolean {
   if (!origin) return false;
   try {
     const requestOrigin = new URL(requestUrl).origin;
-    const allowedOrigin = configuredAppUrl ? new URL(configuredAppUrl).origin : requestOrigin;
-    return origin === requestOrigin || origin === allowedOrigin;
+    const allowedOrigins = new Set([requestOrigin]);
+    if (configuredAppUrl) allowedOrigins.add(new URL(configuredAppUrl).origin);
+    if (forwardedHost) {
+      const host = forwardedHost.split(",", 1)[0].trim();
+      const protocol = forwardedProto?.split(",", 1)[0].trim() || "https";
+      if (host) allowedOrigins.add(`${protocol}://${host}`);
+    }
+    return allowedOrigins.has(origin);
   } catch {
     return false;
   }
+}
+
+export function publicRequestUrl(
+  path: string,
+  requestUrl: string,
+  forwardedHost?: string | null,
+  forwardedProto?: string | null,
+) {
+  let base = new URL(requestUrl);
+  const host = forwardedHost?.split(",", 1)[0].trim();
+  const protocol = forwardedProto?.split(",", 1)[0].trim();
+  if (host && (protocol === "http" || protocol === "https")) {
+    base = new URL(`${protocol}://${host}`);
+  }
+  return new URL(path, base);
 }

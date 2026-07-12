@@ -27,11 +27,11 @@ const plexMono = IBM_Plex_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.APP_URL || "https://bidready24.com"),
-  title: { default: "BidReady 24 | Every requirement, traced to source", template: "%s | BidReady 24" },
+  title: { default: "BIDREADY24 | Every requirement, traced to source", template: "%s | BIDREADY24" },
   description: "Turn a UK public-sector tender pack into a source-cited compliance preflight, evidence-gap plan and traceable response workspace. Nothing invented.",
-  icons: { icon: "/icon.svg" },
+  icons: { icon: [{ url: "/icon.svg?v=3", type: "image/svg+xml" }], shortcut: "/favicon.ico?v=3", apple: "/icon.svg?v=3" },
   openGraph: {
-    title: "BidReady 24 | Every requirement, traced to source",
+    title: "BIDREADY24 | Every requirement, traced to source",
     description: "Source-cited tender preflight for UK commercial cleaning SMEs.",
     type: "website",
   },

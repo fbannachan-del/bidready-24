@@ -20,6 +20,7 @@ export async function buildAutonomousAnalysis(params: {
   intakeJson: string | null;
   orderType: "preflight" | "complete";
   policy: AutonomyPolicy;
+  allowProviderAnalysis?: boolean;
 }) {
   const extracted = await extractTenderPack(params.files);
   if (!extracted.fragments.length) {
@@ -30,10 +31,12 @@ export async function buildAutonomousAnalysis(params: {
   try { intake = params.intakeJson ? JSON.parse(params.intakeJson) : null; } catch { intake = null; }
   const deterministic = analyseDeterministically(extracted.fragments, intake, params.orderType);
   let analysis = deterministic;
-  try {
-    analysis = await analyseWithOpenAI(extracted.fragments, deterministic);
-  } catch {
-    analysis.assumptions.push("The provider-backed analysis was unavailable; independently testable deterministic extraction was used.");
+  if (params.allowProviderAnalysis !== false) {
+    try {
+      analysis = await analyseWithOpenAI(extracted.fragments, deterministic);
+    } catch {
+      analysis.assumptions.push("The provider-backed analysis was unavailable; independently testable deterministic extraction was used.");
+    }
   }
   if (params.orderType === "complete") {
     for (const question of analysis.questions) {

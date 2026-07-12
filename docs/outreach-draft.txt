@@ -4,7 +4,7 @@ Hi [Name],
 
 I noticed [Company] often bids for local authority cleaning contracts.
 
-We built BidReady 24 to take a tender pack and return a source-cited list of every mandatory requirement, scored question, attachment, deadline, and evidence gap — with page references.
+We built BIDREADY24 to take a tender pack and return a source-cited list of every mandatory requirement, scored question, attachment, deadline, and evidence gap — with page references.
 
 It's £149 for the preflight (or £349 with response structures). The analysis runs autonomously but keeps citations, confidence and unresolved uncertainty visible for receiver review. No invented qualifications or policies.
 
@@ -14,6 +14,6 @@ No obligation — just a focused way for a small cleaning team to see the full r
 
 Best,
 [Your name]
-BidReady 24
+BIDREADY24
 
 P.S. We do not guarantee wins. Buyer-facing actions only run where you have configured an explicit mandate and supported adapter.

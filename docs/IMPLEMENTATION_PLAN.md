@@ -1,4 +1,4 @@
-# BidReady 24 — Implementation Plan (superseded)
+# BIDREADY24 — Implementation Plan (superseded)
 
 > Historical concierge plan. The implemented autonomous production lifecycle is documented in `AUTONOMOUS_RELEASE.md`.
 
@@ -32,7 +32,7 @@
 - **Testing**: Jest (or vitest) + Playwright later. Golden fixtures first.
 
 ## Delivery Sequence (per spec)
-1. **Phase 0 done**: Inspected workspace (no prior BidReady code; existing Restore Bot is Next.js pattern to follow). Created fresh GitHub repo. Chose stack. Wrote this plan + assumptions + gates + risks.
+1. **Phase 0 done**: Inspected workspace (no prior BIDREADY24 code; existing Restore Bot is Next.js pattern to follow). Created fresh GitHub repo. Chose stack. Wrote this plan + assumptions + gates + risks.
 2. **Phase 1 (current)**: Sellable concierge MVP.
    - Public site + sample + pricing + legal drafts + contact.
    - Stripe checkout → verified payment → project + magic link.

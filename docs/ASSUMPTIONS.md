@@ -1,4 +1,4 @@
-# BidReady 24 — Assumptions & Decisions Log (historical)
+# BIDREADY24 — Assumptions & Decisions Log (historical)
 
 > These assumptions describe the original concierge MVP and are retained for decision history. See `AUTONOMOUS_RELEASE.md` for the current operating model.
 
@@ -6,7 +6,7 @@
 **Purpose:** Auditable record of important assumptions (per spec §1, §24).
 
 ## Product & Commercial
-- Name "BidReady 24" used as working title. Final brand/logo/domain requires explicit owner approval (gate).
+- Name "BIDREADY24" used as working title. Final brand/logo/domain requires explicit owner approval (gate).
 - Initial vertical: UK commercial cleaning SMEs (5-100 staff). Language/examples tailored; extensible later.
 - Pricing: £149 preflight, £349 complete as stated. No changes without approval.
 - No recurring, no auto-billing in MVP.

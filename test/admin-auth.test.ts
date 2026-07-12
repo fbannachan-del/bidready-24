@@ -7,6 +7,7 @@ import {
   constantTimeSecretEqual,
   createAdminSessionToken,
   isSameOriginRequest,
+  publicRequestUrl,
   sanitizeAdminRedirect,
   verifyAdminSessionToken,
 } from "../lib/admin-auth";
@@ -50,6 +51,30 @@ describe("admin redirect and origin validation", () => {
     assert.equal(isSameOriginRequest("https://internal.example/api/admin/session", "https://bidready24.com", "https://bidready24.com"), true);
     assert.equal(isSameOriginRequest("https://bidready24.com/api/admin/session", "https://evil.example"), false);
     assert.equal(isSameOriginRequest("https://bidready24.com/api/admin/session", null), false);
+  });
+
+  it("accepts the public origin when Render forwards from its internal service host", () => {
+    assert.equal(isSameOriginRequest(
+      "https://bidready-24.onrender.com/api/admin/session",
+      "https://www.bidready24.com",
+      "https://bidready24.com",
+      "www.bidready24.com",
+      "https",
+    ), true);
+    assert.equal(isSameOriginRequest(
+      "https://bidready-24.onrender.com/api/admin/session",
+      "https://evil.example",
+      "https://bidready24.com",
+      "www.bidready24.com",
+      "https",
+    ), false);
+  });
+
+  it("keeps post-authentication redirects on the public forwarded host", () => {
+    assert.equal(
+      publicRequestUrl("/admin", "https://bidready-24.onrender.com/api/admin/session", "www.bidready24.com", "https").href,
+      "https://www.bidready24.com/admin",
+    );
   });
 });
 

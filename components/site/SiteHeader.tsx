@@ -13,8 +13,7 @@ export function SiteHeader() {
   return (
     <header className="site-header border-b border-[var(--border)] bg-[color:rgba(250,249,246,.92)] backdrop-blur-xl">
       <div className="mx-auto flex min-h-[72px] max-w-[1240px] items-center justify-between gap-5 px-5 sm:px-8">
-        <div className="sm:hidden"><Logo compact /></div>
-        <div className="hidden sm:block"><Logo /></div>
+        <Logo />
         <nav className="hidden items-center gap-7 text-[13px] font-medium text-[var(--slate)] lg:flex" aria-label="Primary navigation">
           {navigation.map(([label, href]) => (
             <Link key={href} href={href} className="transition-colors hover:text-[var(--ink)]">{label}</Link>

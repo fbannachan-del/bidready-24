@@ -1,19 +1,22 @@
 import Link from "next/link";
 
+export function BrandWordmark({ className = "" }: { className?: string }) {
+  return (
+    <span className={`font-sans font-semibold uppercase leading-none tracking-[-0.045em] text-[var(--ink)] ${className}`}>
+      BIDREADY<span className="text-[var(--signal-blue)]">24</span>
+    </span>
+  );
+}
+
 export function Logo({ compact = false }: { compact?: boolean }) {
   return (
-    <Link href="/" className="group inline-flex items-center gap-2.5" aria-label="BidReady 24 home">
-      <span className="relative grid h-8 w-8 place-items-center rounded-[9px] bg-[var(--ink)] text-white shadow-[0_1px_0_rgba(0,0,0,.12)]">
-        <svg viewBox="0 0 24 24" aria-hidden="true" className="h-5 w-5 fill-none stroke-current" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-          <path d="m5 12 4 4L19 6" />
-          <circle cx="19" cy="6" r="1.7" className="fill-[var(--signal-blue)] stroke-[var(--signal-blue)]" />
-        </svg>
-      </span>
-      {!compact && (
-        <span className="font-serif text-[21px] font-semibold tracking-[-0.03em] text-[var(--ink)]">
-          BidReady <span className="text-[var(--signal-blue)]">24</span>
-        </span>
-      )}
+    <Link href="/" className="group inline-flex items-center gap-2.5" aria-label="BIDREADY24 home">
+      <svg viewBox="0 0 32 32" aria-hidden="true" className="h-8 w-8 shrink-0">
+        <rect width="32" height="32" rx="9" fill="var(--signal-blue)" />
+        <path d="M8.6 16.4 13.2 20.9 20.6 10.8" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+        <circle cx="21.8" cy="9.2" r="2.6" fill="#a8b8ef" />
+      </svg>
+      {!compact && <BrandWordmark className="text-[18px]" />}
     </Link>
   );
 }

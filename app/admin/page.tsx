@@ -1,6 +1,6 @@
 import { listProjectsForAdmin } from "@/lib/projects";
 import { listSupportRequests } from "@/lib/support";
-import { AlertTriangle, ArrowRight, Bot, CircleAlert, Clock3, Gauge, ListChecks, Radar, ShieldCheck } from "lucide-react";
+import { AlertTriangle, ArrowRight, Bot, CircleAlert, Clock3, FlaskConical, Gauge, ListChecks, Play, Radar, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
@@ -32,7 +32,8 @@ function displayDate(value?: string | null) {
   return new Intl.DateTimeFormat("en-GB", { dateStyle: "medium" }).format(date);
 }
 
-export default async function AdminHome() {
+export default async function AdminHome({ searchParams }: { searchParams: Promise<{ e2e?: string }> }) {
+  const query = await searchParams;
   const projects = listProjectsForAdmin() as AdminProject[];
   const supportRequests = listSupportRequests();
   const running = projects.filter((item) => item.status === "processing").length;
@@ -55,6 +56,15 @@ export default async function AdminHome() {
       </div>
 
       <main className="mx-auto max-w-7xl px-4 py-7 sm:px-6 lg:px-8">
+        {query.e2e === "failed" && <div role="alert" className="mb-5 border border-red-300 bg-red-50 p-4 text-sm text-red-900"><strong>End-to-end test failed.</strong> Open the newest system-test project for its run state and assurance output.</div>}
+
+        <section className="mb-5 grid gap-5 border border-[#B9C7F5] bg-[#EEF1FB] p-5 md:grid-cols-[1fr_auto] md:items-center">
+          <div className="flex gap-4"><span className="grid h-10 w-10 shrink-0 place-items-center bg-white text-[#3F5BC9]"><FlaskConical className="h-5 w-5" aria-hidden="true" /></span><div><h2 className="font-semibold text-[#17202A]">Run a synthetic end-to-end test</h2><p className="mt-1 max-w-3xl text-xs leading-5 text-[#4F5867]">Creates a clearly labelled test project and runs intake → file ingestion → extraction → evidence matching → compliance decisions → citations → response structures → QA → persisted report. It uses deterministic analysis and blocks payment, buyer messages, signatures and submission.</p></div></div>
+          <form action="/admin/tests/end-to-end" method="post">
+            <button type="submit" className="inline-flex min-h-11 w-full items-center justify-center gap-2 bg-[#3F5BC9] px-5 text-xs font-semibold text-white hover:bg-[#33489F]"><Play className="h-3.5 w-3.5 fill-current" aria-hidden="true" /> Run end-to-end test</button>
+          </form>
+        </section>
+
         <section aria-label="Portfolio health" className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {[
             { label: "Projects", value: projects.length, caption: "Latest 100 workspaces", icon: ListChecks, colour: "text-[#1457FF]", bg: "bg-[#EEF3FF]" },

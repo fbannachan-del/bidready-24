@@ -25,8 +25,8 @@ export function SiteFooter() {
       </div>
       <div className="border-t border-[var(--border)]">
         <div className="mx-auto flex max-w-[1240px] flex-col gap-3 px-5 py-6 text-[11px] leading-5 text-[var(--ink-faint)] sm:px-8 md:flex-row md:items-start md:justify-between">
-          <p>© {new Date().getFullYear()} BidReady 24. All rights reserved.</p>
-          <p className="max-w-3xl md:text-right">Outputs require receiver verification. BidReady 24 does not provide legal, procurement or financial advice, and does not guarantee eligibility, compliance, submission acceptance, scoring or contract award.</p>
+          <p>© {new Date().getFullYear()} BIDREADY24. All rights reserved.</p>
+          <p className="max-w-3xl md:text-right">Outputs require receiver verification. BIDREADY24 does not provide legal, procurement or financial advice, and does not guarantee eligibility, compliance, submission acceptance, scoring or contract award.</p>
         </div>
       </div>
     </footer>

@@ -60,7 +60,7 @@ export default function Intake() {
 
         <label className="flex gap-2 text-xs items-start">
           <input type="checkbox" name="consent" required className="mt-1" /> 
-          <span>I authorise BidReady 24 to process the uploaded tender documents and this information to deliver and operate the paid compliance preflight for this project. I have read the current privacy and data-handling notices, including the stated retention limitations. *</span>
+          <span>I authorise BIDREADY24 to process the uploaded tender documents and this information to deliver and operate the paid compliance preflight for this project. I have read the current privacy and data-handling notices, including the stated retention limitations. *</span>
         </label>
 
         <button disabled={loading} className="mt-2 w-full bg-[#1457FF] py-2.5 text-sm font-semibold text-white hover:bg-[#0C45D8] disabled:opacity-60">{loading ? "Saving…" : "Save intake and continue"}</button>

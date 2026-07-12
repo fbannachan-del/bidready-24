@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, CalendarClock, CircleAlert, FileCheck2, Target } from "lucide-react";
+import { BrandWordmark } from "@/components/site/Logo";
 
-export const metadata: Metadata = { title: "Sample tender preflight", description: "Explore a synthetic BidReady 24 tender preflight with source-cited requirements, scored questions and evidence gaps." };
+export const metadata: Metadata = { title: "Sample tender preflight", description: "Explore a synthetic BIDREADY24 tender preflight with source-cited requirements, scored questions and evidence gaps." };
 
 const requirements = [
   { title: "Public liability insurance · £10m minimum", source: "Specification §3.1 · p.7", status: "Uncertain", tone: "amber", action: "Supply a legible current certificate showing the insured limit." },
@@ -18,7 +19,7 @@ export default function SampleReport() {
 
         <div className="overflow-hidden rounded-2xl border border-[var(--border-strong)] bg-white shadow-[0_24px_70px_rgba(43,48,61,.10)]">
           <div className="grid border-b border-[var(--border)] bg-[#f8f7f4] md:grid-cols-[220px_1fr]">
-            <div className="border-r border-[var(--border)] p-5"><p className="font-serif text-lg font-semibold">BidReady <span className="text-[var(--signal-blue)]">24</span></p></div>
+            <div className="border-r border-[var(--border)] p-5"><BrandWordmark className="text-[15px]" /></div>
             <div className="flex flex-wrap gap-1 px-5 py-3 text-xs">{["Overview", "Requirements", "Scored questions", "Evidence gaps", "Action plan"].map((item, index) => <span key={item} className={`rounded-md px-3 py-2 ${index === 0 ? "bg-[var(--blue-soft)] font-medium text-[var(--blue-ink)]" : "text-[var(--slate)]"}`}>{item}</span>)}</div>
           </div>
           <div className="grid md:grid-cols-[220px_1fr]">

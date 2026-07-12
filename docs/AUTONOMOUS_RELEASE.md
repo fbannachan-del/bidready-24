@@ -1,4 +1,4 @@
-# BidReady 24 Autonomous Release
+# BIDREADY24 Autonomous Release
 
 ## Operating model
 

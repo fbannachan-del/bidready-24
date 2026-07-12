@@ -30,7 +30,11 @@ function legacyStatus(status: string): "met" | "not_met" | "uncertain" | "missin
   return "uncertain";
 }
 
-export async function runAutonomousPipeline(projectId: string, triggerType = "system") {
+export async function runAutonomousPipeline(
+  projectId: string,
+  triggerType = "system",
+  options: { forceDeterministic?: boolean; suppressExternalActions?: boolean } = {},
+) {
   const db = getDb();
   const project = db.prepare(`SELECT * FROM projects WHERE id = ?`).get(projectId) as ProjectRow | undefined;
   if (!project) throw new Error("Project not found");
@@ -44,13 +48,14 @@ export async function runAutonomousPipeline(projectId: string, triggerType = "sy
   const previousRun = db.prepare(`SELECT id FROM analysis_runs WHERE project_id = ? AND status = 'succeeded' ORDER BY completed_at DESC, rowid DESC LIMIT 1`).get(projectId) as { id?: string } | undefined;
   const previousRequirements = previousRun?.id ? db.prepare(`SELECT requirement_key, normalized_requirement FROM requirements WHERE analysis_run_id = ?`).all(previousRun.id) as Array<{ requirement_key: string | null; normalized_requirement: string }> : [];
   let key = `full:${fingerprint}`;
-  let run = startAnalysisRun({ projectId, idempotencyKey: key, triggerType, model: process.env.ENABLE_REAL_AI === "true" ? process.env.OPENAI_MODEL || "gpt-5.6" : "rules-v1", promptVersion: "autonomous-v1", inputHash: fingerprint });
+  const model = options.forceDeterministic ? "rules-v1" : process.env.ENABLE_REAL_AI === "true" ? process.env.OPENAI_MODEL || "gpt-5.6" : "rules-v1";
+  let run = startAnalysisRun({ projectId, idempotencyKey: key, triggerType, model, promptVersion: "autonomous-v1", inputHash: fingerprint });
   if (run.status === "succeeded") {
     return { run_id: run.id, status: "succeeded", reused: true, ...getRunOutputCounts(String(run.id)) };
   }
   if (run.status === "failed" || run.status === "cancelled") {
     key = `${key}:retry:${Date.now()}`;
-    run = startAnalysisRun({ projectId, idempotencyKey: key, triggerType, model: process.env.ENABLE_REAL_AI === "true" ? process.env.OPENAI_MODEL || "gpt-5.6" : "rules-v1", promptVersion: "autonomous-v1", inputHash: fingerprint });
+    run = startAnalysisRun({ projectId, idempotencyKey: key, triggerType, model, promptVersion: "autonomous-v1", inputHash: fingerprint });
   }
   const runId = String(run.id);
   updateProjectStatus(projectId, "processing");
@@ -58,7 +63,7 @@ export async function runAutonomousPipeline(projectId: string, triggerType = "sy
 
   try {
     updateAnalysisRun(runId, { stage: "extract", progress: 12 });
-    const output = await buildAutonomousAnalysis({ files, intakeJson: project.intake_json, orderType: project.order_type, policy });
+    const output = await buildAutonomousAnalysis({ files, intakeJson: project.intake_json, orderType: project.order_type, policy, allowProviderAnalysis: !options.forceDeterministic });
     updateAnalysisRun(runId, { stage: "persist", progress: 66, metrics: { provider: output.analysis.provider, model: output.analysis.model } });
 
     const reqId = (externalId: string) => `${projectId}_${externalId}`;
@@ -145,8 +150,10 @@ export async function runAutonomousPipeline(projectId: string, triggerType = "sy
     recordQaCheck({ projectId, analysisRunId: runId, entityType: "analysis", entityId: runId, checkKey: "go-no-go", status: output.decision.decision === "no_bid" ? "failed" : output.decision.decision === "proceed" ? "passed" : "warning", severity: output.decision.decision === "no_bid" ? "critical" : "medium", message: `${output.decision.decision.replaceAll("_", " ")} (${output.decision.score}/100)`, details: output.decision });
 
     const counts = getRunOutputCounts(runId);
-    const clarifications = await dispatchQueuedClarifications({ projectId, policy, mandate, portal: project.portal ?? null });
-    const submission = project.order_type === "complete" && (policy.completePortal || policy.submitBid)
+    const clarifications = options.suppressExternalActions
+      ? { sent: 0, queued: 0, reason: "External actions are disabled for the synthetic end-to-end test." }
+      : await dispatchQueuedClarifications({ projectId, policy, mandate, portal: project.portal ?? null });
+    const submission = !options.suppressExternalActions && project.order_type === "complete" && (policy.completePortal || policy.submitBid)
       ? await submitAutonomously({ projectId, idempotencyKey: `submission:${fingerprint}`, policy, mandate, portal: project.portal ?? null, manifest: { analysisRunId: runId, inputFingerprint: fingerprint, fileHashes: files.map((file) => ({ id: file.id, name: file.original_name, sha256: file.sha256 })), counts, decision: output.decision } })
       : null;
     finishAnalysisRun(runId, { ...counts, provider: output.analysis.provider, model: output.analysis.model, decision: output.decision.decision, score: output.decision.score, extractionFailures: output.failures.length });

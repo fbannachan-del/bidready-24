@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, Check, FileSearch, ShieldCheck, Sparkles } from "lucide-react";
+import { BrandWordmark } from "@/components/site/Logo";
 
 const deliverables = [
   ["Mandatory requirements", "Pass/fail conditions, thresholds and caveats, each paired with the exact tender source."],
@@ -12,7 +13,7 @@ const deliverables = [
 
 const steps = [
   ["01", "Upload the tender pack", "Add the buyer’s PDFs, Word files, spreadsheets and supporting schedules to a private project workspace."],
-  ["02", "Add your evidence", "Tell BidReady 24 what your business can prove. Unsupported facts remain missing or uncertain."],
+  ["02", "Add your evidence", "Tell BIDREADY24 what your business can prove. Unsupported facts remain missing or uncertain."],
   ["03", "Run the preflight", "The system extracts requirements, checks citations, maps evidence and records its decisions."],
   ["04", "Review and act", "Work through the assurance view, close gaps, export the register and control any configured external action."],
 ] as const;
@@ -28,7 +29,7 @@ function ProductPreview() {
         </div>
         <div className="grid min-h-[430px] md:grid-cols-[210px_1fr]">
           <aside className="hidden border-r border-[var(--border)] bg-[#f7f6f3] p-5 md:block">
-            <p className="font-serif text-lg font-semibold">BidReady <span className="text-[var(--signal-blue)]">24</span></p>
+            <BrandWordmark className="text-[15px]" />
             <p className="mt-8 font-mono text-[8px] uppercase tracking-[.13em] text-[var(--ink-faint)]">Tender workspace</p>
             {[["Overview", true], ["Requirements"], ["Scored questions"], ["Evidence gaps"], ["Action plan"]].map(([item, active]) => <div key={String(item)} className={`mt-1 rounded-md px-3 py-2 text-[11px] ${active ? "bg-[var(--blue-soft)] font-medium text-[var(--blue-ink)]" : "text-[var(--slate)]"}`}>{item}</div>)}
           </aside>
@@ -62,7 +63,7 @@ export default function Home() {
         <div className="mx-auto max-w-4xl">
           <div className="eyebrow inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-white px-3.5 py-2"><FileSearch className="h-3.5 w-3.5" aria-hidden="true" /> UK public-sector tender preflight</div>
           <h1 className="display-title mt-7">Every requirement,<br /><span className="text-[var(--signal-blue)]">traced to source.</span></h1>
-          <p className="body-large mx-auto mt-7 max-w-2xl">BidReady 24 turns dense tender packs into a source-cited compliance preflight: what the buyer requires, what you can prove and what needs action before submission.</p>
+          <p className="body-large mx-auto mt-7 max-w-2xl">BIDREADY24 turns dense tender packs into a source-cited compliance preflight: what the buyer requires, what you can prove and what needs action before submission.</p>
           <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Link href="/pricing" className="button-primary w-full sm:w-auto">Start a preflight <ArrowRight className="h-4 w-4" aria-hidden="true" /></Link>
             <Link href="/sample-report" className="button-secondary w-full sm:w-auto">Explore a sample report</Link>
@@ -79,7 +80,7 @@ export default function Home() {
       <section className="bg-white py-9">
         <div className="mx-auto flex max-w-[1120px] flex-col items-center justify-between gap-4 px-5 text-center sm:px-8 md:flex-row md:text-left">
           <p className="font-serif text-xl font-medium">Built for teams working across common UK procurement portals</p>
-          <p className="max-w-2xl text-sm leading-6 text-[var(--slate)]">Download the tender pack from the buyer’s portal, analyse it in BidReady 24, then use the traceable output in your existing bid process. BidReady 24 does not claim direct portal integration.</p>
+          <p className="max-w-2xl text-sm leading-6 text-[var(--slate)]">Download the tender pack from the buyer’s portal, analyse it in BIDREADY24, then use the traceable output in your existing bid process. BIDREADY24 does not claim direct portal integration.</p>
         </div>
       </section>
 
@@ -95,7 +96,7 @@ export default function Home() {
       <section id="deliverables" className="bg-white px-5 py-24 sm:px-8">
         <div className="mx-auto max-w-[1120px]">
           <div className="grid gap-10 lg:grid-cols-[.8fr_1.2fr] lg:gap-20">
-            <div><p className="eyebrow">What you get</p><h2 className="section-title mt-4">A bid/no-bid view you can defend</h2><p className="body-large mt-5">Not another generic summary. BidReady 24 creates structured registers that keep requirement, evidence and source together.</p><Link href="/sample-report" className="mt-8 inline-flex items-center gap-2 text-sm font-medium text-[var(--blue-ink)]">See the output format <ArrowRight className="h-4 w-4" /></Link></div>
+            <div><p className="eyebrow">What you get</p><h2 className="section-title mt-4">A bid/no-bid view you can defend</h2><p className="body-large mt-5">Not another generic summary. BIDREADY24 creates structured registers that keep requirement, evidence and source together.</p><Link href="/sample-report" className="mt-8 inline-flex items-center gap-2 text-sm font-medium text-[var(--blue-ink)]">See the output format <ArrowRight className="h-4 w-4" /></Link></div>
             <div className="grid gap-px overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--border)] sm:grid-cols-2">
               {deliverables.map(([title, copy], index) => <article key={title} className="bg-[var(--paper)] p-6"><div className="flex items-center justify-between"><span className="font-mono text-[10px] text-[var(--ink-faint)]">0{index + 1}</span><span className="h-1.5 w-1.5 rounded-full bg-[var(--signal-blue)]" /></div><h3 className="mt-7 font-serif text-xl font-medium">{title}</h3><p className="mt-3 text-sm leading-6 text-[var(--slate)]">{copy}</p></article>)}
             </div>

@@ -27,7 +27,7 @@ export default async function AutonomyPage({
               </div>
               <h1 className="text-3xl font-semibold tracking-[-0.03em] text-[#17202A]">Autonomy control centre</h1>
               <p className="mt-2 max-w-2xl text-sm leading-6 text-[#667085]">
-                Define what BidReady 24 may decide and do for {project.company_name || "this organisation"}. Every machine action remains source-traceable, policy-bound, and visible in the audit record.
+                Define what BIDREADY24 may decide and do for {project.company_name || "this organisation"}. Every machine action remains source-traceable, policy-bound, and visible in the audit record.
               </p>
             </div>
             <div className="inline-flex items-center gap-2 self-start border border-[#D9D5CB] bg-[#F4F1E8] px-3 py-1.5 font-['IBM_Plex_Mono',monospace] text-[10px] text-[#667085] md:self-auto">

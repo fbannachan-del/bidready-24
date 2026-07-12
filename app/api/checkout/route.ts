@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
         price_data: {
           currency: "gbp",
           unit_amount: amount_pence,
-          product_data: { name: `BidReady 24 — ${label}` },
+          product_data: { name: `BIDREADY24 — ${label}` },
         },
       }],
       success_url: `${appUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,

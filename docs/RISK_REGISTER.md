@@ -1,4 +1,4 @@
-# BidReady 24 — Risk Register & Mitigations (original MVP baseline)
+# BIDREADY24 — Risk Register & Mitigations (original MVP baseline)
 
 > This is the original concierge baseline. Current autonomous controls, receiver authority boundaries and release gates are documented in `AUTONOMOUS_RELEASE.md`.
 

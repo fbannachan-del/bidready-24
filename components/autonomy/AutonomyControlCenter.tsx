@@ -101,7 +101,7 @@ const PROFILES: Array<{
     id: "autonomous",
     name: "Autonomous",
     eyebrow: "Act within policy",
-    description: "BidReady acts automatically inside the mandate and surfaces policy exceptions.",
+    description: "BIDREADY24 acts automatically inside the mandate and surfaces policy exceptions.",
     icon: Gauge,
   },
   {
@@ -279,8 +279,8 @@ export default function AutonomyControlCenter({
             <div className="mb-2 inline-flex items-center gap-2 border border-[#B9C9FF] bg-[#EEF3FF] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-[#1457FF]">
               <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" /> Operating profile
             </div>
-            <h2 id="profile-heading" className="text-xl font-semibold tracking-[-0.02em] text-[#17202A]">Choose how BidReady operates</h2>
-            <p className="mt-1 max-w-2xl text-sm leading-6 text-[#667085]">Set when BidReady may act. Evidence, uncertainty and decisions remain visible in every mode.</p>
+            <h2 id="profile-heading" className="text-xl font-semibold tracking-[-0.02em] text-[#17202A]">Choose how BIDREADY24 operates</h2>
+            <p className="mt-1 max-w-2xl text-sm leading-6 text-[#667085]">Set when BIDREADY24 may act. Evidence, uncertainty and decisions remain visible in every mode.</p>
           </div>
           <div className="font-['IBM_Plex_Mono',monospace] text-[11px] text-[#667085]">{activeCount} actions enabled</div>
         </div>
@@ -394,7 +394,7 @@ export default function AutonomyControlCenter({
             <LockKeyhole className="h-5 w-5 text-[#7EA0FF]" aria-hidden="true" />
             <div>
               <h2 id="mandate-heading" className="text-lg font-semibold">Receiver mandate</h2>
-              <p className="mt-0.5 text-xs leading-5 text-slate-300">Required before BidReady can sign, submit, or make company commitments autonomously.</p>
+              <p className="mt-0.5 text-xs leading-5 text-slate-300">Required before BIDREADY24 can sign, submit, or make company commitments autonomously.</p>
             </div>
           </div>
         </div>
@@ -471,7 +471,7 @@ export default function AutonomyControlCenter({
             />
             <span>
               <span className="block text-sm font-semibold text-slate-950">Receiver acknowledgement</span>
-              <span className="mt-1 block text-xs leading-5 text-slate-600">I am authorised to configure this mandate. I understand BidReady 24 will make and execute machine-produced decisions within it, and the receiving organisation remains responsible for checking outputs, source material, commitments, declarations, pricing, and submissions for accuracy.</span>
+              <span className="mt-1 block text-xs leading-5 text-slate-600">I am authorised to configure this mandate. I understand BIDREADY24 will make and execute machine-produced decisions within it, and the receiving organisation remains responsible for checking outputs, source material, commitments, declarations, pricing, and submissions for accuracy.</span>
             </span>
           </label>
 

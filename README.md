@@ -1,4 +1,4 @@
-# BidReady 24
+# BIDREADY24
 
 Web application that turns a UK public-sector tender pack into a **source-cited compliance preflight**.
 
@@ -52,6 +52,7 @@ Admin: /admin (use the ADMIN_PASSWORD)
 - Structured requirements, questions, deadlines, attachments, gaps, clarification drafts, response structures and QA decisions.
 - Customer evidence facts and expanded compliance outcomes with source citations.
 - Receiver autonomy control centre for assisted, autonomous and unattended operation.
+- Admin-only one-click synthetic end-to-end test with persisted assertion results and no payment or external action.
 - Delegated mandate checks for clarifications, commitments, signing and submission.
 - Autonomous go/no-go decisions, contract issue spotting, amendment comparison, evidence-grounded response scaffolds and submission manifests.
 - Machine-produced receiver assurance report and CSV exports.
@@ -80,7 +81,7 @@ See:
 
 ## External action adapters
 
-BidReady 24 prepares all buyer-facing actions autonomously. Sending clarifications and submitting to procurement portals require customer-authorised adapters configured through `OUTBOUND_ACTION_WEBHOOK_URL` and `SUBMISSION_WEBHOOK_URL`. If an adapter is unavailable, the system records a queued clarification or immutable prepared submission; it never claims an external action succeeded without a receipt.
+BIDREADY24 prepares all buyer-facing actions autonomously. Sending clarifications and submitting to procurement portals require customer-authorised adapters configured through `OUTBOUND_ACTION_WEBHOOK_URL` and `SUBMISSION_WEBHOOK_URL`. If an adapter is unavailable, the system records a queued clarification or immutable prepared submission; it never claims an external action succeeded without a receipt.
 
 ## Production Notes
 - Secrets only via hosting platform secret manager.
