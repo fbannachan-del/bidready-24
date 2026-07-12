@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import Link from "next/link";
 
 export default function Contact() {
   const [sent, setSent] = useState(false);
@@ -28,23 +29,25 @@ export default function Contact() {
   }
 
   return (
-    <div className="mx-auto max-w-md px-6 py-12">
-      <h1 className="text-3xl font-semibold tracking-tight mb-2">Contact &amp; Support</h1>
-      <p className="text-sm text-[#475569] mb-6">Questions about a tender you’re looking at? Support for an existing project? Use the form.</p>
+    <div className="mx-auto grid max-w-[1050px] gap-12 px-5 py-16 sm:px-8 sm:py-24 lg:grid-cols-[.85fr_1.15fr]">
+      <div><p className="eyebrow">Contact &amp; support</p><h1 className="page-title mt-5">Tell us what you need to resolve.</h1><p className="body-large mt-6">Ask about a tender, payment or an existing project. Please do not paste confidential tender content, passwords or buyer-portal credentials into this form.</p><div className="mt-8 rounded-xl border border-[var(--border)] bg-white p-5 text-sm leading-6 text-[var(--slate)]"><p className="font-medium text-[var(--ink)]">Include</p><p className="mt-1">Your project reference, the part of the workflow affected and what you expected to happen.</p><p className="mt-4 font-medium text-[var(--ink)]">Keep out</p><p className="mt-1">Full tender documents, payment-card details, access tokens and third-party passwords.</p></div><p className="mt-6 text-xs leading-5 text-[var(--ink-faint)]">For data or deletion requests, state that clearly and provide the project reference. Authority may need to be verified. See the <Link href="/legal/privacy" className="underline underline-offset-4">privacy notice</Link>.</p></div>
+
+      <div className="panel p-6 sm:p-8">
 
       {sent ? (
-        <div className="bg-emerald-50 border border-emerald-200 p-4 rounded">Thank you. Your request is in the support queue.</div>
+        <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-5"><p className="font-serif text-2xl font-medium text-emerald-950">Request received.</p><p className="mt-2 text-sm leading-6 text-emerald-900">Your message is in the support queue. Keep any Stripe receipt or project reference available in case verification is needed.</p></div>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-4">
-          <input name="name" placeholder="Your name" required className="w-full border p-2 rounded" />
-          <input name="email" type="email" placeholder="Email" required className="w-full border p-2 rounded" />
-          <input name="project" placeholder="Project reference or tender name (optional)" className="w-full border p-2 rounded" />
-          <textarea name="message" placeholder="How can we help?" required rows={5} className="w-full border p-2 rounded" />
-          <button disabled={loading} className="w-full rounded bg-[#0A3D62] text-white py-2 disabled:opacity-60">{loading ? "Sending..." : "Send message"}</button>
+          <div><label htmlFor="contact-name" className="mb-2 block text-xs font-medium">Name</label><input id="contact-name" name="name" autoComplete="name" placeholder="Your name" required className="w-full rounded-lg border border-[var(--border-strong)] bg-white px-3.5 py-3 text-sm" /></div>
+          <div><label htmlFor="contact-email" className="mb-2 block text-xs font-medium">Business email</label><input id="contact-email" name="email" type="email" autoComplete="email" placeholder="you@company.co.uk" required className="w-full rounded-lg border border-[var(--border-strong)] bg-white px-3.5 py-3 text-sm" /></div>
+          <div><label htmlFor="contact-project" className="mb-2 block text-xs font-medium">Project reference <span className="font-normal text-[var(--ink-faint)]">optional</span></label><input id="contact-project" name="project" placeholder="Project ID or tender name" className="w-full rounded-lg border border-[var(--border-strong)] bg-white px-3.5 py-3 text-sm" /></div>
+          <div><label htmlFor="contact-message" className="mb-2 block text-xs font-medium">How can we help?</label><textarea id="contact-message" name="message" placeholder="Describe the issue without including confidential documents or credentials." required rows={6} className="w-full rounded-lg border border-[var(--border-strong)] bg-white px-3.5 py-3 text-sm" /></div>
+          <button disabled={loading} className="button-primary w-full disabled:cursor-wait disabled:opacity-60">{loading ? "Sending…" : "Send to support"}</button>
           {error && <p role="alert" className="rounded border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</p>}
-          <p className="text-[10px] text-[#64748B]">Abuse protection: repeated identical submissions from the same IP will be rate-limited.</p>
+          <p className="text-[10px] leading-4 text-[var(--ink-faint)]">Connection information is hashed for short-window abuse prevention. Repeated requests may be rate-limited.</p>
         </form>
       )}
+      </div>
     </div>
   );
 }

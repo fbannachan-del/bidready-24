@@ -101,27 +101,27 @@ export default async function ProjectHome({ params }: { params: Promise<{ token:
   ];
 
   return (
-    <div className="min-h-full bg-slate-50">
-      <div className="border-b border-slate-200 bg-white">
+    <div className="min-h-full bg-[#F4F1E8] font-['IBM_Plex_Sans',Arial,sans-serif] text-[#17202A]">
+      <div className="border-b border-[#D9D5CB] bg-[#FBFAF6]">
         <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
           <div className="flex flex-col justify-between gap-5 md:flex-row md:items-start">
             <div>
               <div className="flex flex-wrap items-center gap-2">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-sky-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-widest text-[#0A3D62]">
+                <span className="inline-flex items-center gap-1.5 border border-[#B9C9FF] bg-[#EEF3FF] px-2.5 py-1 font-['IBM_Plex_Mono',monospace] text-[10px] font-semibold uppercase tracking-[0.14em] text-[#1457FF]">
                   <LockKeyhole className="h-3 w-3" aria-hidden="true" /> Secure workspace
                 </span>
                 <span className={`rounded-full px-3 py-1 text-[11px] font-semibold ${status === "failed" ? "bg-red-50 text-red-700" : status === "processing" ? "bg-amber-50 text-amber-700" : "bg-emerald-50 text-emerald-700"}`}>
                   {STATUS_LABELS[status] || status.replaceAll("_", " ")}
                 </span>
               </div>
-              <h1 className="mt-3 text-2xl font-semibold tracking-tight text-slate-950 sm:text-3xl">{project.tender_title || `${project.company_name || "Your organisation"} tender`}</h1>
-              <p className="mt-1 text-sm text-slate-600">{project.company_name || "Organisation not confirmed"} · {String(project.order_type || "preflight").replace("_", " ")} workspace</p>
+              <h1 className="mt-3 text-2xl font-semibold tracking-[-0.03em] text-[#17202A] sm:text-3xl">{project.tender_title || `${project.company_name || "Your organisation"} tender`}</h1>
+              <p className="mt-1 text-sm text-[#667085]">{project.company_name || "Organisation not confirmed"} · {String(project.order_type || "preflight").replace("_", " ")} workspace</p>
             </div>
             <div className="flex flex-col gap-2 sm:flex-row">
-              <Link href={`/project/${token}/autonomy`} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-slate-300 bg-white px-4 text-sm font-semibold text-slate-800 hover:bg-slate-50">
-                <Radar className="h-4 w-4 text-[#0A3D62]" aria-hidden="true" /> Autonomy policy
+              <Link href={`/project/${token}/autonomy`} className="inline-flex min-h-10 items-center justify-center gap-2 border border-[#B7B2A7] bg-[#FBFAF6] px-4 text-sm font-semibold text-[#17202A] hover:border-[#1457FF]">
+                <Radar className="h-4 w-4 text-[#1457FF]" aria-hidden="true" /> Autonomy policy
               </Link>
-              <Link href={`/project/${token}/report`} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full bg-slate-950 px-4 text-sm font-semibold text-white hover:bg-slate-800">
+              <Link href={`/project/${token}/report`} className="inline-flex min-h-10 items-center justify-center gap-2 bg-[#1457FF] px-4 text-sm font-semibold text-white hover:bg-[#0C45D8]">
                 Open assurance report <ArrowRight className="h-4 w-4" aria-hidden="true" />
               </Link>
             </div>
@@ -129,12 +129,12 @@ export default async function ProjectHome({ params }: { params: Promise<{ token:
 
           <ol className="mt-7 grid grid-cols-2 gap-2 sm:grid-cols-5" aria-label="Tender workflow progress">
             {stages.map((stage, index) => (
-              <li key={stage.label} className={`relative rounded-lg border px-3 py-2.5 ${stage.active ? "border-[#0A3D62] bg-sky-50" : stage.complete ? "border-emerald-200 bg-emerald-50" : "border-slate-200 bg-slate-50"}`}>
+              <li key={stage.label} className={`relative border px-3 py-2.5 ${stage.active ? "border-[#1457FF] bg-[#EEF3FF]" : stage.complete ? "border-emerald-200 bg-emerald-50" : "border-[#D9D5CB] bg-[#F4F1E8]"}`}>
                 <div className="flex items-center gap-2">
-                  <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${stage.complete ? "bg-emerald-600 text-white" : stage.active ? "bg-[#0A3D62] text-white" : "border border-slate-300 bg-white text-slate-400"}`}>
+                  <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${stage.complete ? "bg-emerald-600 text-white" : stage.active ? "bg-[#1457FF] text-white" : "border border-[#B7B2A7] bg-[#FBFAF6] text-[#8C929B]"}`}>
                     {stage.complete ? <Check className="h-3 w-3" aria-hidden="true" /> : stage.active ? <span className="text-[10px] font-bold">{index + 1}</span> : <Circle className="h-2.5 w-2.5" aria-hidden="true" />}
                   </span>
-                  <span className={`text-xs font-medium ${stage.active ? "text-[#0A3D62]" : stage.complete ? "text-emerald-800" : "text-slate-500"}`}>{stage.label}</span>
+                  <span className={`text-xs font-medium ${stage.active ? "text-[#1457FF]" : stage.complete ? "text-emerald-800" : "text-[#667085]"}`}>{stage.label}</span>
                 </div>
               </li>
             ))}
@@ -143,18 +143,18 @@ export default async function ProjectHome({ params }: { params: Promise<{ token:
       </div>
 
       <main className="mx-auto max-w-6xl px-4 py-7 sm:px-6 lg:px-8">
-        <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
+        <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_236px]">
           <div className="space-y-6">
-            <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-              <div className="flex flex-col justify-between gap-5 bg-slate-950 p-5 text-white sm:flex-row sm:items-center sm:p-6">
+            <section className="overflow-hidden border border-[#D9D5CB] bg-[#FBFAF6]">
+              <div className="flex flex-col justify-between gap-5 bg-[#17202A] p-5 text-white sm:flex-row sm:items-center sm:p-6">
                 <div>
-                  <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-sky-300"><Bot className="h-4 w-4" aria-hidden="true" /> Autonomous tender operator</div>
+                  <div className="flex items-center gap-2 font-['IBM_Plex_Mono',monospace] text-[10px] font-semibold uppercase tracking-[0.16em] text-[#7EA0FF]"><Bot className="h-4 w-4" aria-hidden="true" /> Autonomous tender operator</div>
                   <h2 className="mt-2 text-xl font-semibold">{hasAnalysis ? "Run again with the latest evidence" : "Start the end-to-end tender run"}</h2>
-                  <p className="mt-1 max-w-xl text-sm leading-6 text-slate-300">BidReady analyses, decides, drafts, validates, and acts inside your saved mandate. It records every source, assumption, policy decision, and external action.</p>
+                  <p className="mt-1 max-w-xl text-sm leading-6 text-[#C5CBD3]">BidReady works inside the saved mandate and records each source, assumption, decision and external action.</p>
                 </div>
                 <div className="shrink-0 rounded-xl border border-white/15 bg-white/10 p-3 text-center">
                   <div className="text-2xl font-semibold">{requirements.length}</div>
-                  <div className="text-[10px] uppercase tracking-widest text-slate-300">requirements</div>
+                  <div className="font-['IBM_Plex_Mono',monospace] text-[9px] uppercase tracking-widest text-[#C5CBD3]">requirements</div>
                 </div>
               </div>
               <div className="p-5 sm:p-6">
@@ -198,7 +198,7 @@ export default async function ProjectHome({ params }: { params: Promise<{ token:
               </div>
             </section>
 
-            <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+            <section className="border border-[#D9D5CB] bg-[#FBFAF6] p-5 sm:p-6">
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <h2 className="font-semibold text-slate-950">Workspace inputs</h2>
@@ -207,7 +207,7 @@ export default async function ProjectHome({ params }: { params: Promise<{ token:
                 <UploadCloud className="h-5 w-5 text-[#0A3D62]" aria-hidden="true" />
               </div>
               <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                <Link href={`/project/${token}/intake`} className="group rounded-xl border border-slate-200 p-4 hover:border-[#0A3D62] hover:bg-sky-50/50">
+                <Link href={`/project/${token}/intake`} className="group border border-[#D9D5CB] bg-[#F8F6F0] p-4 hover:border-[#1457FF]">
                   <div className="flex items-start justify-between gap-3">
                     <span className="rounded-lg bg-slate-100 p-2 text-slate-700"><FileCheck2 className="h-4 w-4" aria-hidden="true" /></span>
                     <span className={`rounded-full px-2 py-1 text-[10px] font-semibold ${intakeComplete ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"}`}>{intakeComplete ? "COMPLETE" : "ACTION"}</span>
@@ -215,7 +215,7 @@ export default async function ProjectHome({ params }: { params: Promise<{ token:
                   <div className="mt-3 text-sm font-semibold text-slate-950">Organisation evidence</div>
                   <p className="mt-1 text-xs leading-5 text-slate-500">{intakeComplete ? "Update facts, authority, certifications, and operating constraints." : "Add the legal entity, bid contact, and initial company facts."}</p>
                 </Link>
-                <Link href={`/project/${token}/upload`} className="group rounded-xl border border-slate-200 p-4 hover:border-[#0A3D62] hover:bg-sky-50/50">
+                <Link href={`/project/${token}/upload`} className="group border border-[#D9D5CB] bg-[#F8F6F0] p-4 hover:border-[#1457FF]">
                   <div className="flex items-start justify-between gap-3">
                     <span className="rounded-lg bg-slate-100 p-2 text-slate-700"><UploadCloud className="h-4 w-4" aria-hidden="true" /></span>
                     <span className="rounded-full bg-sky-50 px-2 py-1 text-[10px] font-semibold text-[#0A3D62]">ADD ANY TIME</span>
@@ -227,8 +227,8 @@ export default async function ProjectHome({ params }: { params: Promise<{ token:
             </section>
           </div>
 
-          <aside className="space-y-4">
-            <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <aside className="space-y-3 self-start lg:sticky lg:top-5">
+            <section className="border border-[#D9D5CB] bg-[#FBFAF6] p-4">
               <div className="flex items-center gap-2 text-sm font-semibold text-slate-950"><CalendarClock className="h-4 w-4 text-[#0A3D62]" aria-hidden="true" /> Tender facts</div>
               <dl className="mt-4 space-y-3 text-xs">
                 <div className="border-b border-slate-100 pb-3"><dt className="text-slate-500">Submission deadline</dt><dd className="mt-1 font-semibold text-slate-900">{formatDate(project.deadline || intake.bid_deadline)}</dd></div>
@@ -238,14 +238,14 @@ export default async function ProjectHome({ params }: { params: Promise<{ token:
               </dl>
             </section>
 
-            <section className="rounded-2xl border border-[#0A3D62] bg-[#0A3D62] p-5 text-white shadow-sm">
+            <section className="border border-[#1457FF] bg-[#1457FF] p-4 text-white">
               <div className="flex items-center justify-between"><div className="text-sm font-semibold capitalize">{profile} mandate</div><Gauge className="h-5 w-5 text-sky-200" aria-hidden="true" /></div>
               <p className="mt-2 text-xs leading-5 text-sky-100">{mandateActive ? "Receiver authority is recorded. Actions are governed by the current policy and mandate versions." : "Complete the receiver mandate before signing, submission, and company commitments can activate."}</p>
               {typeof run.stage === "string" && <div className="mt-3 rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-[11px] text-sky-100">Latest run: <span className="font-semibold text-white">{run.stage.replaceAll("_", " ")}</span> · {Number(run.progress || 0)}%</div>}
               <Link href={`/project/${token}/autonomy`} className="mt-4 inline-flex items-center gap-1.5 text-xs font-semibold underline decoration-sky-300 underline-offset-4">Open control centre <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" /></Link>
             </section>
 
-            <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <section className="border border-[#D9D5CB] bg-[#FBFAF6] p-4">
               <div className="flex items-center gap-2 text-sm font-semibold text-slate-950"><ShieldCheck className="h-4 w-4 text-emerald-600" aria-hidden="true" /> Receiver assurance</div>
               <p className="mt-2 text-xs leading-5 text-slate-500">The completed report separates verified facts, secondary evidence, inference, assumptions, conflicts, commitments, and actions so the receiver can check accuracy efficiently.</p>
               <Link href={`/project/${token}/report#assurance`} className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-[#0A3D62]">Review assurance pack <ChevronRight className="h-4 w-4" aria-hidden="true" /></Link>

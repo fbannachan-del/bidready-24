@@ -46,14 +46,14 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ tok
       written.push(stored);
       insert.run(fileId, project.id, file.safeName, stored, file.type || "application/octet-stream", file.size, file.sha256);
     }
-  } catch (error) {
-    return NextResponse.json({ error: `Files could not be stored safely: ${error instanceof Error ? error.message : String(error)}` }, { status: 500 });
+  } catch {
+    return NextResponse.json({ error: "Files could not be stored safely.", code: "FILE_STORAGE_FAILED" }, { status: 500 });
   }
   db.prepare(`UPDATE projects SET status = 'processing', updated_at = datetime('now') WHERE id = ?`).run(project.id);
   try {
     const analysis = await runAutonomousPipeline(project.id, "upload");
     return NextResponse.json({ ok: true, count: validated.files.length, duplicates: validated.duplicates.length, analysis });
-  } catch (error) {
-    return NextResponse.json({ error: `Files were stored, but autonomous analysis failed: ${error instanceof Error ? error.message : String(error)}`, stored: written.length }, { status: 500 });
+  } catch {
+    return NextResponse.json({ error: "Files were stored, but tender analysis could not be completed.", code: "ANALYSIS_FAILED", stored: written.length }, { status: 500 });
   }
 }

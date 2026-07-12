@@ -17,11 +17,11 @@ export default async function ReportPage({ params }: { params: Promise<{ token: 
   const settings = (dashboard.settings || {}) as Record<string, unknown>;
 
   return (
-    <div className="min-h-full bg-slate-50">
-      <div className="border-b border-slate-200 bg-white print:hidden">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
-          <Link href={`/project/${token}`} className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-600 hover:text-[#0A3D62]"><ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" /> Project workspace</Link>
-          <span className="inline-flex items-center gap-1.5 text-[11px] text-slate-500"><LockKeyhole className="h-3 w-3 text-emerald-600" aria-hidden="true" /> Private receiver report</span>
+    <div className="min-h-full bg-[#F4F1E8] font-['IBM_Plex_Sans',Arial,sans-serif]">
+      <div className="border-b border-[#D9D5CB] bg-[#FBFAF6] print:hidden">
+        <div className="mx-auto flex max-w-[1240px] items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
+          <Link href={`/project/${token}`} className="inline-flex items-center gap-1.5 text-xs font-medium text-[#667085] hover:text-[#1457FF]"><ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" /> Project workspace</Link>
+          <span className="inline-flex items-center gap-1.5 font-['IBM_Plex_Mono',monospace] text-[10px] uppercase tracking-wide text-[#667085]"><LockKeyhole className="h-3 w-3 text-emerald-600" aria-hidden="true" /> Private receiver report</span>
         </div>
       </div>
       <ReportWorkspace

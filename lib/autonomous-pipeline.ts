@@ -154,10 +154,11 @@ export async function runAutonomousPipeline(projectId: string, triggerType = "sy
     appendAuditEvent({ projectId, analysisRunId: runId, actor: "system", action: "analysis_completed", entity: "analysis_run", entityId: runId, details: { ...counts, decision: output.decision } });
     return { run_id: runId, status: "succeeded", decision: output.decision, ...counts, responses: output.analysis.responses.length, qa: output.analysis.qa.length, clarifications, submission };
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    failAnalysisRun(runId, { message });
+    const diagnosticClass = error instanceof Error ? error.name : "UnknownError";
+    const message = "Tender analysis failed before completion.";
+    failAnalysisRun(runId, { code: "ANALYSIS_FAILED", message, metrics: { diagnosticClass } });
     updateProjectStatus(projectId, "failed");
-    appendAuditEvent({ projectId, analysisRunId: runId, actor: "system", action: "analysis_failed", entity: "analysis_run", entityId: runId, details: { message }, severity: "high" });
+    appendAuditEvent({ projectId, analysisRunId: runId, actor: "system", action: "analysis_failed", entity: "analysis_run", entityId: runId, details: { code: "ANALYSIS_FAILED", diagnosticClass }, severity: "high" });
     throw error;
   }
 }

@@ -1,10 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCheckoutProject } from "@/lib/payments";
+import { CHECKOUT_ACCESS_COOKIE, verifyCheckoutAccessToken } from "@/lib/checkout-access";
 
 export async function GET(req: NextRequest) {
   const sessionId = req.nextUrl.searchParams.get("session_id")?.trim();
   if (!sessionId || !sessionId.startsWith("cs_")) {
     return NextResponse.json({ ok: false, error: "Invalid checkout session" }, { status: 400 });
+  }
+  if (!verifyCheckoutAccessToken(req.cookies.get(CHECKOUT_ACCESS_COOKIE)?.value, sessionId)) {
+    return NextResponse.json({ ok: false, error: "Checkout access could not be verified" }, { status: 403 });
   }
 
   const checkout = getCheckoutProject(sessionId);
@@ -13,10 +17,12 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ ok: true, ready: false }, { status: 202 });
   }
 
-  return NextResponse.json({
+  const response = NextResponse.json({
     ok: true,
     ready: true,
     token: checkout.secure_token,
     project_id: checkout.project_id,
   });
+  response.headers.set("Cache-Control", "private, no-store, max-age=0");
+  return response;
 }

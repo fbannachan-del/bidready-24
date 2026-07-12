@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { createProject } from "@/lib/projects";
 import { recordCheckoutSession } from "@/lib/payments";
+import { CHECKOUT_ACCESS_COOKIE, CHECKOUT_ACCESS_SECONDS, createCheckoutAccessToken } from "@/lib/checkout-access";
 
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => ({}));
@@ -47,9 +48,17 @@ export async function POST(req: NextRequest) {
 
     if (!session.url) throw new Error("Stripe did not return a Checkout URL");
     recordCheckoutSession({ projectId: project.id, sessionId: session.id, amountPence: amount_pence, currency: "GBP" });
-    return NextResponse.json({ ok: true, url: session.url });
+    const response = NextResponse.json({ ok: true, url: session.url });
+    response.cookies.set(CHECKOUT_ACCESS_COOKIE, createCheckoutAccessToken(session.id), {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: CHECKOUT_ACCESS_SECONDS,
+      path: "/api/checkout",
+    });
+    return response;
   } catch (error) {
-    console.error("Unable to create Stripe Checkout session", error);
+    console.error("Unable to create Stripe Checkout session", { name: error instanceof Error ? error.name : "UnknownError" });
     return NextResponse.json(
       { ok: false, error: "Checkout could not be started. Please try again." },
       { status: 502 },

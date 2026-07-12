@@ -82,18 +82,18 @@ export default async function AdminProject({ params }: { params: Promise<{ id: s
   ];
 
   return (
-    <div className="min-h-full bg-slate-50">
-      <div className="border-b border-slate-200 bg-white">
+    <div className="min-h-full bg-[#F4F1E8] font-['IBM_Plex_Sans',Arial,sans-serif] text-[#17202A]">
+      <div className="border-b border-[#D9D5CB] bg-[#FBFAF6]">
         <div className="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
-          <Link href="/admin" className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-600 hover:text-[#0A3D62]"><ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" /> Operations console</Link>
+          <Link href="/admin" className="inline-flex items-center gap-1.5 text-xs font-medium text-[#667085] hover:text-[#1457FF]"><ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" /> Operations console</Link>
           <div className="mt-4 flex flex-col justify-between gap-5 md:flex-row md:items-end">
             <div>
               <div className="flex flex-wrap items-center gap-2"><span className="rounded-full bg-sky-50 px-3 py-1 text-[10px] font-semibold uppercase tracking-widest text-[#0A3D62]">{project.order_type}</span><span className={`rounded-full border px-3 py-1 text-[10px] font-semibold uppercase tracking-widest ${status === "failed" ? "border-red-200 bg-red-50 text-red-700" : "border-emerald-200 bg-emerald-50 text-emerald-700"}`}>{status.replaceAll("_", " ")}</span></div>
-              <h1 className="mt-3 text-2xl font-semibold tracking-tight text-slate-950">{project.tender_title || project.company_name || "Autonomous project run"}</h1>
-              <p className="mt-1 font-mono text-[11px] text-slate-500">{project.id}</p>
+              <h1 className="mt-3 text-2xl font-semibold tracking-[-0.03em] text-[#17202A]">{project.tender_title || project.company_name || "Autonomous project run"}</h1>
+              <p className="mt-1 font-['IBM_Plex_Mono',monospace] text-[10px] text-[#667085]">{project.id}</p>
             </div>
             <form action={`/admin/projects/${id}/actions`} method="post" className="flex flex-col gap-2 sm:flex-row">
-              <button name="action" value="run_autonomous" className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full bg-[#0A3D62] px-4 text-xs font-semibold text-white hover:bg-[#082C47]"><Play className="h-3.5 w-3.5 fill-current" aria-hidden="true" /> Start autonomous run</button>
+              <button name="action" value="run_autonomous" className="inline-flex min-h-10 items-center justify-center gap-2 bg-[#1457FF] px-4 text-xs font-semibold text-white hover:bg-[#0C45D8]"><Play className="h-3.5 w-3.5 fill-current" aria-hidden="true" /> Start autonomous run</button>
               <button name="action" value="mark_ready" className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-slate-300 bg-white px-4 text-xs font-semibold text-slate-700 hover:bg-slate-50"><FileCheck2 className="h-3.5 w-3.5" aria-hidden="true" /> Re-run QA gate</button>
               <button name="action" value="deliver" className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full bg-emerald-600 px-4 text-xs font-semibold text-white hover:bg-emerald-700"><Send className="h-3.5 w-3.5" aria-hidden="true" /> Deliver report</button>
             </form>
@@ -111,10 +111,10 @@ export default async function AdminProject({ params }: { params: Promise<{ id: s
           ].map((item) => { const Icon = item.icon; return <div key={item.label} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div className="flex items-center justify-between"><span className="text-xs font-medium text-slate-500">{item.label}</span><span className={`rounded-lg p-2 ${item.style}`}><Icon className="h-4 w-4" aria-hidden="true" /></span></div><div className="mt-3 text-2xl font-semibold text-slate-950">{item.value}</div><div className="mt-1 text-[11px] text-slate-500">{item.caption}</div></div>; })}
         </div>
 
-        <div className="mt-6 grid gap-6 xl:grid-cols-[1fr_360px]">
+        <div className="mt-5 grid gap-5 xl:grid-cols-[minmax(0,1fr)_236px]">
           <div className="space-y-6">
-            <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-              <div className="flex items-center justify-between gap-4"><div><div className="text-xs font-semibold uppercase tracking-widest text-[#0A3D62]">Run observability</div><h2 className="mt-1 text-lg font-semibold text-slate-950">End-to-end execution</h2>{runStage && <p className="mt-1 text-xs text-slate-500">Latest stage: {runStage.replaceAll("_", " ")} · {runProgress}% · {String(latestRun.status || "unknown")}</p>}</div><Activity className="h-5 w-5 text-emerald-600" aria-hidden="true" /></div>
+            <section className="border border-[#D9D5CB] bg-[#FBFAF6] p-5 sm:p-6">
+              <div className="flex items-center justify-between gap-4"><div><div className="font-['IBM_Plex_Mono',monospace] text-[10px] font-semibold uppercase tracking-[0.16em] text-[#1457FF]">Run observability</div><h2 className="mt-1 text-lg font-semibold text-[#17202A]">End-to-end execution</h2>{runStage && <p className="mt-1 text-xs text-[#667085]">Latest stage: {runStage.replaceAll("_", " ")} · {runProgress}% · {String(latestRun.status || "unknown")}</p>}</div><Activity className="h-5 w-5 text-emerald-600" aria-hidden="true" /></div>
               <ol className="mt-6 space-y-1">
                 {runSteps.map((step, index) => {
                   const Icon = step.icon;
@@ -123,7 +123,7 @@ export default async function AdminProject({ params }: { params: Promise<{ id: s
                   return (
                     <li key={step.key} className="relative flex gap-4 pb-6 last:pb-0">
                       {index < runSteps.length - 1 && <span className={`absolute left-[15px] top-8 h-[calc(100%-24px)] w-px ${complete ? "bg-emerald-300" : "bg-slate-200"}`} aria-hidden="true" />}
-                      <span className={`relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${complete ? "bg-emerald-600 text-white" : active ? "bg-[#0A3D62] text-white ring-4 ring-sky-100" : "border border-slate-300 bg-white text-slate-400"}`}>{complete ? <Check className="h-4 w-4" aria-hidden="true" /> : active ? <Icon className="h-4 w-4" aria-hidden="true" /> : <Circle className="h-3 w-3" aria-hidden="true" />}</span>
+                      <span className={`relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${complete ? "bg-emerald-600 text-white" : active ? "bg-[#1457FF] text-white ring-4 ring-[#DCE5FF]" : "border border-[#B7B2A7] bg-[#FBFAF6] text-[#8C929B]"}`}>{complete ? <Check className="h-4 w-4" aria-hidden="true" /> : active ? <Icon className="h-4 w-4" aria-hidden="true" /> : <Circle className="h-3 w-3" aria-hidden="true" />}</span>
                       <div className="min-w-0 flex-1 pt-1"><div className="flex flex-col justify-between gap-1 sm:flex-row"><h3 className={`text-sm font-semibold ${active ? "text-[#0A3D62]" : "text-slate-900"}`}>{step.label}</h3><span className="text-[10px] font-medium uppercase tracking-wide text-slate-500">{complete ? "Complete" : active ? "Active" : "Pending"}</span></div><p className="mt-1 text-xs leading-5 text-slate-500">{step.help}</p></div>
                     </li>
                   );
@@ -131,7 +131,7 @@ export default async function AdminProject({ params }: { params: Promise<{ id: s
               </ol>
             </section>
 
-            <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <section className="overflow-hidden border border-[#D9D5CB] bg-[#FBFAF6]">
               <div className="border-b border-slate-200 p-5"><h2 className="font-semibold text-slate-950">Decision register</h2><p className="mt-1 text-xs text-slate-500">Inspect or correct individual classifications. Changes remain in the audit trail.</p></div>
               <div className="divide-y divide-slate-200">
                 {requirements.length === 0 && <div className="px-5 py-12 text-center text-sm text-slate-500"><FileSearch className="mx-auto mb-3 h-6 w-6 text-slate-400" aria-hidden="true" />No decision items yet. Start an autonomous run after the tender pack is uploaded.</div>}
@@ -163,15 +163,15 @@ export default async function AdminProject({ params }: { params: Promise<{ id: s
             </section>
           </div>
 
-          <aside className="space-y-4">
-            <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <aside className="space-y-3 self-start xl:sticky xl:top-5">
+            <section className="border border-[#D9D5CB] bg-[#FBFAF6] p-4">
               <h2 className="flex items-center gap-2 text-sm font-semibold text-slate-950"><Clock3 className="h-4 w-4 text-[#0A3D62]" aria-hidden="true" /> Project telemetry</h2>
               <dl className="mt-4 space-y-3 text-xs">
                 {[["Company", project.company_name || "Not recorded"], ["Tender", project.tender_title || "Not recorded"], ["Deadline", displayDate(project.deadline)], ["Portal", project.portal || "Not recorded"], ["Created", displayDate(project.created_at)], ["Updated", displayDate(project.updated_at)]].map(([label, value]) => <div key={label} className="border-b border-slate-100 pb-3 last:border-0 last:pb-0"><dt className="text-slate-500">{label}</dt><dd className="mt-1 font-medium text-slate-900">{value}</dd></div>)}
               </dl>
             </section>
 
-            <section className="rounded-2xl border border-[#0A3D62] bg-[#0A3D62] p-5 text-white shadow-sm">
+            <section className="border border-[#1457FF] bg-[#1457FF] p-4 text-white">
               <div className="flex items-center justify-between"><h2 className="text-sm font-semibold">Policy posture</h2><Bot className="h-5 w-5 text-sky-200" aria-hidden="true" /></div>
               <div className="mt-3 rounded-xl border border-white/15 bg-white/10 p-3"><div className="text-[10px] font-semibold uppercase tracking-widest text-sky-200">Operating profile</div><div className="mt-1 font-semibold capitalize">{profile}</div><div className="mt-1 text-xs leading-5 text-sky-100">External actions follow the saved mandate. Receiver assurance does not block the run.</div></div>
               <div className="mt-3 flex items-center justify-between text-xs"><span className="text-sky-100">Mandate</span><span className="font-semibold">{autonomySettings?.receiver_acknowledged_at ? "Acknowledged" : "Not acknowledged"}</span></div>

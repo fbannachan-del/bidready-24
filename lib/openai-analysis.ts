@@ -50,7 +50,7 @@ export async function analyseWithOpenAI(fragments: SourceFragment[], base: Auton
       text: { format: { type: "json_schema", name: "tender_preflight", strict: true, schema: jsonSchema } },
     }),
   });
-  if (!response.ok) throw new Error(`OpenAI analysis failed (${response.status}): ${(await response.text()).slice(0, 300)}`);
+  if (!response.ok) throw new Error(`Provider analysis failed with status ${response.status}`);
   const raw = outputText(await response.json() as OpenAIResponse);
   if (!raw) throw new Error("OpenAI analysis returned no structured output");
   const parsed = AiAnalysis.parse(JSON.parse(raw));

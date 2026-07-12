@@ -1,6 +1,6 @@
 # BidReady 24
 
-Secure web app that turns a UK public-sector tender pack into a **source-cited compliance preflight**.
+Web application that turns a UK public-sector tender pack into a **source-cited compliance preflight**.
 
 **Core promise**: Upload a tender pack. Receive an autonomous, traceable compliance plan. Every requirement links back to its source. Missing evidence and uncertainty are explicit. Unsupported customer claims are never presented as verified facts.
 
@@ -55,15 +55,15 @@ Admin: /admin (use the ADMIN_PASSWORD)
 - Delegated mandate checks for clarifications, commitments, signing and submission.
 - Autonomous go/no-go decisions, contract issue spotting, amendment comparison, evidence-grounded response scaffolds and submission manifests.
 - Machine-produced receiver assurance report and CSV exports.
-- Hash-chained audit events for important actions.
-- Deletion support (customer + auto).
+- Audit events for autonomous runs, decisions and external actions; the expanded autonomy store includes hash-chain support, but not every legacy write path is claimed to be chained.
+- Manual deletion-request handling while the complete automated lifecycle control is built and tested.
 
 ## Architecture & Data
 - Next.js App Router, server actions where possible.
 - better-sqlite3 (MVP) — see `docs/IMPLEMENTATION_PLAN.md` for Postgres path.
 - Explicit, retry-safe pipeline stages in `lib/autonomous-pipeline.ts` and `lib/validation/pipeline-control.ts`.
 - Versioned schemas (zod + TS).
-- Local storage adapter.
+- Application-attached persistent storage. See the live security and data-handling pages for current limitations.
 
 See:
 - `docs/IMPLEMENTATION_PLAN.md`
@@ -86,7 +86,7 @@ BidReady 24 prepares all buyer-facing actions autonomously. Sending clarificatio
 - Secrets only via hosting platform secret manager.
 - Render Blueprint deployment with persistent disk and health checks.
 - Hosted Checkout and external adapters fail closed when production credentials are absent.
-- Retention: 30 days default for original files post-delivery.
+- No fixed automatic file-deletion promise is made until physical source removal, extracted-copy handling, retries and audit receipts are implemented end to end.
 
 ## Contributing / Ops
 This is a production product repo. Changes should be scoped, tested, auditable and consistent with the receiver authority model.

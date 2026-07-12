@@ -22,12 +22,13 @@ export default function Intake() {
     setLoading(false);
   }
 
-  if (submitted) return <div className="mx-auto max-w-md p-8"><div className="rounded-xl border border-emerald-200 bg-emerald-50 p-5 text-sm text-emerald-900"><strong>Organisation evidence saved.</strong><br />You can now upload the tender pack and configure the autonomy mandate from the project workspace.</div></div>;
+  if (submitted) return <div className="min-h-full bg-[#F4F1E8] p-8 font-['IBM_Plex_Sans',Arial,sans-serif]"><div className="mx-auto max-w-md border border-emerald-200 bg-emerald-50 p-5 text-sm text-emerald-900"><strong>Organisation evidence saved.</strong><br />You can now upload the tender pack and configure the autonomy mandate from the project workspace.</div></div>;
 
   return (
-    <div className="mx-auto max-w-2xl px-6 py-10">
-      <h1 className="text-2xl font-semibold">Company Intake</h1>
-      <p className="text-sm text-[#475569]">This information grounds autonomous compliance decisions and identifies the correct organisation. A claim is not treated as verified evidence solely because it is entered here. All fields marked * are required.</p>
+    <div className="mx-auto max-w-2xl px-6 py-10 font-['IBM_Plex_Sans',Arial,sans-serif] text-[#17202A]">
+      <div className="font-['IBM_Plex_Mono',monospace] text-[10px] font-semibold uppercase tracking-[0.16em] text-[#1457FF]">Organisation evidence</div>
+      <h1 className="mt-2 text-2xl font-semibold tracking-[-0.03em]">Company intake</h1>
+      <p className="mt-2 text-sm leading-6 text-[#667085]">This information identifies the bidding organisation and grounds the first evidence pass. Intake answers are not treated as verified evidence on their own. Fields marked * are required.</p>
 
       <form onSubmit={onSubmit} className="mt-6 space-y-4 text-sm">
         <input name="company_name" placeholder="Company legal name *" required className="w-full border p-2 rounded" />
@@ -59,10 +60,10 @@ export default function Intake() {
 
         <label className="flex gap-2 text-xs items-start">
           <input type="checkbox" name="consent" required className="mt-1" /> 
-          <span>I consent to BidReady 24 processing the uploaded tender documents and this information solely to deliver the paid compliance preflight service for this project. I understand originals are deleted after 30 days by default. *</span>
+          <span>I authorise BidReady 24 to process the uploaded tender documents and this information to deliver and operate the paid compliance preflight for this project. I have read the current privacy and data-handling notices, including the stated retention limitations. *</span>
         </label>
 
-        <button disabled={loading} className="w-full bg-[#0A3D62] text-white py-2.5 rounded-full mt-2 disabled:opacity-60">{loading ? "Saving..." : "Save intake & continue to upload"}</button>
+        <button disabled={loading} className="mt-2 w-full bg-[#1457FF] py-2.5 text-sm font-semibold text-white hover:bg-[#0C45D8] disabled:opacity-60">{loading ? "Saving…" : "Save intake and continue"}</button>
       </form>
       <p className="text-[10px] mt-4 text-[#64748B]">You can edit this later via support if needed. No data is shared outside your project.</p>
     </div>

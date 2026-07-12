@@ -41,14 +41,14 @@ export default function RunTenderButton({ token, disabled = false }: { token: st
         type="button"
         onClick={startRun}
         disabled={disabled || running}
-        className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-[#0A3D62] px-5 text-sm font-semibold text-white transition hover:bg-[#082C47] disabled:cursor-not-allowed disabled:opacity-45 sm:w-auto"
+        className="inline-flex min-h-11 w-full items-center justify-center gap-2 bg-[#1457FF] px-5 font-['IBM_Plex_Sans',Arial,sans-serif] text-sm font-semibold text-white transition hover:bg-[#0C45D8] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1457FF] disabled:cursor-not-allowed disabled:opacity-45 sm:w-auto"
       >
         {running ? <LoaderCircle className="h-4 w-4 animate-spin" aria-hidden="true" /> : <Play className="h-4 w-4 fill-current" aria-hidden="true" />}
         {running ? "Starting autonomous run…" : "Run tender now"}
         {!running && <ArrowRight className="h-4 w-4" aria-hidden="true" />}
       </button>
       {result && (
-        <div aria-live="polite" className={`mt-3 flex items-start gap-2 text-xs ${result.error ? "text-red-700" : "text-emerald-700"}`}>
+        <div aria-live="polite" className={`mt-3 flex items-start gap-2 font-['IBM_Plex_Mono',monospace] text-[11px] ${result.error ? "text-red-700" : "text-emerald-700"}`}>
           {result.error ? <TriangleAlert className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" /> : <CircleCheck className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />}
           <span>
             {result.error || result.message || "Autonomous analysis started."}

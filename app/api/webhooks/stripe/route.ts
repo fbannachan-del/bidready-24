@@ -30,14 +30,14 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ received: true });
       }
       const paymentIntent = typeof session.payment_intent === "string" ? session.payment_intent : session.payment_intent?.id || null;
-      fulfilCheckout({ projectId, sessionId: session.id, paymentIntent, rawEvent: rawBody });
+      fulfilCheckout({ projectId, sessionId: session.id, paymentIntent, eventId: event.id, eventType: event.type });
     }
 
     if (event.type === "checkout.session.async_payment_failed" || event.type === "checkout.session.expired") {
-      markCheckoutFailed(event.data.object.id, rawBody);
+      markCheckoutFailed(event.data.object.id, event.id, event.type);
     }
   } catch (error) {
-    console.error("Stripe webhook fulfilment failed", error);
+    console.error("Stripe webhook fulfilment failed", { eventId: event.id, name: error instanceof Error ? error.name : "UnknownError" });
     return NextResponse.json({ error: "Webhook fulfilment failed" }, { status: 500 });
   }
 

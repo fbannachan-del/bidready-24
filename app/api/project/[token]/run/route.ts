@@ -14,7 +14,7 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ to
     const counts = result as typeof result & Record<string, unknown>;
     const reused = "reused" in result && result.reused;
     return NextResponse.json({ ...result, message: reused ? "The current analysis is already complete; verified output was reused." : "Autonomous tender analysis completed.", requirements: Number(counts.requirements ?? 0), questions: Number(counts.questions ?? 0), gaps: Number(counts.gaps ?? 0) });
-  } catch (error) {
-    return NextResponse.json({ error: error instanceof Error ? error.message : "Autonomous analysis failed" }, { status: 500 });
+  } catch {
+    return NextResponse.json({ error: "Tender analysis could not be completed.", code: "ANALYSIS_FAILED" }, { status: 500 });
   }
 }

@@ -14,7 +14,9 @@ export interface SupportRequest {
 }
 
 export function supportIpHash(ip: string) {
-  return createHash("sha256").update(`${process.env.SUPPORT_RATE_LIMIT_SALT || "bidready-support"}:${ip}`).digest("hex");
+  const salt = process.env.SUPPORT_RATE_LIMIT_SALT;
+  if (!salt && process.env.NODE_ENV === "production") throw new Error("Support rate-limit hashing is not configured");
+  return createHash("sha256").update(`${salt || "bidready-support-development-only"}:${ip}`).digest("hex");
 }
 
 export function recentSupportCount(ipHash: string) {

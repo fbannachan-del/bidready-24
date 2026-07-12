@@ -264,25 +264,25 @@ export default function AutonomyControlCenter({
 
   if (loading) {
     return (
-      <div className="flex min-h-64 items-center justify-center rounded-2xl border border-slate-200 bg-white">
-        <LoaderCircle className="h-5 w-5 animate-spin text-[#0A3D62]" aria-hidden="true" />
-        <span className="ml-3 text-sm text-slate-600">Loading autonomy policy…</span>
+      <div className="flex min-h-64 items-center justify-center border border-[#D9D5CB] bg-[#FBFAF6] font-['IBM_Plex_Sans',Arial,sans-serif]">
+        <LoaderCircle className="h-5 w-5 animate-spin text-[#1457FF]" aria-hidden="true" />
+        <span className="ml-3 text-sm text-[#667085]">Loading autonomy policy…</span>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <section aria-labelledby="profile-heading" className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+    <div className="space-y-5 font-['IBM_Plex_Sans',Arial,sans-serif] text-[#17202A]">
+      <section id="operating-profile" aria-labelledby="profile-heading" className="border border-[#D9D5CB] bg-[#FBFAF6] p-5 sm:p-6">
         <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
           <div>
-            <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-sky-50 px-3 py-1 text-xs font-semibold text-[#0A3D62]">
+            <div className="mb-2 inline-flex items-center gap-2 border border-[#B9C9FF] bg-[#EEF3FF] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-[#1457FF]">
               <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" /> Operating profile
             </div>
-            <h2 id="profile-heading" className="text-xl font-semibold tracking-tight text-slate-950">Choose how BidReady operates</h2>
-            <p className="mt-1 max-w-2xl text-sm leading-6 text-slate-600">Autonomy changes when the system may act—not how clearly it records evidence, uncertainty, and decisions.</p>
+            <h2 id="profile-heading" className="text-xl font-semibold tracking-[-0.02em] text-[#17202A]">Choose how BidReady operates</h2>
+            <p className="mt-1 max-w-2xl text-sm leading-6 text-[#667085]">Set when BidReady may act. Evidence, uncertainty and decisions remain visible in every mode.</p>
           </div>
-          <div className="text-xs font-medium text-slate-500">{activeCount} autonomous actions enabled</div>
+          <div className="font-['IBM_Plex_Mono',monospace] text-[11px] text-[#667085]">{activeCount} actions enabled</div>
         </div>
 
         <div className="mt-5 grid gap-3 lg:grid-cols-3" role="radiogroup" aria-label="Autonomy operating profile">
@@ -296,57 +296,57 @@ export default function AutonomyControlCenter({
                 role="radio"
                 aria-checked={selected}
                 onClick={() => selectProfile(item.id)}
-                className={`group rounded-xl border p-4 text-left transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0A3D62] ${
-                  selected ? "border-[#0A3D62] bg-sky-50/70 ring-1 ring-[#0A3D62]" : "border-slate-200 hover:border-slate-300 hover:bg-slate-50"
+                className={`group border p-4 text-left transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1457FF] ${
+                  selected ? "border-[#1457FF] bg-[#EEF3FF] ring-1 ring-[#1457FF]" : "border-[#D9D5CB] bg-[#F8F6F0] hover:border-[#A9A59C]"
                 }`}
               >
                 <div className="flex items-start justify-between gap-3">
-                  <span className={`rounded-lg p-2 ${selected ? "bg-[#0A3D62] text-white" : "bg-slate-100 text-slate-600"}`}>
+                  <span className={`p-2 ${selected ? "bg-[#1457FF] text-white" : "bg-[#E8E5DD] text-[#667085]"}`}>
                     <Icon className="h-4 w-4" aria-hidden="true" />
                   </span>
-                  <span className={`flex h-5 w-5 items-center justify-center rounded-full border ${selected ? "border-[#0A3D62] bg-[#0A3D62] text-white" : "border-slate-300"}`}>
+                  <span className={`flex h-5 w-5 items-center justify-center rounded-full border ${selected ? "border-[#1457FF] bg-[#1457FF] text-white" : "border-[#B7B2A7]"}`}>
                     {selected && <Check className="h-3 w-3" aria-hidden="true" />}
                   </span>
                 </div>
-                <div className="mt-4 text-[11px] font-semibold uppercase tracking-widest text-[#0A3D62]">{item.eyebrow}</div>
-                <div className="mt-1 font-semibold text-slate-950">{item.name}</div>
-                <p className="mt-1 text-xs leading-5 text-slate-600">{item.description}</p>
+                <div className="mt-4 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#1457FF]">{item.eyebrow}</div>
+                <div className="mt-1 font-semibold text-[#17202A]">{item.name}</div>
+                <p className="mt-1 text-xs leading-5 text-[#667085]">{item.description}</p>
               </button>
             );
           })}
         </div>
       </section>
 
-      <section aria-labelledby="policy-heading" className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+      <section id="action-policy" aria-labelledby="policy-heading" className="border border-[#D9D5CB] bg-[#FBFAF6] p-5 sm:p-6">
         <div className="flex items-center gap-3">
-          <div className="rounded-xl bg-slate-950 p-2.5 text-white"><Bot className="h-5 w-5" aria-hidden="true" /></div>
+          <div className="bg-[#17202A] p-2.5 text-white"><Bot className="h-5 w-5" aria-hidden="true" /></div>
           <div>
-            <h2 id="policy-heading" className="text-xl font-semibold tracking-tight text-slate-950">Action policy</h2>
-            <p className="text-sm text-slate-600">Control the actions the system can take without waiting.</p>
+            <h2 id="policy-heading" className="text-xl font-semibold tracking-[-0.02em] text-[#17202A]">Action policy</h2>
+            <p className="text-sm text-[#667085]">Choose which actions may proceed without waiting.</p>
           </div>
         </div>
 
-        <div className="mt-6 divide-y divide-slate-200">
+        <div className="mt-6 divide-y divide-[#D9D5CB]">
           {POLICY_GROUPS.map((group) => {
             const Icon = group.icon;
             return (
               <div key={group.title} className="grid gap-4 py-6 first:pt-0 lg:grid-cols-[240px_1fr]">
                 <div>
-                  <div className="flex items-center gap-2 font-semibold text-slate-900"><Icon className="h-4 w-4 text-[#0A3D62]" aria-hidden="true" />{group.title}</div>
-                  <p className="mt-1 text-xs leading-5 text-slate-500">{group.description}</p>
+                  <div className="flex items-center gap-2 font-semibold text-[#17202A]"><Icon className="h-4 w-4 text-[#1457FF]" aria-hidden="true" />{group.title}</div>
+                  <p className="mt-1 text-xs leading-5 text-[#667085]">{group.description}</p>
                 </div>
                 <div className="grid gap-2 md:grid-cols-2">
                   {group.items.map((item) => (
-                    <label key={item.key} className="flex cursor-pointer gap-3 rounded-xl border border-slate-200 p-3.5 hover:bg-slate-50">
+                    <label key={item.key} className="flex cursor-pointer gap-3 border border-[#D9D5CB] bg-[#F8F6F0] p-3.5 hover:border-[#A9A59C]">
                       <input
                         type="checkbox"
-                        className="mt-0.5 h-4 w-4 accent-[#0A3D62]"
+                        className="mt-0.5 h-4 w-4 accent-[#1457FF]"
                         checked={Boolean(policy[item.key])}
                         onChange={(event) => setPolicy((current) => ({ ...current, [item.key]: event.target.checked }))}
                       />
                       <span>
-                        <span className="block text-sm font-medium text-slate-900">{item.label}</span>
-                        <span className="mt-0.5 block text-xs leading-5 text-slate-500">{item.help}</span>
+                        <span className="block text-sm font-medium text-[#17202A]">{item.label}</span>
+                        <span className="mt-0.5 block text-xs leading-5 text-[#667085]">{item.help}</span>
                       </span>
                     </label>
                   ))}
@@ -356,7 +356,7 @@ export default function AutonomyControlCenter({
           })}
         </div>
 
-        <div className="grid gap-4 rounded-xl bg-slate-50 p-4 sm:grid-cols-2">
+        <div className="grid gap-4 border border-[#D9D5CB] bg-[#F4F1E8] p-4 sm:grid-cols-2">
           <label className="text-sm font-medium text-slate-800">
             Minimum gross margin
             <span className="mt-1 flex items-center rounded-lg border border-slate-300 bg-white px-3 focus-within:ring-2 focus-within:ring-[#0A3D62]/20">
@@ -388,10 +388,10 @@ export default function AutonomyControlCenter({
         </div>
       </section>
 
-      <section aria-labelledby="mandate-heading" className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-        <div className="border-b border-slate-200 bg-slate-950 px-5 py-5 text-white sm:px-6">
+      <section id="receiver-mandate" aria-labelledby="mandate-heading" className="overflow-hidden border border-[#D9D5CB] bg-[#FBFAF6]">
+        <div className="border-b border-[#2C3440] bg-[#17202A] px-5 py-5 text-white sm:px-6">
           <div className="flex items-center gap-3">
-            <LockKeyhole className="h-5 w-5 text-sky-300" aria-hidden="true" />
+            <LockKeyhole className="h-5 w-5 text-[#7EA0FF]" aria-hidden="true" />
             <div>
               <h2 id="mandate-heading" className="text-lg font-semibold">Receiver mandate</h2>
               <p className="mt-0.5 text-xs leading-5 text-slate-300">Required before BidReady can sign, submit, or make company commitments autonomously.</p>
@@ -484,7 +484,7 @@ export default function AutonomyControlCenter({
               type="button"
               onClick={saveSettings}
               disabled={saving || (profile === "unattended" && !mandateComplete)}
-              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-[#0A3D62] px-6 text-sm font-semibold text-white transition hover:bg-[#082C47] disabled:cursor-not-allowed disabled:opacity-45"
+              className="inline-flex min-h-11 items-center justify-center gap-2 bg-[#1457FF] px-6 text-sm font-semibold text-white transition hover:bg-[#0C45D8] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1457FF] disabled:cursor-not-allowed disabled:opacity-45"
             >
               {saving ? <LoaderCircle className="h-4 w-4 animate-spin" aria-hidden="true" /> : <Save className="h-4 w-4" aria-hidden="true" />}
               {saving ? "Saving mandate…" : "Save and activate"}

@@ -32,8 +32,8 @@ export async function buildAutonomousAnalysis(params: {
   let analysis = deterministic;
   try {
     analysis = await analyseWithOpenAI(extracted.fragments, deterministic);
-  } catch (error) {
-    analysis.assumptions.push(`The provider-backed analysis was unavailable; independently testable deterministic extraction was used. ${error instanceof Error ? error.message : String(error)}`);
+  } catch {
+    analysis.assumptions.push("The provider-backed analysis was unavailable; independently testable deterministic extraction was used.");
   }
   if (params.orderType === "complete") {
     for (const question of analysis.questions) {

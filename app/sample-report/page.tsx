@@ -1,93 +1,42 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+import { ArrowRight, CalendarClock, CircleAlert, FileCheck2, Target } from "lucide-react";
+
+export const metadata: Metadata = { title: "Sample tender preflight", description: "Explore a synthetic BidReady 24 tender preflight with source-cited requirements, scored questions and evidence gaps." };
+
+const requirements = [
+  { title: "Public liability insurance · £10m minimum", source: "Specification §3.1 · p.7", status: "Uncertain", tone: "amber", action: "Supply a legible current certificate showing the insured limit." },
+  { title: "CHAS or accepted SSIP equivalent", source: "Selection form · Q12 · p.4", status: "Missing", tone: "red", action: "Confirm accepted equivalents with the buyer before the clarification cut-off." },
+  { title: "Enhanced DBS for education-site operatives", source: "Safeguarding schedule §5 · p.19", status: "Evidence found", tone: "green", action: "Verify the policy and sample evidence remain current at submission." },
+] as const;
 
 export default function SampleReport() {
   return (
-    <div className="mx-auto max-w-5xl px-6 py-10">
-      <div className="mb-6">
-        <Link href="/" className="text-sm text-[#0A3D62]">← Back</Link>
-      </div>
-      <div className="flex items-center justify-between">
-        <div>
-          <div className="uppercase tracking-[1.5px] text-xs text-emerald-600">SAMPLE — SYNTHETIC DATA ONLY</div>
-          <h1 className="text-3xl font-semibold tracking-tight">Acme Cleaning Ltd — Borough Council Cleaning Services 2026-2029</h1>
-          <div className="text-sm text-[#475569] mt-1">Tender Ref: BC/CLEAN/2026/014 • Deadline: 14 August 2026, 12:00 • Portal: ProContract</div>
-        </div>
-        <div className="text-right text-xs bg-white border p-3 rounded">Eligibility: <span className="font-medium text-emerald-600">Review needed</span><br/>Human reviewed • 11 Jul 2026</div>
-      </div>
+    <div className="bg-[#f5f4f1] py-8 sm:py-14">
+      <div className="mx-auto max-w-[1180px] px-4 sm:px-8">
+        <div className="mb-5 flex flex-col justify-between gap-3 sm:flex-row sm:items-end"><div><p className="eyebrow">Synthetic demonstration · no customer data</p><h1 className="mt-3 font-serif text-3xl font-medium tracking-[-.035em] sm:text-4xl">Borough Council Cleaning Services 2026–2029</h1><p className="mt-2 text-sm text-[var(--slate)]">Tender ref BC/CLEAN/2026/014 · example output only</p></div><Link href="/pricing" className="button-primary !min-h-10 !text-sm">Analyse your tender <ArrowRight className="h-4 w-4" /></Link></div>
 
-      <div className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Summary */}
-        <div className="lg:col-span-3 bg-white border rounded-xl p-6">
-          <h2 className="font-semibold mb-2">Executive Summary</h2>
-          <p className="text-sm text-[#475569]">
-            The tender is for a 3-year contract (with possible 1-year extension) for daily office and public building cleaning across 12 sites. 
-            Mandatory requirements include public liability £10m, employers liability £10m, CHAS or equivalent, and specific DBS/safeguarding for school sites.
-            Several scored quality questions carry 60% of marks. Pricing is 40%.
-          </p>
-          <div className="mt-3 text-xs text-amber-700 bg-amber-50 inline-block px-2 py-0.5 rounded">One critical gap: no current CHAS or SSIP accreditation shown in your intake. Confirm before bid decision.</div>
-        </div>
+        <div className="overflow-hidden rounded-2xl border border-[var(--border-strong)] bg-white shadow-[0_24px_70px_rgba(43,48,61,.10)]">
+          <div className="grid border-b border-[var(--border)] bg-[#f8f7f4] md:grid-cols-[220px_1fr]">
+            <div className="border-r border-[var(--border)] p-5"><p className="font-serif text-lg font-semibold">BidReady <span className="text-[var(--signal-blue)]">24</span></p></div>
+            <div className="flex flex-wrap gap-1 px-5 py-3 text-xs">{["Overview", "Requirements", "Scored questions", "Evidence gaps", "Action plan"].map((item, index) => <span key={item} className={`rounded-md px-3 py-2 ${index === 0 ? "bg-[var(--blue-soft)] font-medium text-[var(--blue-ink)]" : "text-[var(--slate)]"}`}>{item}</span>)}</div>
+          </div>
+          <div className="grid md:grid-cols-[220px_1fr]">
+            <aside className="hidden border-r border-[var(--border)] bg-[#fbfaf8] p-5 md:block"><p className="font-mono text-[9px] uppercase tracking-[.12em] text-[var(--ink-faint)]">Report status</p><div className="mt-5 rounded-xl border border-[var(--border)] bg-white p-4"><p className="text-xs text-[var(--slate)]">Readiness</p><p className="mt-1 font-serif text-4xl font-medium">68<span className="text-base text-[var(--ink-faint)]">/100</span></p><div className="mt-3 flex gap-1">{["bg-[var(--gap-red)]", "bg-[var(--review-amber)]", "bg-[var(--review-amber)]", "bg-[var(--verify-green)]", "bg-[var(--verify-green)]"].map((c, i) => <span key={i} className={`h-1.5 flex-1 rounded-full ${c}`} />)}</div></div><div className="mt-6 space-y-3 text-[11px] text-[var(--slate)]"><p><span className="block font-mono text-[9px] uppercase text-[var(--ink-faint)]">Submission</span>14 Aug 2026 · 12:00</p><p><span className="block font-mono text-[9px] uppercase text-[var(--ink-faint)]">Clarifications</span>31 Jul 2026 · 17:00</p><p><span className="block font-mono text-[9px] uppercase text-[var(--ink-faint)]">Buyer portal</span>Named in tender pack</p></div></aside>
+            <main className="p-5 sm:p-8">
+              <div className="flex flex-col justify-between gap-4 border-b border-[var(--border)] pb-6 lg:flex-row"><div><p className="font-mono text-[9px] uppercase tracking-[.12em] text-[var(--ink-faint)]">Executive summary</p><h2 className="mt-2 font-serif text-2xl font-medium">Proceed only after the critical accreditation gap is resolved.</h2><p className="mt-3 max-w-3xl text-sm leading-6 text-[var(--slate)]">This three-year multi-site cleaning contract has one unresolved pass/fail accreditation condition and an uncertain insurance threshold. Quality accounts for 60% of the stated evaluation and includes a mandatory site visit.</p></div><span className="status-chip h-fit bg-amber-50 text-amber-700">Decision required</span></div>
+              <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">{[
+                [FileCheck2, "28", "Requirements"], [Target, "7", "Scored questions"], [CircleAlert, "3", "Critical gaps"], [CalendarClock, "4", "Key dates"],
+              ].map(([Icon, value, label]) => { const MetricIcon = Icon as typeof FileCheck2; return <div key={String(label)} className="rounded-xl border border-[var(--border)] p-4"><MetricIcon className="h-4 w-4 text-[var(--signal-blue)]" /><p className="mt-4 font-serif text-3xl font-medium">{String(value)}</p><p className="text-[11px] text-[var(--slate)]">{String(label)}</p></div>; })}</div>
 
-        {/* Critical Dates */}
-        <div className="bg-white border rounded-xl p-6">
-          <h3 className="font-semibold mb-3">Critical Dates</h3>
-          <ul className="text-sm space-y-2">
-            <li><span className="font-mono text-xs">14 Aug 2026 12:00</span> — Tender submission (electronic)</li>
-            <li><span className="font-mono text-xs">31 Jul 2026 17:00</span> — Clarification questions deadline</li>
-            <li><span className="font-mono text-xs">22 Jul 2026 10:00</span> — Site visit (mandatory, register by 18 Jul)</li>
-            <li><span className="font-mono text-xs">01 Oct 2026</span> — Contract start (mobilisation 4 weeks prior)</li>
-          </ul>
-          <div className="citation mt-3">Source: Instructions to Tenderers, p.2; ITT Appendix A</div>
+              <section className="mt-8"><div className="flex items-center justify-between"><h3 className="font-serif text-xl font-medium">Priority requirements</h3><span className="font-mono text-[9px] uppercase tracking-[.1em] text-[var(--ink-faint)]">3 of 28 shown</span></div><div className="mt-4 overflow-hidden rounded-xl border border-[var(--border)]">{requirements.map((row, index) => <article key={row.title} className={`grid gap-4 p-4 sm:grid-cols-[1fr_auto] ${index ? "border-t border-[var(--border)]" : ""}`}><div><p className="text-sm font-medium">{row.title}</p><span className="citation-chip mt-2">{row.source}</span><p className="mt-3 text-xs leading-5 text-[var(--slate)]">Next action: {row.action}</p></div><span className={`status-chip h-fit ${row.tone === "red" ? "bg-red-50 text-red-700" : row.tone === "green" ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"}`}>{row.status}</span></article>)}</div></section>
+
+              <div className="mt-8 grid gap-4 lg:grid-cols-2"><section className="rounded-xl border border-[var(--border)] p-5"><p className="font-mono text-[9px] uppercase tracking-[.1em] text-[var(--ink-faint)]">Highest weighted question</p><h3 className="mt-3 font-serif text-xl font-medium">Service delivery and quality assurance</h3><p className="mt-2 text-sm leading-6 text-[var(--slate)]">1,500 words · 12% weighting · address audit, supervision, rectification and continuous improvement.</p><span className="citation-chip mt-4">Quality schedule · Q2 · p.11</span></section><section className="rounded-xl border border-red-200 bg-red-50/60 p-5"><p className="font-mono text-[9px] uppercase tracking-[.1em] text-red-700">Critical evidence gap</p><h3 className="mt-3 font-serif text-xl font-medium text-red-950">SSIP evidence not supplied</h3><p className="mt-2 text-sm leading-6 text-red-900">The tender marks this condition pass/fail. The sample company record contains no current certificate or buyer-approved equivalent.</p></section></div>
+            </main>
+          </div>
         </div>
 
-        {/* Mandatory Matrix */}
-        <div className="bg-white border rounded-xl p-6 lg:col-span-2">
-          <h3 className="font-semibold mb-3">Mandatory Compliance (excerpt)</h3>
-          <table className="table w-full text-sm">
-            <thead><tr className="bg-[#F8F9FA]"><th>Requirement</th><th>Source</th><th>Your status</th><th>Action</th></tr></thead>
-            <tbody>
-              <tr>
-                <td>Public Liability Insurance £10m minimum</td>
-                <td className="citation">Spec 3.1, p.7</td>
-                <td><span className="status-uncertain px-2 py-0.5 text-xs rounded border">UNCERTAIN</span></td>
-                <td className="text-xs">Upload current cert or confirm level in intake</td>
-              </tr>
-              <tr>
-                <td>CHAS or equivalent SSIP accreditation</td>
-                <td className="citation">ITT 4.2 &amp; Form B, p.4</td>
-                <td><span className="status-missing px-2 py-0.5 text-xs rounded border">MISSING</span></td>
-                <td className="text-xs text-amber-700">Critical — apply or partner</td>
-              </tr>
-              <tr>
-                <td>DBS checks for all staff on education sites</td>
-                <td className="citation">Safeguarding Schedule, p.19</td>
-                <td><span className="status-met px-2 py-0.5 text-xs rounded border">MET (intake)</span></td>
-                <td className="text-xs">Policy + sample certificate provided</td>
-              </tr>
-            </tbody>
-          </table>
-          <div className="text-[10px] mt-2 text-[#64748B]">Full matrix contains 28 items. All linked to source. No invented status.</div>
-        </div>
-
-        {/* Gaps */}
-        <div className="bg-white border rounded-xl p-6">
-          <h3 className="font-semibold mb-2 text-red-700">Evidence Gaps (Critical)</h3>
-          <ul className="text-sm space-y-2">
-            <li className="border-l-2 border-red-400 pl-2">CHAS / SSIP — no evidence supplied. Required for pass/fail.</li>
-            <li className="border-l-2 border-amber-400 pl-2">Method statement for eco-friendly products (scored 8%).</li>
-            <li className="border-l-2 border-amber-400 pl-2">TUPE information — confirm current staff transfer assumptions.</li>
-          </ul>
-          <div className="text-xs mt-2">See full action plan in delivered report.</div>
-        </div>
-
-        {/* Limitations */}
-        <div className="lg:col-span-3 mt-4 p-4 bg-[#FEFCE8] border border-amber-200 text-xs rounded">
-          <strong>Limitations of this sample:</strong> All company facts and evidence are synthetic. In a real report your actual supplied documents and intake answers are used. 
-          No claim in this sample or any report is guaranteed to be accepted by the buyer. This is not advice. Review every citation yourself.
-        </div>
-      </div>
-
-      <div className="mt-8 text-center text-xs">
-        This is a realistic example of the output format. <Link href="/pricing" className="underline">Purchase a real analysis</Link> for your tender.
+        <div className="mt-6 rounded-xl border border-amber-300 bg-amber-50 p-5 text-xs leading-5 text-amber-950"><strong>About this sample:</strong> every organisation, document, requirement and evidence item shown here is synthetic. It demonstrates the report structure, not a buyer interpretation or compliance decision. Real outputs must be checked against the uploaded tender pack by the receiver.</div>
       </div>
     </div>
   );

@@ -25,12 +25,18 @@ services:
         value: "200"
       - key: ADMIN_PASSWORD
         sync: false   # Set this securely in the Render Dashboard
+      - key: ADMIN_SESSION_SECRET
+        sync: false
       - key: STRIPE_SECRET_KEY
         sync: false
       - key: NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
         sync: false
       - key: STRIPE_WEBHOOK_SECRET
         sync: false
+      - key: CHECKOUT_SESSION_SECRET
+        sync: false
+      - key: PROJECT_TOKEN_TTL_HOURS
+        value: "168"
       - key: ENABLE_REAL_AI
         value: "true"
       - key: OPENAI_MODEL

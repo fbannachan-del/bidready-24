@@ -32,18 +32,22 @@ export async function POST(req: NextRequest) {
   const webhookUrl = process.env.SUPPORT_WEBHOOK_URL;
   if (webhookUrl) {
     try {
-      const response = await fetch(webhookUrl, {
+      const endpoint = new URL(webhookUrl);
+      if (process.env.NODE_ENV === "production" && endpoint.protocol !== "https:") throw new Error("SUPPORT_WEBHOOK_HTTPS_REQUIRED");
+      if (process.env.NODE_ENV === "production" && !process.env.SUPPORT_WEBHOOK_SECRET) throw new Error("SUPPORT_WEBHOOK_AUTH_REQUIRED");
+      const response = await fetch(endpoint, {
         method: "POST",
         headers: {
           "content-type": "application/json",
           ...(process.env.SUPPORT_WEBHOOK_SECRET ? { authorization: `Bearer ${process.env.SUPPORT_WEBHOOK_SECRET}` } : {}),
         },
         body: JSON.stringify({ id, ...parsed.data, created_at: new Date().toISOString() }),
+        redirect: "error",
         signal: AbortSignal.timeout(10_000),
       });
       if (!response.ok) console.error("Support webhook rejected request", response.status);
     } catch (error) {
-      console.error("Support webhook delivery failed; request remains in admin inbox", error);
+      console.error("Support webhook delivery failed; request remains in admin inbox", { name: error instanceof Error ? error.name : "UnknownError" });
     }
   }
 

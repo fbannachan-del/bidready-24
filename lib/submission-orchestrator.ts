@@ -2,6 +2,14 @@ import crypto from "node:crypto";
 import { getDb } from "./db";
 import { addAudit } from "./projects";
 import { canPerformExternalAction, type AutonomyMandate, type AutonomyPolicy } from "./autonomy-policy";
+import { postToConfiguredAdapter } from "./adapter-security";
+import { z } from "zod";
+
+const SubmissionReceipt = z.object({
+  confirmed: z.literal(true),
+  external_action_id: z.string().trim().min(1).max(200),
+  receipt: z.string().trim().min(1).max(2_000),
+}).strict();
 
 export type SubmissionResult = {
   id: string;
@@ -46,20 +54,16 @@ export async function submitAutonomously(params: {
   }
 
   try {
-    const response = await fetch(endpoint, {
-      method: "POST",
-      headers: { "content-type": "application/json", ...(process.env.SUBMISSION_WEBHOOK_SECRET ? { authorization: `Bearer ${process.env.SUBMISSION_WEBHOOK_SECRET}` } : {}) },
-      body: JSON.stringify({ submissionId: id, projectId: params.projectId, portal: params.portal, opportunityRef: params.opportunityRef, manifest: params.manifest }),
-    });
-    if (!response.ok) throw new Error(`Portal adapter returned HTTP ${response.status}`);
-    const body = await response.json() as { receipt?: string; confirmed?: boolean };
-    const receipt = body.receipt || `BR24-${id.slice(-10).toUpperCase()}`;
-    const status = body.confirmed ? "confirmed" : "submitted";
-    db.prepare(`INSERT INTO submissions (id, project_id, idempotency_key, portal, opportunity_ref, status, manifest_json, receipt_ref, submitted_at, confirmed_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), CASE WHEN ? = 'confirmed' THEN datetime('now') END)`).run(id, params.projectId, params.idempotencyKey, params.portal, params.opportunityRef ?? null, status, JSON.stringify(params.manifest), receipt, status);
-    addAudit(params.projectId, "system", "submission_sent", "submission", { submissionId: id, receipt, status });
-    return { id, status: body.confirmed ? "confirmed" : "prepared", receipt };
-  } catch (error) {
-    const reason = error instanceof Error ? error.message : String(error);
+    const body = SubmissionReceipt.parse(await postToConfiguredAdapter({
+      endpoint,
+      secret: process.env.SUBMISSION_WEBHOOK_SECRET,
+      body: { submissionId: id, projectId: params.projectId, portal: params.portal, opportunityRef: params.opportunityRef, manifest: params.manifest },
+    }));
+    db.prepare(`INSERT INTO submissions (id, project_id, idempotency_key, portal, opportunity_ref, status, manifest_json, receipt_ref, submitted_at, confirmed_at) VALUES (?, ?, ?, ?, ?, 'confirmed', ?, ?, datetime('now'), datetime('now'))`).run(id, params.projectId, params.idempotencyKey, params.portal, params.opportunityRef ?? null, JSON.stringify(params.manifest), body.receipt);
+    addAudit(params.projectId, "system", "submission_confirmed", "submission", { submissionId: id, receipt: body.receipt, externalActionId: body.external_action_id, status: "confirmed" });
+    return { id, status: "confirmed", receipt: body.receipt };
+  } catch {
+    const reason = "The configured portal adapter did not return a valid external confirmation.";
     db.prepare(`INSERT INTO submissions (id, project_id, idempotency_key, portal, opportunity_ref, status, manifest_json, error_message) VALUES (?, ?, ?, ?, ?, 'failed', ?, ?)`).run(id, params.projectId, params.idempotencyKey, params.portal, params.opportunityRef ?? null, JSON.stringify(params.manifest), reason);
     addAudit(params.projectId, "system", "submission_failed", "submission", { submissionId: id, reason });
     return { id, status: "failed", reason };

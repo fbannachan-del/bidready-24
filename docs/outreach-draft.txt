@@ -6,14 +6,14 @@ I noticed [Company] often bids for local authority cleaning contracts.
 
 We built BidReady 24 to take a tender pack and return a source-cited list of every mandatory requirement, scored question, attachment, deadline, and evidence gap — with page references.
 
-It's £149 for the preflight (or £349 with draft structure). Human reviewed. No invented qualifications or policies.
+It's £149 for the preflight (or £349 with response structures). The analysis runs autonomously but keeps citations, confidence and unresolved uncertainty visible for receiver review. No invented qualifications or policies.
 
 If you're preparing a bid in the next few weeks and want to sanity-check the pack quickly, happy to share the sample report or walk through a real example.
 
-No obligation — just a tool that many small cleaning firms are finding useful for the first time they see the full requirement list in one place.
+No obligation — just a focused way for a small cleaning team to see the full requirement list in one place.
 
 Best,
 [Your name]
 BidReady 24
 
-P.S. We never submit bids or guarantee wins. You stay in control.
+P.S. We do not guarantee wins. Buyer-facing actions only run where you have configured an explicit mandate and supported adapter.

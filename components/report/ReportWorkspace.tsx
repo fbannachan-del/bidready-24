@@ -81,7 +81,7 @@ function notesText(value?: string | null) {
 
 function EmptyState({ children }: { children: React.ReactNode }) {
   return (
-    <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-5 py-10 text-center text-sm text-slate-500">
+    <div className="border border-dashed border-[#B7B2A7] bg-[#F4F1E8] px-5 py-10 text-center text-sm text-[#667085]">
       <FileSearch className="mx-auto mb-3 h-6 w-6 text-slate-400" aria-hidden="true" />
       {children}
     </div>
@@ -135,10 +135,10 @@ export default function ReportWorkspace({
   const lowConfidence = requirements.filter((item) => (item.confidence || 0) < 0.6 || item.review_required).slice(0, 8);
 
   return (
-    <div>
-      <div className="border-b border-slate-200 bg-white print:hidden">
-        <div className="mx-auto flex max-w-6xl flex-col justify-between gap-4 px-4 py-5 sm:px-6 md:flex-row md:items-end lg:px-8">
-          <nav className="flex gap-1 overflow-x-auto rounded-xl bg-slate-100 p-1" aria-label="Report sections" role="tablist">
+    <div className="bg-[#F4F1E8] font-['IBM_Plex_Sans',Arial,sans-serif] text-[#17202A]">
+      <div className="border-b border-[#D9D5CB] bg-[#FBFAF6] print:hidden">
+        <div className="mx-auto flex max-w-[1240px] flex-col justify-between gap-4 px-4 py-4 sm:px-6 md:flex-row md:items-end lg:px-8">
+          <nav className="flex gap-px overflow-x-auto border border-[#D9D5CB] bg-[#D9D5CB]" aria-label="Report sections" role="tablist">
             {[
               { id: "overview" as Tab, label: "Overview", icon: ClipboardCheck },
               { id: "requirements" as Tab, label: "Compliance matrix", icon: ListChecks },
@@ -146,35 +146,35 @@ export default function ReportWorkspace({
             ].map((item) => {
               const Icon = item.icon;
               return (
-                <button key={item.id} type="button" role="tab" aria-selected={tab === item.id} aria-controls={`report-panel-${item.id}`} onClick={() => setTab(item.id)} className={`inline-flex min-h-9 shrink-0 items-center gap-2 rounded-lg px-3 text-xs font-semibold transition ${tab === item.id ? "bg-white text-slate-950 shadow-sm" : "text-slate-600 hover:text-slate-950"}`}>
+                <button key={item.id} type="button" role="tab" aria-selected={tab === item.id} aria-controls={`report-panel-${item.id}`} onClick={() => setTab(item.id)} className={`inline-flex min-h-9 shrink-0 items-center gap-2 px-3 text-xs font-semibold transition ${tab === item.id ? "bg-[#1457FF] text-white" : "bg-[#FBFAF6] text-[#667085] hover:text-[#17202A]"}`}>
                   <Icon className="h-3.5 w-3.5" aria-hidden="true" />{item.label}
                 </button>
               );
             })}
           </nav>
           <div className="flex flex-wrap gap-2">
-            <a href={`/api/exports/${token}/csv`} className="inline-flex min-h-9 items-center gap-2 rounded-full border border-slate-300 bg-white px-4 text-xs font-semibold text-slate-700 hover:bg-slate-50"><ArrowDownToLine className="h-3.5 w-3.5" aria-hidden="true" /> CSV</a>
-            <button type="button" onClick={() => window.print()} className="inline-flex min-h-9 items-center gap-2 rounded-full border border-slate-300 bg-white px-4 text-xs font-semibold text-slate-700 hover:bg-slate-50"><Printer className="h-3.5 w-3.5" aria-hidden="true" /> Print / PDF</button>
+            <a href={`/api/exports/${token}/csv`} className="inline-flex min-h-9 items-center gap-2 border border-[#B7B2A7] bg-[#FBFAF6] px-4 text-xs font-semibold text-[#17202A] hover:border-[#1457FF]"><ArrowDownToLine className="h-3.5 w-3.5" aria-hidden="true" /> CSV</a>
+            <button type="button" onClick={() => window.print()} className="inline-flex min-h-9 items-center gap-2 border border-[#B7B2A7] bg-[#FBFAF6] px-4 text-xs font-semibold text-[#17202A] hover:border-[#1457FF]"><Printer className="h-3.5 w-3.5" aria-hidden="true" /> Print / PDF</button>
           </div>
         </div>
       </div>
 
-      <main id={`report-panel-${tab}`} role="tabpanel" className="mx-auto max-w-6xl px-4 py-7 sm:px-6 lg:px-8">
-        <section className="mb-6 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-          <div className="bg-slate-950 px-5 py-6 text-white sm:px-7">
+      <main id={`report-panel-${tab}`} role="tabpanel" className="mx-auto max-w-[1240px] px-4 py-7 sm:px-6 lg:px-8">
+        <section className="mb-5 overflow-hidden border border-[#D9D5CB] bg-[#FBFAF6]">
+          <div className="bg-[#17202A] px-5 py-6 text-white sm:px-7">
             <div className="flex flex-col justify-between gap-5 md:flex-row md:items-start">
               <div>
-                <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-sky-300"><Fingerprint className="h-4 w-4" aria-hidden="true" /> Source-cited autonomous report</div>
-                <h1 className="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">{project.tender_title}</h1>
+                <div className="flex items-center gap-2 font-['IBM_Plex_Mono',monospace] text-[10px] font-semibold uppercase tracking-[0.18em] text-[#7EA0FF]"><Fingerprint className="h-4 w-4" aria-hidden="true" /> Source-cited autonomous report</div>
+                <h1 className="mt-3 text-2xl font-semibold tracking-[-0.03em] sm:text-3xl">{project.tender_title}</h1>
                 <p className="mt-1 text-sm text-slate-300">{project.company_name} · {project.order_type} · {project.status.replaceAll("_", " ")} · <span className="capitalize">{runSummary.profile}</span> profile</p>
               </div>
               <div className="self-start rounded-xl border border-white/15 bg-white/10 px-4 py-3 text-xs">
-                <div className="font-semibold text-white">Machine-produced assessment</div>
+                <div className="font-['IBM_Plex_Mono',monospace] text-[10px] font-semibold uppercase tracking-[0.12em] text-white">Machine-produced assessment</div>
                 <div className="mt-1 text-slate-300">{runSummary.runStage.replaceAll("_", " ")} · {runSummary.runStatus.replaceAll("_", " ")}</div>
               </div>
             </div>
           </div>
-          <div className="grid grid-cols-2 divide-x divide-y divide-slate-200 sm:grid-cols-4 sm:divide-y-0">
+          <div className="grid grid-cols-2 divide-x divide-y divide-[#D9D5CB] sm:grid-cols-4 sm:divide-y-0">
             {[
               { label: "Requirements", value: requirements.length, icon: FileText },
               { label: "Met", value: metrics.success, icon: BadgeCheck },
@@ -182,7 +182,7 @@ export default function ReportWorkspace({
               { label: "Verify", value: metrics.verify, icon: CircleHelp },
             ].map((item) => {
               const Icon = item.icon;
-              return <div key={item.label} className="p-4 sm:p-5"><div className="flex items-center gap-2 text-[11px] font-medium text-slate-500"><Icon className="h-3.5 w-3.5 text-[#0A3D62]" aria-hidden="true" />{item.label}</div><div className="mt-2 text-2xl font-semibold text-slate-950">{item.value}</div></div>;
+              return <div key={item.label} className="p-4 sm:p-5"><div className="flex items-center gap-2 font-['IBM_Plex_Mono',monospace] text-[10px] font-medium uppercase tracking-wide text-[#667085]"><Icon className="h-3.5 w-3.5 text-[#1457FF]" aria-hidden="true" />{item.label}</div><div className="mt-2 text-2xl font-semibold text-[#17202A]">{item.value}</div></div>;
             })}
           </div>
         </section>
@@ -190,12 +190,12 @@ export default function ReportWorkspace({
         {tab === "overview" && (
           <div className="grid gap-6 lg:grid-cols-[1.4fr_0.8fr]">
             <div className="space-y-6">
-              <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+              <section className="border border-[#D9D5CB] bg-[#FBFAF6] p-5 sm:p-6">
                 <div className="flex items-start gap-3">
-                  <span className="rounded-xl bg-sky-50 p-2.5 text-[#0A3D62]"><Bot className="h-5 w-5" aria-hidden="true" /></span>
+                  <span className="bg-[#EEF3FF] p-2.5 text-[#1457FF]"><Bot className="h-5 w-5" aria-hidden="true" /></span>
                   <div>
-                    <div className="text-xs font-semibold uppercase tracking-widest text-[#0A3D62]">Executive position</div>
-                    <h2 className="mt-1 text-xl font-semibold tracking-tight text-slate-950">Autonomous compliance preflight complete</h2>
+                    <div className="font-['IBM_Plex_Mono',monospace] text-[10px] font-semibold uppercase tracking-[0.16em] text-[#1457FF]">Executive position</div>
+                    <h2 className="mt-1 text-xl font-semibold tracking-[-0.02em] text-[#17202A]">Autonomous compliance preflight complete</h2>
                   </div>
                 </div>
                 <p className="mt-4 text-sm leading-6 text-slate-600">
@@ -208,7 +208,7 @@ export default function ReportWorkspace({
                 </div>
               </section>
 
-              <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+              <section className="border border-[#D9D5CB] bg-[#FBFAF6] p-5 sm:p-6">
                 <div className="flex items-center justify-between gap-3"><div><div className="text-xs font-semibold uppercase tracking-widest text-red-700">Priority action plan</div><h2 className="mt-1 text-lg font-semibold text-slate-950">Material gaps</h2></div><TriangleAlert className="h-5 w-5 text-red-600" aria-hidden="true" /></div>
                 <div className="mt-4 space-y-3">
                   {topRisks.length === 0 && <EmptyState>No material gaps are currently recorded.</EmptyState>}

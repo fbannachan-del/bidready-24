@@ -32,7 +32,8 @@ export function fulfilCheckout(params: {
   projectId: string;
   sessionId: string;
   paymentIntent: string | null;
-  rawEvent: string;
+  eventId: string;
+  eventType: string;
 }) {
   return db.transaction(() => {
     const payment = db.prepare(`
@@ -48,7 +49,7 @@ export function fulfilCheckout(params: {
         UPDATE payments
         SET status = 'paid', stripe_payment_intent = COALESCE(?, stripe_payment_intent), raw_event = ?
         WHERE stripe_checkout_session = ?
-      `).run(params.paymentIntent, params.rawEvent, params.sessionId);
+      `).run(params.paymentIntent, JSON.stringify({ id: params.eventId, type: params.eventType }), params.sessionId);
       db.prepare(`
         UPDATE projects SET status = 'paid', updated_at = datetime('now') WHERE id = ?
       `).run(params.projectId);
@@ -64,11 +65,11 @@ export function fulfilCheckout(params: {
   })();
 }
 
-export function markCheckoutFailed(sessionId: string, rawEvent: string) {
+export function markCheckoutFailed(sessionId: string, eventId: string, eventType: string) {
   db.prepare(`
     UPDATE payments SET status = 'failed', raw_event = ?
     WHERE stripe_checkout_session = ? AND status != 'paid'
-  `).run(rawEvent, sessionId);
+  `).run(JSON.stringify({ id: eventId, type: eventType }), sessionId);
 }
 
 export function getCheckoutProject(sessionId: string): CheckoutProject | undefined {

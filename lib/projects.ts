@@ -43,7 +43,9 @@ export function createProject(params: {
 }) {
   const id = "proj_" + randomBytes(10).toString("hex");
   const token = generateToken();
-  const expires = new Date(Date.now() + 1000 * 60 * 60 * 24 * 7).toISOString(); // 7 days
+  const configuredHours = Number(process.env.PROJECT_TOKEN_TTL_HOURS || 168);
+  const ttlHours = Number.isFinite(configuredHours) && configuredHours >= 1 && configuredHours <= 24 * 30 ? configuredHours : 168;
+  const expires = new Date(Date.now() + 1000 * 60 * 60 * ttlHours).toISOString();
 
   db.prepare(`
     INSERT INTO projects (id, order_type, amount_pence, status, secure_token, token_expires_at, company_name)
@@ -58,7 +60,7 @@ export function createProject(params: {
 }
 
 export function getProjectByToken(token: string) {
-  return db.prepare(`SELECT * FROM projects WHERE secure_token = ? AND token_revoked = 0 AND token_expires_at > datetime('now')`).get(token) as ProjectRow | undefined;
+  return db.prepare(`SELECT * FROM projects WHERE secure_token = ? AND token_revoked = 0 AND julianday(token_expires_at) > julianday('now')`).get(token) as ProjectRow | undefined;
 }
 
 export function getProjectById(id: string) {

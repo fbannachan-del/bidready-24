@@ -23,6 +23,7 @@ function CheckoutSuccessContent() {
           if (!cancelled) {
             setToken(data.token);
             setState("ready");
+            window.history.replaceState({}, "", "/checkout/success");
           }
           return;
         }
@@ -37,10 +38,10 @@ function CheckoutSuccessContent() {
   }, [sessionId]);
 
   return (
-    <div className="mx-auto max-w-lg px-6 py-16 text-center">
-      {state === "waiting" && <><h1 className="text-3xl font-semibold">Confirming your payment</h1><p className="mt-3 text-[#475569]">Stripe has returned you safely. We’re waiting for the signed payment confirmation.</p></>}
-      {state === "ready" && <><h1 className="text-3xl font-semibold">Your project is ready</h1><p className="mt-3 text-[#475569]">Payment confirmed. Continue to your secure workspace to add your company evidence and tender pack.</p><a href={`/project/${token}`} className="mt-7 inline-flex rounded-full bg-[#0A3D62] px-7 py-3 font-medium text-white">Open secure project</a></>}
-      {state === "failed" && <><h1 className="text-3xl font-semibold">We’re still confirming payment</h1><p className="mt-3 text-[#475569]">Your payment may still have succeeded. Please contact support with your Stripe receipt rather than paying again.</p><a href="/contact" className="mt-7 inline-flex rounded-full border border-[#0A3D62] px-7 py-3 font-medium text-[#0A3D62]">Contact support</a></>}
+    <div className="mx-auto max-w-2xl px-5 py-20 text-center sm:px-8 sm:py-28">
+      {state === "waiting" && <><p className="eyebrow">Payment confirmation</p><h1 className="page-title mt-5">Confirming your payment</h1><p className="body-large mx-auto mt-5 max-w-lg">Stripe has returned you safely. BidReady 24 is waiting for the signed server-to-server payment confirmation.</p><div className="mx-auto mt-8 h-1.5 w-40 overflow-hidden rounded-full bg-[var(--border)]"><div className="h-full w-1/2 animate-pulse rounded-full bg-[var(--signal-blue)]" /></div></>}
+      {state === "ready" && <><p className="eyebrow">Payment confirmed</p><h1 className="page-title mt-5">Your project is ready</h1><p className="body-large mx-auto mt-5 max-w-lg">Continue to the private workspace to add company evidence and upload the tender pack.</p><a href={`/project/${token}`} className="button-primary mt-8">Open project workspace</a><p className="mt-5 text-xs text-[var(--ink-faint)]">Treat the project link as confidential. It grants access to this tender workspace.</p></>}
+      {state === "failed" && <><p className="eyebrow">Confirmation delayed</p><h1 className="page-title mt-5">Do not pay again yet</h1><p className="body-large mx-auto mt-5 max-w-lg">Your payment may still have succeeded. Contact support with the Stripe receipt so it can be reconciled safely.</p><a href="/contact" className="button-secondary mt-8">Contact support</a></>}
     </div>
   );
 }

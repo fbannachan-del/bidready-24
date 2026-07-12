@@ -26,13 +26,14 @@ export default function Upload() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl px-6 py-10">
-      <h1 className="text-2xl font-semibold mb-1">Upload Tender Documents</h1>
-      <p className="text-sm text-[#475569]">Supported: PDF, DOCX, XLSX, CSV, TXT. Max ~200 MB total. We will validate and hash each file.</p>
+    <div className="mx-auto max-w-2xl px-6 py-10 font-['IBM_Plex_Sans',Arial,sans-serif] text-[#17202A]">
+      <div className="font-['IBM_Plex_Mono',monospace] text-[10px] font-semibold uppercase tracking-[0.16em] text-[#1457FF]">Tender intake</div>
+      <h1 className="mt-2 text-2xl font-semibold tracking-[-0.03em]">Upload tender documents</h1>
+      <p className="mt-2 text-sm leading-6 text-[#667085]">PDF, DOCX, XLSX, CSV and TXT are supported. Files are validated, hashed and retained with their original names.</p>
 
       <div className="mt-6">
         <input type="file" multiple onChange={e => setFiles(e.target.files)} className="block w-full text-sm" />
-        <button onClick={upload} disabled={!files || done} className="mt-3 px-6 py-2 bg-[#0A3D62] text-white rounded-full text-sm disabled:opacity-50">Upload &amp; validate</button>
+        <button onClick={upload} disabled={!files || done} className="mt-3 bg-[#1457FF] px-6 py-2 text-sm font-semibold text-white hover:bg-[#0C45D8] disabled:opacity-50">Upload and validate</button>
         <div className="text-xs mt-2 text-emerald-600">{status}</div>
       </div>
 

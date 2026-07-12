@@ -1,6 +1,14 @@
 import { getDb } from "./db";
 import { appendAuditEvent } from "./autonomy";
 import { canPerformExternalAction, type AutonomyMandate, type AutonomyPolicy } from "./autonomy-policy";
+import { postToConfiguredAdapter } from "./adapter-security";
+import { z } from "zod";
+
+const ClarificationReceipt = z.object({
+  confirmed: z.literal(true),
+  external_action_id: z.string().trim().min(1).max(200),
+  receipt: z.string().trim().min(1).max(2_000),
+}).strict();
 
 export async function dispatchQueuedClarifications(params: {
   projectId: string;
@@ -17,17 +25,16 @@ export async function dispatchQueuedClarifications(params: {
   let sent = 0;
   for (const item of items) {
     try {
-      const response = await fetch(endpoint, {
-        method: "POST",
-        headers: { "content-type": "application/json", ...(process.env.OUTBOUND_ACTION_WEBHOOK_SECRET ? { authorization: `Bearer ${process.env.OUTBOUND_ACTION_WEBHOOK_SECRET}` } : {}) },
-        body: JSON.stringify({ type: "buyer_clarification", projectId: params.projectId, portal: params.portal, clarificationId: item.id, question: item.question, context: item.context, source: item.source_location }),
-      });
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const receipt = ClarificationReceipt.parse(await postToConfiguredAdapter({
+        endpoint,
+        secret: process.env.OUTBOUND_ACTION_WEBHOOK_SECRET,
+        body: { type: "buyer_clarification", projectId: params.projectId, portal: params.portal, clarificationId: item.id, question: item.question, context: item.context, source: item.source_location },
+      }));
       db.prepare(`UPDATE clarifications SET status = 'sent', sent_at = datetime('now'), updated_at = datetime('now') WHERE id = ?`).run(item.id);
-      appendAuditEvent({ projectId: params.projectId, actor: "system", action: "clarification_sent", entity: "clarification", entityId: item.id, details: { portal: params.portal } });
+      appendAuditEvent({ projectId: params.projectId, actor: "system", action: "clarification_sent", entity: "clarification", entityId: item.id, details: { portal: params.portal, externalActionId: receipt.external_action_id, receipt: receipt.receipt } });
       sent += 1;
-    } catch (error) {
-      appendAuditEvent({ projectId: params.projectId, actor: "system", action: "clarification_send_failed", entity: "clarification", entityId: item.id, details: { error: error instanceof Error ? error.message : String(error) }, severity: "high" });
+    } catch {
+      appendAuditEvent({ projectId: params.projectId, actor: "system", action: "clarification_send_failed", entity: "clarification", entityId: item.id, details: { errorCode: "adapter_delivery_unconfirmed" }, severity: "high" });
     }
   }
   return { sent, queued: items.length - sent };
