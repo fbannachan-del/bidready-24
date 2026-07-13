@@ -63,8 +63,13 @@ function splitText(file: UploadedFileRecord, text: string, locationPrefix: strin
     }
     const heading = headingFor(headings, cursor, end);
     const suffix = heading ? ` · ${heading}` : index > 1 ? ` · part ${index}` : "";
+    // Include the locationPrefix in the id. splitText is called once per PDF
+    // page and once per XLSX sheet, each restarting `index` at 1 — so without
+    // the prefix, page/sheet fragments collide (…:fragment:1) and violate the
+    // fragments.id UNIQUE constraint during persistence.
+    const prefixKey = locationPrefix.replace(/[^A-Za-z0-9.]+/g, "_");
     fragments.push({
-      id: `${file.id}:fragment:${index}`,
+      id: `${file.id}:${prefixKey}:fragment:${index}`,
       fileId: file.id,
       documentName: file.original_name,
       location: `${locationPrefix}${suffix}`,

@@ -3,6 +3,7 @@ import { describe, it } from "node:test";
 import { mkdtemp, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { extractTenderPack, ExtractionEmptyError } from "../lib/extraction";
 import { buildAutonomousAnalysis } from "../lib/analysis-core";
 import type { UploadedFileRecord } from "../lib/tender-types";
@@ -19,6 +20,23 @@ async function tmpFile(name: string, content: string) {
 }
 
 describe("extraction robustness", () => {
+  it("mints unique fragment ids across PDF pages and XLSX sheets", async () => {
+    // splitText is called once per page/sheet with a restarting index; ids must
+    // still be globally unique per file or replaceRunAnalysis violates the
+    // fragments.id UNIQUE constraint. Golden pack-a has a 5-page PDF and a
+    // 2-sheet XLSX — exactly the multi-call cases that previously collided.
+    const here = path.dirname(fileURLToPath(import.meta.url));
+    const base = path.join(here, "..", "fixtures", "golden-packs", "pack-a-baseline");
+    const { fragments, failures } = await extractTenderPack([
+      rec("fpdf", "ITT-Main.pdf", path.join(base, "ITT-Main.pdf")),
+      rec("fxlsx", "Pricing-Schedule.xlsx", path.join(base, "Pricing-Schedule.xlsx")),
+    ]);
+    assert.equal(failures.length, 0, `extraction failures: ${failures.map((f) => f.error).join("; ")}`);
+    assert.ok(fragments.length >= 4, `expected multiple page/sheet fragments, got ${fragments.length}`);
+    const ids = fragments.map((f) => f.id);
+    assert.equal(new Set(ids).size, ids.length, `duplicate fragment ids: ${ids.join(", ")}`);
+  });
+
   it("attaches granular clause/section locations from headings", async () => {
     const p = await tmpFile("spec.txt", "Intro line.\nClause 2.1 Service standards. The Supplier must clean daily.\nClause 2.2 COSHH. The Supplier must maintain COSHH assessments.");
     const { fragments, failures } = await extractTenderPack([rec("f1", "spec.txt", p)]);
