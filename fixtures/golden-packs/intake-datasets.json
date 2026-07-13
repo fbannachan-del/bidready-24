@@ -1,0 +1,43 @@
+{
+  "minimal": {
+    "company_name": "Sparkleline Cleaning Ltd",
+    "contact_name": "Dana Frost",
+    "contact_email": "dana@sparkleline-test.invalid",
+    "consent": true
+  },
+  "full_matching": {
+    "company_name": "Sparkleline Cleaning Ltd",
+    "contact_name": "Dana Frost",
+    "contact_email": "dana@sparkleline-test.invalid",
+    "insurance_levels": "Public liability \u00a310m (Aviva AV-PL-99231144); employers' liability \u00a310m (AV-EL-99231145)",
+    "certifications": [
+      "CHAS Premium Plus CHAS-778812",
+      "ISO 9001"
+    ],
+    "existing_policies": [
+      "Health and safety",
+      "Safeguarding",
+      "DBS policy"
+    ],
+    "service_area": "Anytown and 25 mile radius",
+    "consent": true
+  },
+  "poor": {
+    "company_name": "Sparkleline Cleaning Ltd",
+    "contact_name": "Dana Frost",
+    "contact_email": "dana@sparkleline-test.invalid",
+    "insurance_levels": "",
+    "certifications": [],
+    "consent": true
+  },
+  "conflicting": {
+    "company_name": "Sparkleline Cleaning Ltd",
+    "contact_name": "Dana Frost",
+    "contact_email": "dana@sparkleline-test.invalid",
+    "insurance_levels": "Public liability \u00a35m only",
+    "certifications": [
+      "CHAS expired 2024"
+    ],
+    "consent": true
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "description": "Requirements split across 5 files; tests document_id correctness.",
+  "files": [
+    "ITT-Instructions.pdf",
+    "Spec-Part1.docx",
+    "Spec-Part2.docx",
+    "Selection-Questionnaire.pdf",
+    "Schedule-of-Rates.xlsx"
+  ],
+  "expected": [
+    {
+      "id": "MD-INS-001",
+      "verbatim": "Tenders must be submitted via the In-Tend portal only; email submissions will be rejected.",
+      "file": "ITT-Instructions.pdf",
+      "location": "PDF page 1",
+      "type": "mandatory"
+    },
+    {
+      "id": "MD-FIN-002",
+      "verbatim": "Tenderers must demonstrate minimum annual turnover of \u00a3750,000 in each of the last two audited financial years.",
+      "file": "ITT-Instructions.pdf",
+      "location": "PDF page 2",
+      "type": "mandatory"
+    },
+    {
+      "id": "MD-CORE-003",
+      "verbatim": "Daily cleaning of all public conveniences listed in Annex A including weekend coverage between April and September.",
+      "file": "Spec-Part1.docx",
+      "location": "Part 1",
+      "type": "mandatory"
+    },
+    {
+      "id": "MD-EQ-004",
+      "verbatim": "All powered equipment must be PAT tested annually with records available for inspection.",
+      "file": "Spec-Part1.docx",
+      "location": "Part 1 Clause 5",
+      "type": "mandatory"
+    },
+    {
+      "id": "MD-UNIF-005",
+      "verbatim": "Staff must wear corporate uniform with visible photo identification at all times while on Council premises.",
+      "file": "Spec-Part2.docx",
+      "location": "Part 2",
+      "type": "mandatory"
+    },
+    {
+      "id": "MD-LW-006",
+      "verbatim": "The Supplier must pay all contract staff at or above the Real Living Wage as published by the Living Wage Foundation.",
+      "file": "Spec-Part2.docx",
+      "location": "Part 2",
+      "type": "mandatory"
+    },
+    {
+      "id": "SQ-Q12",
+      "verbatim": "Confirm SSIP accreditation status and provide certificate number. This is a pass/fail question.",
+      "file": "Selection-Questionnaire.pdf",
+      "location": "PDF page 1",
+      "type": "mandatory"
+    },
+    {
+      "id": "RATE-007",
+      "verbatim": "Rates must be fixed for the first 24 months with CPI-linked adjustment permitted thereafter.",
+      "file": "Schedule-of-Rates.xlsx",
+      "location": "Sheet: Rates",
+      "type": "pricing"
+    }
+  ]
+}

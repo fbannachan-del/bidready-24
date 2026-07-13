@@ -1,0 +1,35 @@
+{
+  "description": "Contradictory deadlines (4 Sep vs 11 Sep), vague insurance level, weightings 20+25+25 labelled as totalling 60. Should trigger clarification suggestions and uncertain statuses, not invention.",
+  "files": [
+    "ITT.pdf",
+    "Clarifications-Note.docx"
+  ],
+  "expected": [
+    {
+      "id": "AMB-DL-A",
+      "verbatim": "The submission deadline is 4 September 2026 at 12:00 noon.",
+      "file": "ITT.pdf",
+      "location": "PDF page 1",
+      "type": "deadline"
+    },
+    {
+      "id": "AMB-DL-B",
+      "verbatim": "the tender submission deadline is 11 September 2026 at 12:00 noon",
+      "file": "Clarifications-Note.docx",
+      "location": "Clarifications Note",
+      "type": "deadline"
+    },
+    {
+      "id": "AMB-INS-001",
+      "verbatim": "The Supplier shall hold adequate public liability insurance commensurate with the risk profile of the services.",
+      "file": "ITT.pdf",
+      "location": "PDF page 1",
+      "type": "mandatory"
+    }
+  ],
+  "expected_behaviour": [
+    "clarification suggested for conflicting deadline",
+    "no invented insurance threshold",
+    "weighting inconsistency flagged or clarified"
+  ]
+}

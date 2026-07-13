@@ -1,0 +1,59 @@
+{
+  "description": "XLSX/CSV/TXT heavy pack; tests table + sheet + plaintext extraction and Sheet: locations.",
+  "files": [
+    "Data-Heavy.xlsx",
+    "sites.csv",
+    "terms.txt"
+  ],
+  "expected": [
+    {
+      "id": "EDGE-001",
+      "verbatim": "EDGE-001: Public liability cover of \u00a35,000,000 minimum is required; \u00a310,000,000 preferred for sites with public access.",
+      "file": "Data-Heavy.xlsx",
+      "location": "Sheet: Requirements Matrix",
+      "type": "mandatory"
+    },
+    {
+      "id": "EDGE-002",
+      "verbatim": "EDGE-002: All clinical waste must be handled under a registered waste carrier licence (upper tier).",
+      "file": "Data-Heavy.xlsx",
+      "location": "Sheet: Requirements Matrix",
+      "type": "mandatory"
+    },
+    {
+      "id": "EDGE-003",
+      "verbatim": "EDGE-003: Monthly management information must be provided in CSV format including task completion rates per site.",
+      "file": "Data-Heavy.xlsx",
+      "location": "Sheet: Requirements Matrix",
+      "type": "mandatory"
+    },
+    {
+      "id": "EDGE-004",
+      "verbatim": "EDGE-004: Operatives must sign in via the Authority's QR-code system at each visit \u2014 no paper logs are accepted.",
+      "file": "Data-Heavy.xlsx",
+      "location": "Sheet: Requirements Matrix",
+      "type": "mandatory"
+    },
+    {
+      "id": "EDGE-PR-005",
+      "verbatim": "Quarterly pricing reviews apply only where CPI exceeds 4% year-on-year.",
+      "file": "Data-Heavy.xlsx",
+      "location": "Sheet: Pricing Q3",
+      "type": "pricing"
+    },
+    {
+      "id": "EDGE-CSV-006",
+      "verbatim": "Town Hall requires daily clean before 07:30 including the council chamber.",
+      "file": "sites.csv",
+      "location": "row S1",
+      "type": "mandatory"
+    },
+    {
+      "id": "EDGE-TXT-008",
+      "verbatim": "Invoices must reference the Authority's purchase order number; unreferenced invoices will be returned unpaid.",
+      "file": "terms.txt",
+      "location": "Special Terms",
+      "type": "mandatory"
+    }
+  ]
+}

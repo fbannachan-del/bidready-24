@@ -1,0 +1,15 @@
+{
+  "description": "Upload AFTER a poor-evidence first run to close insurance/CHAS/DBS gaps. Expected transitions: missing/uncertain -> probably_met/met/verified_met for PL, EL, SSIP/CHAS, DBS related requirements.",
+  "files": [
+    "Company-Evidence-Pack.pdf",
+    "Insurance-Certificate.docx"
+  ],
+  "closes": [
+    "REQ-PL-001",
+    "REQ-EL-002",
+    "REQ-SSIP-003",
+    "REQ-DBS-004",
+    "SQ-Q12",
+    "AMB-INS-001"
+  ]
+}

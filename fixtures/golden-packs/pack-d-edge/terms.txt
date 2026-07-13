@@ -1,0 +1,5 @@
+SPECIAL TERMS — Cleaning Framework
+
+EDGE-TXT-008: Invoices must reference the Authority's purchase order number; unreferenced invoices will be returned unpaid.
+
+EDGE-TXT-009: The contract is let under the Procurement Act 2023 and the Authority applies a 30-day payment term to correctly rendered invoices.

@@ -1,0 +1,143 @@
+{
+  "description": "Baseline golden pack. Well-structured, unambiguous.",
+  "files": [
+    "ITT-Main.pdf",
+    "Specification.docx",
+    "Pricing-Schedule.xlsx"
+  ],
+  "expected": [
+    {
+      "id": "REQ-PL-001",
+      "verbatim": "REQ-PL-001: The Supplier must hold Public Liability Insurance of not less than \u00a310,000,000 (ten million pounds sterling) per occurrence throughout the contract term.",
+      "file": "ITT-Main.pdf",
+      "location": "Clause 3.1, PDF page 2",
+      "type": "mandatory"
+    },
+    {
+      "id": "REQ-EL-002",
+      "verbatim": "REQ-EL-002: The Supplier must hold Employers' Liability Insurance of not less than \u00a310,000,000 per occurrence.",
+      "file": "ITT-Main.pdf",
+      "location": "Clause 3.2, PDF page 2",
+      "type": "mandatory"
+    },
+    {
+      "id": "REQ-SSIP-003",
+      "verbatim": "REQ-SSIP-003: The Supplier must hold current CHAS accreditation or membership of an equivalent SSIP scheme at the date of tender submission.",
+      "file": "ITT-Main.pdf",
+      "location": "Clause 3.3, PDF page 2",
+      "type": "mandatory"
+    },
+    {
+      "id": "REQ-DBS-004",
+      "verbatim": "REQ-DBS-004: All operatives assigned to education premises must hold a valid Enhanced DBS certificate issued within the last three years.",
+      "file": "ITT-Main.pdf",
+      "location": "Clause 3.4, PDF page 3",
+      "type": "mandatory"
+    },
+    {
+      "id": "REQ-MS-005",
+      "verbatim": "REQ-MS-005: Method statements for each building category listed in Schedule 2 must be submitted with the tender response.",
+      "file": "ITT-Main.pdf",
+      "location": "Clause 3.5, PDF page 3",
+      "type": "mandatory"
+    },
+    {
+      "id": "REQ-TUPE-006",
+      "verbatim": "REQ-TUPE-006: The Supplier must confirm acceptance of TUPE obligations in respect of the incumbent workforce listed in Schedule 5.",
+      "file": "ITT-Main.pdf",
+      "location": "Clause 3.6, PDF page 3",
+      "type": "mandatory"
+    },
+    {
+      "id": "Q1",
+      "verbatim": "Describe your mobilisation plan for the first 12 weeks of the contract. Maximum 1,500 words. Weighting 15%.",
+      "file": "ITT-Main.pdf",
+      "location": "Section 4, PDF page 4",
+      "type": "scored"
+    },
+    {
+      "id": "Q2",
+      "verbatim": "Describe your quality assurance regime and how you will manage the KPIs in Schedule 3. Maximum 1,200 words. Weighting 12%.",
+      "file": "ITT-Main.pdf",
+      "location": "Section 4, PDF page 4",
+      "type": "scored"
+    },
+    {
+      "id": "Q3",
+      "verbatim": "Describe your environmental measures including cleaning product selection. Maximum 800 words. Weighting 8%.",
+      "file": "ITT-Main.pdf",
+      "location": "Section 4, PDF page 4",
+      "type": "scored"
+    },
+    {
+      "id": "DL-SUBMIT",
+      "verbatim": "The submission deadline is 14 August 2026 at 12:00 noon.",
+      "file": "ITT-Main.pdf",
+      "location": "PDF page 1",
+      "type": "deadline"
+    },
+    {
+      "id": "DL-CLAR",
+      "verbatim": "The clarification deadline is 31 July 2026 at 17:00.",
+      "file": "ITT-Main.pdf",
+      "location": "PDF page 1",
+      "type": "deadline"
+    },
+    {
+      "id": "DL-SITE",
+      "verbatim": "A mandatory site visit will be held on 22 July 2026.",
+      "file": "ITT-Main.pdf",
+      "location": "PDF page 1",
+      "type": "deadline"
+    },
+    {
+      "id": "SPEC-STD-101",
+      "verbatim": "Cleaning services must be delivered to BICSc standards or demonstrable equivalent across all sites in Schedule 1.",
+      "file": "Specification.docx",
+      "location": "Clause 2.1",
+      "type": "mandatory"
+    },
+    {
+      "id": "SPEC-COSHH-102",
+      "verbatim": "The Supplier must maintain COSHH assessments for every cleaning product used on site and make them available to the Authority on request within five working days.",
+      "file": "Specification.docx",
+      "location": "Clause 2.2",
+      "type": "mandatory"
+    },
+    {
+      "id": "SPEC-SAFE-103",
+      "verbatim": "The Supplier must operate a written safeguarding policy aligned to Keeping Children Safe in Education for all education premises.",
+      "file": "Specification.docx",
+      "location": "Clause 2.3",
+      "type": "mandatory"
+    },
+    {
+      "id": "SPEC-SV-104",
+      "verbatim": "The Supplier must commit at least 2 apprenticeship starts per contract year within the borough.",
+      "file": "Specification.docx",
+      "location": "Clause 2.4",
+      "type": "mandatory"
+    },
+    {
+      "id": "PRICE-201",
+      "verbatim": "Tenderers must state a single fixed monthly price covering all sites listed in Schedule 1 inclusive of materials and equipment.",
+      "file": "Pricing-Schedule.xlsx",
+      "location": "Sheet: Pricing",
+      "type": "pricing"
+    },
+    {
+      "id": "SCHED-KPI-301",
+      "verbatim": "Monthly KPI regime with 98% task completion threshold and service credits applying after two consecutive failures.",
+      "file": "Pricing-Schedule.xlsx",
+      "location": "Sheet: Schedules",
+      "type": "kpi"
+    }
+  ],
+  "expected_attachments": [
+    "insurance certificates",
+    "CHAS or equivalent SSIP certificate",
+    "sample DBS policy",
+    "health and safety policy",
+    "completed pricing schedule"
+  ]
+}
