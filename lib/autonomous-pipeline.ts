@@ -17,6 +17,7 @@ import {
   upsertEvidenceFact,
 } from "./autonomy";
 import { analysisFingerprint, buildAutonomousAnalysis } from "./analysis-core";
+import { ExtractionEmptyError } from "./extraction";
 import { AutonomyMandateSchema, AutonomyPolicySchema, DEFAULT_MANDATE, DEFAULT_POLICY } from "./autonomy-policy";
 import type { UploadedFileRecord } from "./tender-types";
 import { dispatchQueuedClarifications } from "./external-actions";
@@ -149,6 +150,25 @@ export async function runAutonomousPipeline(
     }
     recordQaCheck({ projectId, analysisRunId: runId, entityType: "analysis", entityId: runId, checkKey: "go-no-go", status: output.decision.decision === "no_bid" ? "failed" : output.decision.decision === "proceed" ? "passed" : "warning", severity: output.decision.decision === "no_bid" ? "critical" : "medium", message: `${output.decision.decision.replaceAll("_", " ")} (${output.decision.score}/100)`, details: output.decision });
 
+    // Surface any documents that could not be read as a visible QA check so a
+    // partial run is never presented as clean/complete.
+    const processedFileIds = new Set(output.fragments.map((fragment) => fragment.fileId));
+    const extractionSummary = {
+      uploaded: files.length,
+      processed: processedFileIds.size,
+      partial: output.failures.length > 0,
+      failures: output.failures.map((failure) => ({ id: failure.file.id, name: failure.file.original_name, error: failure.error })),
+    };
+    recordQaCheck({
+      projectId, analysisRunId: runId, entityType: "analysis", entityId: runId, checkKey: "extraction-complete",
+      status: extractionSummary.failures.length ? "failed" : "passed",
+      severity: extractionSummary.failures.length ? "high" : "info",
+      message: extractionSummary.failures.length
+        ? `${extractionSummary.failures.length} of ${extractionSummary.uploaded} uploaded document(s) could not be read and were excluded: ${extractionSummary.failures.map((f) => f.name).join(", ")}`
+        : `All ${extractionSummary.uploaded} uploaded document(s) were read.`,
+      details: extractionSummary,
+    });
+
     const counts = getRunOutputCounts(runId);
     const clarifications = options.suppressExternalActions
       ? { sent: 0, queued: 0, reason: "External actions are disabled for the synthetic end-to-end test." }
@@ -156,16 +176,18 @@ export async function runAutonomousPipeline(
     const submission = !options.suppressExternalActions && project.order_type === "complete" && (policy.completePortal || policy.submitBid)
       ? await submitAutonomously({ projectId, idempotencyKey: `submission:${fingerprint}`, policy, mandate, portal: project.portal ?? null, manifest: { analysisRunId: runId, inputFingerprint: fingerprint, fileHashes: files.map((file) => ({ id: file.id, name: file.original_name, sha256: file.sha256 })), counts, decision: output.decision } })
       : null;
-    finishAnalysisRun(runId, { ...counts, provider: output.analysis.provider, model: output.analysis.model, decision: output.decision.decision, score: output.decision.score, extractionFailures: output.failures.length });
+    finishAnalysisRun(runId, { ...counts, provider: output.analysis.provider, model: output.analysis.model, providerStatus: output.providerStatus, extraction: extractionSummary, decision: output.decision.decision, score: output.decision.score, extractionFailures: output.failures.length });
     updateProjectStatus(projectId, "ready");
-    appendAuditEvent({ projectId, analysisRunId: runId, actor: "system", action: "analysis_completed", entity: "analysis_run", entityId: runId, details: { ...counts, decision: output.decision } });
-    return { run_id: runId, status: "succeeded", decision: output.decision, ...counts, responses: output.analysis.responses.length, qa: output.analysis.qa.length, clarifications, submission };
+    appendAuditEvent({ projectId, analysisRunId: runId, actor: "system", action: "analysis_completed", entity: "analysis_run", entityId: runId, details: { ...counts, decision: output.decision, extraction: extractionSummary } });
+    return { run_id: runId, status: "succeeded", decision: output.decision, ...counts, responses: output.analysis.responses.length, qa: output.analysis.qa.length, clarifications, submission, extraction: extractionSummary, warnings: extractionSummary.failures.length ? { droppedFiles: extractionSummary.failures } : undefined };
   } catch (error) {
+    const isEmpty = error instanceof ExtractionEmptyError;
     const diagnosticClass = error instanceof Error ? error.name : "UnknownError";
-    const message = "Tender analysis failed before completion.";
-    failAnalysisRun(runId, { code: "ANALYSIS_FAILED", message, metrics: { diagnosticClass } });
+    const code = isEmpty ? "EXTRACTION_EMPTY" : "ANALYSIS_FAILED";
+    const message = isEmpty ? error.message : "Tender analysis failed before completion.";
+    failAnalysisRun(runId, { code, message, metrics: { diagnosticClass, ...(isEmpty ? { failures: error.failures } : {}) } });
     updateProjectStatus(projectId, "failed");
-    appendAuditEvent({ projectId, analysisRunId: runId, actor: "system", action: "analysis_failed", entity: "analysis_run", entityId: runId, details: { code: "ANALYSIS_FAILED", diagnosticClass }, severity: "high" });
+    appendAuditEvent({ projectId, analysisRunId: runId, actor: "system", action: "analysis_failed", entity: "analysis_run", entityId: runId, details: { code, diagnosticClass, ...(isEmpty ? { failures: error.failures } : {}) }, severity: "high" });
     throw error;
   }
 }

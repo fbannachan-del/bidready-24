@@ -93,6 +93,7 @@ export default function ReportWorkspace({
   requirements,
   token,
   runSummary,
+  extraction,
 }: {
   project: {
     company_name: string;
@@ -112,6 +113,13 @@ export default function ReportWorkspace({
     attachments: number;
     clarifications: number;
   };
+  extraction?: {
+    uploaded: number;
+    processed: number;
+    failures: Array<{ name: string; error?: string }>;
+    aiDegraded?: boolean;
+    aiError?: string;
+  } | null;
 }) {
   const [tab, setTab] = useState<Tab>("overview");
   const [filter, setFilter] = useState("all");
@@ -187,6 +195,26 @@ export default function ReportWorkspace({
           </div>
         </section>
 
+        {extraction && extraction.failures.length > 0 && (
+          <section className="border border-red-300 bg-red-50 p-4 sm:p-5">
+            <div className="flex items-start gap-3">
+              <TriangleAlert className="h-5 w-5 shrink-0 text-red-600" aria-hidden="true" />
+              <div className="min-w-0">
+                <h2 className="text-sm font-semibold text-red-900">{extraction.failures.length} of {extraction.uploaded} uploaded document{extraction.uploaded === 1 ? "" : "s"} could not be read and {extraction.failures.length === 1 ? "was" : "were"} excluded from this analysis</h2>
+                <p className="mt-1 text-xs leading-5 text-red-800">Any requirement contained only in {extraction.failures.length === 1 ? "this file" : "these files"} is not represented in this report. Replace or re-export {extraction.failures.length === 1 ? "it" : "them"} and run the analysis again.</p>
+                <ul className="mt-2 space-y-1">
+                  {extraction.failures.map((f) => <li key={f.name} className="font-mono text-[11px] text-red-800">• {f.name}{f.error ? ` — ${f.error}` : ""}</li>)}
+                </ul>
+              </div>
+            </div>
+          </section>
+        )}
+        {extraction && extraction.aiDegraded && (
+          <section className="border border-amber-300 bg-amber-50 p-3 sm:p-4">
+            <p className="text-xs leading-5 text-amber-900"><span className="font-semibold">Deterministic extraction only.</span> The AI analysis pass did not run for this report{extraction.aiError ? ` (${extraction.aiError})` : ""}, so some nuanced or narratively-worded requirements may not be captured. Review the source documents directly for completeness.</p>
+          </section>
+        )}
+
         {tab === "overview" && (
           <div className="grid gap-6 lg:grid-cols-[1.4fr_0.8fr]">
             <div className="space-y-6">
@@ -202,7 +230,21 @@ export default function ReportWorkspace({
                   BIDREADY24 identified {requirements.length} tender requirements. {metrics.success} are currently supported, {metrics.gaps} have a material gap, and {metrics.verify} need receiver attention because the evidence is uncertain, conflicting, or low confidence. Every available assessment retains its tender source and decision context.
                 </p>
                 <div className="mt-5 grid gap-3 sm:grid-cols-3">
-                  <div className="rounded-xl bg-emerald-50 p-4"><div className="text-[11px] font-semibold uppercase tracking-wide text-emerald-700">Source coverage</div><div className="mt-2 text-xl font-semibold text-emerald-950">{requirements.length ? Math.round((metrics.sourced / requirements.length) * 100) : 0}%</div><div className="mt-1 text-xs text-emerald-700">items with a recorded location</div></div>
+                  {(() => {
+                    const partial = Boolean(extraction && extraction.failures.length > 0);
+                    if (extraction && extraction.uploaded > 0) {
+                      return (
+                        <div className={`rounded-xl p-4 ${partial ? "bg-amber-50" : "bg-emerald-50"}`}>
+                          <div className={`text-[11px] font-semibold uppercase tracking-wide ${partial ? "text-amber-700" : "text-emerald-700"}`}>Document coverage</div>
+                          <div className={`mt-2 text-xl font-semibold ${partial ? "text-amber-950" : "text-emerald-950"}`}>{extraction.processed}/{extraction.uploaded}</div>
+                          <div className={`mt-1 text-xs ${partial ? "text-amber-700" : "text-emerald-700"}`}>documents read{partial ? ` · ${extraction.failures.length} excluded` : ""}</div>
+                        </div>
+                      );
+                    }
+                    return (
+                      <div className="rounded-xl bg-emerald-50 p-4"><div className="text-[11px] font-semibold uppercase tracking-wide text-emerald-700">Source coverage</div><div className="mt-2 text-xl font-semibold text-emerald-950">{requirements.length ? Math.round((metrics.sourced / requirements.length) * 100) : 0}%</div><div className="mt-1 text-xs text-emerald-700">items with a recorded location</div></div>
+                    );
+                  })()}
                   <div className="rounded-xl bg-amber-50 p-4"><div className="text-[11px] font-semibold uppercase tracking-wide text-amber-700">Receiver checks</div><div className="mt-2 text-xl font-semibold text-amber-950">{metrics.verify}</div><div className="mt-1 text-xs text-amber-700">prioritised verification items</div></div>
                   <div className="rounded-xl bg-sky-50 p-4"><div className="text-[11px] font-semibold uppercase tracking-wide text-sky-700">Deadline</div><div className="mt-2 truncate text-sm font-semibold text-sky-950">{project.deadline || "Not confirmed"}</div><div className="mt-1 text-xs text-sky-700">original wording retained</div></div>
                 </div>

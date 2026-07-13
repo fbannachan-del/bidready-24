@@ -1,0 +1,25 @@
+{
+  "captured": "2026-07-13",
+  "site": "https://www.bidready24.com",
+  "isolation_tests_live": {
+    "PDF_only":  {"upload_file":"pack-a ITT-Main.pdf (5-page, valid %PDF)", "run_http":500, "code":"ANALYSIS_FAILED", "requirements":0},
+    "XLSX_only": {"upload_file":"pack-a Pricing-Schedule.xlsx", "run_http":500, "code":"ANALYSIS_FAILED", "requirements":0},
+    "TXT_CSV":   {"upload_file":"pack-d terms.txt + sites.csv", "run_http":500, "code":"ANALYSIS_FAILED", "requirements":0},
+    "DOCX_mixed":{"upload_file":"pack-a ITT-Main.pdf + Specification.docx + Pricing-Schedule.xlsx", "run":"succeeded", "fragments":1, "requirements":4, "note":"ONLY docx content extracted; PDF+XLSX silently dropped; all locations generic 'Document'; uniform 0.78 confidence = deterministic fallback"}
+  },
+  "local_plain_node_same_code": {
+    "PDF_only":  {"fragments":5, "requirements":11},
+    "XLSX_only": {"fragments":2, "requirements":3},
+    "TXT_CSV":   {"fragments":2, "requirements":1},
+    "DOCX_only": {"fragments":1, "requirements":4}
+  },
+  "conclusion": "Extraction code + fixtures are correct (all formats work in plain Node). Failure is specific to the deployed Next.js server: PDF/XLSX/TXT/CSV extraction throws at runtime; only DOCX (mammoth) survives. In mixed uploads Promise.allSettled swallows the failures so the run still reports 'succeeded' with only docx content and generic citations.",
+  "leading_root_cause": "Heavy/native parsers (pdf-parse, xlsx) not declared in next.config serverExternalPackages -> bundled by Next -> throw at runtime. TXT/CSV failing on live too is being confirmed via local Next build reproduction.",
+  "functional_surface_OK": {
+    "intake_validation": "empty/consent-false/bad-email/1-char-company/missing-required all -> 400; valid -> 200 save; identical resubmit -> noop",
+    "upload_validation": ".md/.exe/bad-pdf-signature/empty all -> 400",
+    "autonomy": "GET 200 (profile=unattended default); PUT profile=assisted -> 200 persisted",
+    "negative_tokens": "bad token on csv/autonomy/run -> 404; bad-token report -> 404 no data leak",
+    "admin_test_route": "admin-gated create-project works (paid [TEST] projects)"
+  }
+}

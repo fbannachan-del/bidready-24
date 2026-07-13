@@ -54,7 +54,17 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ tok
   try {
     const analysis = await runAutonomousPipeline(project.id, "upload");
     return NextResponse.json({ ok: true, count: validated.files.length, duplicates: validated.duplicates.length, analysis });
-  } catch {
+  } catch (error) {
+    const code = error && typeof error === "object" && "code" in error ? String((error as { code?: string }).code) : "ANALYSIS_FAILED";
+    if (code === "EXTRACTION_EMPTY") {
+      const failures = (error as { failures?: Array<{ name: string; error: string }> }).failures ?? [];
+      return NextResponse.json({
+        error: "Your files were stored, but none of them could be read, so no analysis was produced. Replace or re-export the files below and run again.",
+        code,
+        stored: written.length,
+        files: failures.map((f) => ({ name: f.name, reason: f.error })),
+      }, { status: 422 });
+    }
     return NextResponse.json({ error: "Files were stored, but tender analysis could not be completed.", code: "ANALYSIS_FAILED", stored: written.length }, { status: 500 });
   }
 }

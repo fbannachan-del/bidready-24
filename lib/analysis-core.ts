@@ -1,6 +1,6 @@
 import crypto from "node:crypto";
 import { analyseDeterministically } from "./deterministic-analysis";
-import { extractTenderPack } from "./extraction";
+import { extractTenderPack, ExtractionEmptyError } from "./extraction";
 import { analyseWithOpenAI } from "./openai-analysis";
 import { decideGoNoGo, type AutonomyPolicy } from "./autonomy-policy";
 import type { UploadedFileRecord } from "./tender-types";
@@ -24,18 +24,32 @@ export async function buildAutonomousAnalysis(params: {
 }) {
   const extracted = await extractTenderPack(params.files);
   if (!extracted.fragments.length) {
-    const detail = extracted.failures.map((item) => `${item.file.original_name}: ${item.error}`).join("; ");
-    throw new Error(`No readable tender content was extracted${detail ? ` (${detail})` : ""}.`);
+    // Nothing readable at all — surface the per-file reasons so the API can
+    // return an actionable 4xx instead of an opaque 500.
+    throw new ExtractionEmptyError(extracted.failures.map((item) => ({ id: item.file.id, name: item.file.original_name, error: item.error })));
   }
   let intake: Record<string, unknown> | null = null;
   try { intake = params.intakeJson ? JSON.parse(params.intakeJson) : null; } catch { intake = null; }
   const deterministic = analyseDeterministically(extracted.fragments, intake, params.orderType);
   let analysis = deterministic;
+  const aiEnabled = process.env.ENABLE_REAL_AI === "true" && Boolean(process.env.OPENAI_API_KEY);
+  const providerStatus: { attempted: boolean; ok: boolean; provider: string; model: string | null; error?: string } = {
+    attempted: false, ok: false, provider: analysis.provider, model: analysis.model,
+  };
   if (params.allowProviderAnalysis !== false) {
+    providerStatus.attempted = aiEnabled;
     try {
       analysis = await analyseWithOpenAI(extracted.fragments, deterministic);
-    } catch {
-      analysis.assumptions.push("The provider-backed analysis was unavailable; independently testable deterministic extraction was used.");
+      providerStatus.provider = analysis.provider;
+      providerStatus.model = analysis.model;
+      providerStatus.ok = analysis.provider === "openai";
+    } catch (error) {
+      // Do NOT swallow silently: record the reason so it is diagnosable and
+      // visible to the receiver that only deterministic extraction ran.
+      const reason = error instanceof Error ? error.message : String(error);
+      providerStatus.error = reason;
+      console.error("Provider analysis failed; using deterministic output", { name: error instanceof Error ? error.name : "UnknownError", reason });
+      analysis.assumptions.push(`The provider-backed analysis was unavailable (${reason}); independently testable deterministic extraction was used.`);
     }
   }
   if (params.orderType === "complete") {
@@ -68,5 +82,5 @@ export async function buildAutonomousAnalysis(params: {
     });
   }
   const decision = decideGoNoGo(analysis, params.policy);
-  return { ...extracted, analysis, decision };
+  return { ...extracted, analysis, decision, providerStatus };
 }

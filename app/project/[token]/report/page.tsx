@@ -16,6 +16,28 @@ export default async function ReportPage({ params }: { params: Promise<{ token: 
   const latestRun = (dashboard.latestRun || {}) as Record<string, unknown>;
   const settings = (dashboard.settings || {}) as Record<string, unknown>;
 
+  // Extraction summary from the latest succeeded run, so a partial run (some
+  // documents unreadable) is shown honestly rather than as clean 100% coverage.
+  let extraction: { uploaded: number; processed: number; failures: Array<{ name: string; error?: string }>; aiDegraded?: boolean; aiError?: string } | null = null;
+  try {
+    if (latestRun.status === "succeeded") {
+      const metrics = typeof latestRun.metrics_json === "string" ? JSON.parse(latestRun.metrics_json) : (latestRun.metrics_json || {});
+      const ex = metrics?.extraction;
+      const ps = metrics?.providerStatus;
+      if (ex && typeof ex.uploaded === "number") {
+        extraction = {
+          uploaded: ex.uploaded,
+          processed: typeof ex.processed === "number" ? ex.processed : 0,
+          failures: Array.isArray(ex.failures) ? ex.failures.map((f: { name?: unknown; error?: unknown }) => ({ name: String(f?.name ?? "document"), error: f?.error ? String(f.error) : undefined })) : [],
+          aiDegraded: Boolean(ps && ps.attempted && !ps.ok),
+          aiError: ps && ps.error ? String(ps.error) : undefined,
+        };
+      }
+    }
+  } catch {
+    extraction = null;
+  }
+
   return (
     <div className="min-h-full bg-[#F4F1E8] font-['IBM_Plex_Sans',Arial,sans-serif]">
       <div className="border-b border-[#D9D5CB] bg-[#FBFAF6] print:hidden">
@@ -43,6 +65,7 @@ export default async function ReportPage({ params }: { params: Promise<{ token: 
           deadline: project.deadline || "Not confirmed",
         }}
         requirements={requirements}
+        extraction={extraction}
       />
     </div>
   );

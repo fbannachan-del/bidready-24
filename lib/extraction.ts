@@ -7,9 +7,51 @@ import type { SourceFragment, UploadedFileRecord } from "./tender-types";
 
 const MAX_FRAGMENT_CHARS = 3_500;
 
+/**
+ * Thrown when a whole tender pack yields no readable content. Carries the
+ * per-file reasons so the API can return a 4xx with actionable detail instead
+ * of an opaque 500. `code` lets route handlers branch without importing the class.
+ */
+export class ExtractionEmptyError extends Error {
+  readonly code = "EXTRACTION_EMPTY";
+  readonly failures: Array<{ id: string; name: string; error: string }>;
+  constructor(failures: Array<{ id: string; name: string; error: string }>) {
+    const detail = failures.map((f) => `${f.name}: ${f.error}`).join("; ");
+    super(`No readable tender content was extracted${detail ? ` (${detail})` : ""}.`);
+    this.name = "ExtractionEmptyError";
+    this.failures = failures;
+  }
+}
+
+/** Section/clause markers we attach to fragments for finer link-backs. */
+const HEADING_RE = /(?:^|\n)[ \t>*_#.\-]*((?:Clause|Section|Part|Schedule|Annex|Appendix)\s+\d+[A-Za-z]?(?:\.\d+)*|§\s*\d+(?:\.\d+)*|Q\s?\d+)\b/gi;
+
+function findHeadings(clean: string): Array<{ index: number; label: string }> {
+  const out: Array<{ index: number; label: string }> = [];
+  for (const match of clean.matchAll(HEADING_RE)) {
+    const label = match[1].replace(/\s+/g, " ").replace(/§\s+/, "§").trim();
+    const tokenIndex = (match.index ?? 0) + match[0].lastIndexOf(match[1]);
+    out.push({ index: tokenIndex, label });
+  }
+  return out;
+}
+
+/** Nearest heading active for the fragment spanning [start, end). */
+function headingFor(headings: Array<{ index: number; label: string }>, start: number, end: number): string | null {
+  const inside = headings.find((h) => h.index >= start && h.index < end);
+  if (inside) return inside.label;
+  let label: string | null = null;
+  for (const h of headings) {
+    if (h.index < start) label = h.label;
+    else break;
+  }
+  return label;
+}
+
 function splitText(file: UploadedFileRecord, text: string, locationPrefix: string): SourceFragment[] {
   const clean = text.replace(/\u0000/g, "").trim();
   if (!clean) return [];
+  const headings = findHeadings(clean);
   const fragments: SourceFragment[] = [];
   let cursor = 0;
   let index = 1;
@@ -19,11 +61,13 @@ function splitText(file: UploadedFileRecord, text: string, locationPrefix: strin
       const boundary = Math.max(clean.lastIndexOf("\n", end), clean.lastIndexOf(". ", end));
       if (boundary > cursor + 800) end = boundary + 1;
     }
+    const heading = headingFor(headings, cursor, end);
+    const suffix = heading ? ` · ${heading}` : index > 1 ? ` · part ${index}` : "";
     fragments.push({
       id: `${file.id}:fragment:${index}`,
       fileId: file.id,
       documentName: file.original_name,
-      location: `${locationPrefix}${index > 1 ? ` · part ${index}` : ""}`,
+      location: `${locationPrefix}${suffix}`,
       text: clean.slice(cursor, end).trim(),
       charStart: cursor,
       charEnd: end,
@@ -47,7 +91,12 @@ export async function extractFile(file: UploadedFileRecord): Promise<SourceFragm
   }
 
   if ([".xlsx", ".xls"].includes(ext)) {
-    const workbook = XLSX.readFile(file.stored_path, { cellDates: true, cellFormula: true });
+    // Read the bytes ourselves and hand SheetJS a buffer. XLSX.readFile relies
+    // on SheetJS's internal lazy require('fs'), which the server bundler can
+    // rewrite/stub — making readFile throw "Cannot access file" in production.
+    // XLSX.read(buffer) is bundler-independent.
+    const bytes = await fs.readFile(file.stored_path);
+    const workbook = XLSX.read(bytes, { type: "buffer", cellDates: true, cellFormula: true });
     return workbook.SheetNames.flatMap((sheetName) => {
       const sheet = workbook.Sheets[sheetName];
       if (!sheet) return [];
