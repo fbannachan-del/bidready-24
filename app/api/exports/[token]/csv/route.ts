@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getProjectByToken, getRequirements } from "@/lib/projects";
+import { getRequirements } from "@/lib/projects";
+import { resolveAccessibleProjectFromRequest } from "@/lib/project-access";
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
-  const project = getProjectByToken(token);
+  const project = resolveAccessibleProjectFromRequest(req, token);
   if (!project) return new NextResponse("Not found", { status: 404 });
 
   const reqs = getRequirements(project.id);

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getProjectByToken, updateProjectIntake } from "@/lib/projects";
+import { updateProjectIntake } from "@/lib/projects";
+import { resolveAccessibleProjectFromRequest } from "@/lib/project-access";
 import { IntakeSchema } from "@/lib/schemas";
 import { intakeFingerprint, parseIntakePayload, validateIntakeTransition } from "@/lib/validation/intake";
 import { getDb } from "@/lib/db";
@@ -7,7 +8,7 @@ import { runAutonomousPipeline } from "@/lib/autonomous-pipeline";
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
-  const project = getProjectByToken(token);
+  const project = resolveAccessibleProjectFromRequest(req, token);
   if (!project) return NextResponse.json({ error: "Invalid or expired link" }, { status: 404 });
 
   const body = await req.json().catch(() => null);

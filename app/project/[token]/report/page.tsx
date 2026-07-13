@@ -1,13 +1,14 @@
 import ReportWorkspace, { type ReportRequirement } from "@/components/report/ReportWorkspace";
 import { getAutonomyDashboard } from "@/lib/autonomy";
-import { getProjectByToken, getRequirements } from "@/lib/projects";
+import { getRequirements } from "@/lib/projects";
+import { resolveAccessibleProjectForPage } from "@/lib/project-access";
 import { ArrowLeft, LockKeyhole } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
 export default async function ReportPage({ params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
-  const project = getProjectByToken(token);
+  const project = await resolveAccessibleProjectForPage(token);
   if (!project) notFound();
 
   const requirements = getRequirements(project.id) as ReportRequirement[];

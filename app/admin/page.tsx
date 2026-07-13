@@ -65,6 +65,18 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
       <main className="mx-auto max-w-7xl px-4 py-7 sm:px-6 lg:px-8">
         {query.e2e === "failed" && <div role="alert" className="mb-5 border border-red-300 bg-red-50 p-4 text-sm text-red-900"><strong>End-to-end test failed.</strong> Open the newest system-test project for its run state and assurance output.</div>}
 
+        <section className="mb-5 grid gap-5 border border-[#B7E3C6] bg-[#ECF8F1] p-5 md:grid-cols-[1fr_auto] md:items-center">
+          <div className="flex gap-4"><span className="grid h-10 w-10 shrink-0 place-items-center bg-white text-[#1E7A46]"><Radar className="h-5 w-5" aria-hidden="true" /></span><div><h2 className="font-semibold text-[#17202A]">Analyse a new tender</h2><p className="mt-1 max-w-3xl text-xs leading-5 text-[#4F5867]">Create a live analysis workspace with no payment gate and go straight to intake, upload and the autonomous run. Admin sessions can open and re-run any project regardless of the customer link.</p></div></div>
+          <form action="/admin/analyse" method="post" className="flex items-center gap-2">
+            <label className="sr-only" htmlFor="admin-analyse-order">Pack type</label>
+            <select id="admin-analyse-order" name="order_type" defaultValue="preflight" className="min-h-11 border border-[#B7B2A7] bg-white px-3 text-xs font-semibold text-[#17202A]">
+              <option value="preflight">Preflight</option>
+              <option value="complete">Complete Pack</option>
+            </select>
+            <button type="submit" className="inline-flex min-h-11 items-center justify-center gap-2 bg-[#1E7A46] px-5 text-xs font-semibold text-white hover:bg-[#186038]"><Radar className="h-3.5 w-3.5" aria-hidden="true" /> Analyse a new tender</button>
+          </form>
+        </section>
+
         <section className="mb-5 grid gap-5 border border-[#B9C7F5] bg-[#EEF1FB] p-5 md:grid-cols-[1fr_auto] md:items-center">
           <div className="flex gap-4"><span className="grid h-10 w-10 shrink-0 place-items-center bg-white text-[#3F5BC9]"><FlaskConical className="h-5 w-5" aria-hidden="true" /></span><div><h2 className="font-semibold text-[#17202A]">Run a synthetic end-to-end test</h2><p className="mt-1 max-w-3xl text-xs leading-5 text-[#4F5867]">Creates a clearly labelled test project and runs intake → file ingestion → extraction → evidence matching → compliance decisions → citations → response structures → QA → persisted report. It uses deterministic analysis and blocks payment, buyer messages, signatures and submission.</p></div></div>
           <form action="/admin/tests/end-to-end" method="post">

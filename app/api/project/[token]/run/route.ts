@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getProjectByToken } from "@/lib/projects";
+import { resolveAccessibleProjectFromRequest } from "@/lib/project-access";
 import { runAutonomousPipeline } from "@/lib/autonomous-pipeline";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
 
-export async function POST(_req: NextRequest, { params }: { params: Promise<{ token: string }> }) {
+export async function POST(req: NextRequest, { params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
-  const project = getProjectByToken(token);
+  const project = resolveAccessibleProjectFromRequest(req, token);
   if (!project) return NextResponse.json({ error: "Invalid or expired project link" }, { status: 404 });
   try {
     const result = await runAutonomousPipeline(project.id, "customer");

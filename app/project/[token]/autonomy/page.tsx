@@ -1,5 +1,5 @@
 import AutonomyControlCenter from "@/components/autonomy/AutonomyControlCenter";
-import { getProjectByToken } from "@/lib/projects";
+import { resolveAccessibleProjectForPage } from "@/lib/project-access";
 import { ArrowLeft, LockKeyhole, Radar } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -10,7 +10,7 @@ export default async function AutonomyPage({
   params: Promise<{ token: string }>;
 }) {
   const { token } = await params;
-  const project = getProjectByToken(token);
+  const project = await resolveAccessibleProjectForPage(token);
   if (!project) notFound();
 
   return (

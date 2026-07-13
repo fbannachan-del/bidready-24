@@ -1,9 +1,68 @@
 import { createHash, randomBytes, timingSafeEqual } from "node:crypto";
+import type { NextRequest } from "next/server";
 import { getDb } from "./db";
 import type { ProjectRow } from "./projects";
-import { getProjectById, getProjectByToken } from "./projects";
+import { getProjectById, getProjectByToken, getProjectBySecureToken, refreshProjectToken } from "./projects";
+import { CUSTOMER_SESSION_COOKIE, accountFromRequest, accountOwnsProject } from "./customer-auth";
+import { ADMIN_SESSION_COOKIE, verifyAdminSessionToken } from "./admin-auth";
 
 const db = getDb();
+
+/** Who is asking: a token holder is always allowed; owners and admins keep access past token expiry. */
+export type AccessContext = { accountId: string | null; isAdmin: boolean };
+
+function isAdminSession(adminCookie?: string | null): boolean {
+  const password = process.env.ADMIN_PASSWORD;
+  if (!password || !adminCookie) return false;
+  return verifyAdminSessionToken({ token: adminCookie, password, sessionSecret: process.env.ADMIN_SESSION_SECRET });
+}
+
+export function accessContextFromCookies(opts: { customer?: string | null; admin?: string | null }): AccessContext {
+  return {
+    accountId: accountFromRequest(opts.customer)?.id ?? null,
+    isAdmin: isAdminSession(opts.admin),
+  };
+}
+
+export function accessContextFromRequest(req: NextRequest): AccessContext {
+  return accessContextFromCookies({
+    customer: req.cookies.get(CUSTOMER_SESSION_COOKIE)?.value,
+    admin: req.cookies.get(ADMIN_SESSION_COOKIE)?.value,
+  });
+}
+
+/**
+ * Resolve a project from its secure token for the current requester.
+ * - A live (non-expired, non-revoked) token always works — unchanged public behaviour.
+ * - A logged-in owner OR an admin session keeps full access even after the token
+ *   has expired, and the expiry is slid forward so their link never goes stale.
+ * Revoked tokens remain hard-denied for everyone.
+ */
+export function resolveAccessibleProject(token: string, ctx: AccessContext): ProjectRow | null {
+  const live = getProjectByToken(token);
+  if (live) return live;
+  const owned = getProjectBySecureToken(token);
+  if (!owned) return null;
+  if (ctx.isAdmin || (ctx.accountId && accountOwnsProject(ctx.accountId, owned.id))) {
+    refreshProjectToken(owned.id);
+    return getProjectByToken(token) ?? owned;
+  }
+  return null;
+}
+
+export function resolveAccessibleProjectFromRequest(req: NextRequest, token: string): ProjectRow | null {
+  return resolveAccessibleProject(token, accessContextFromRequest(req));
+}
+
+/** Server-component helper: reads the request cookies and resolves owner/admin access. */
+export async function resolveAccessibleProjectForPage(token: string): Promise<ProjectRow | null> {
+  const { cookies } = await import("next/headers");
+  const store = await cookies();
+  return resolveAccessibleProject(token, accessContextFromCookies({
+    customer: store.get(CUSTOMER_SESSION_COOKIE)?.value,
+    admin: store.get(ADMIN_SESSION_COOKIE)?.value,
+  }));
+}
 
 export type AccessLookupResult =
   | { matched: true; project: ProjectRow }

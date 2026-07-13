@@ -1,6 +1,7 @@
 import RunTenderButton from "@/components/project/RunTenderButton";
 import { getAutonomyDashboard } from "@/lib/autonomy";
-import { getProjectByToken, getRequirements } from "@/lib/projects";
+import { getRequirements } from "@/lib/projects";
+import { resolveAccessibleProjectForPage } from "@/lib/project-access";
 import {
   ArrowRight,
   BadgeCheck,
@@ -71,7 +72,7 @@ function formatDate(value: unknown) {
 
 export default async function ProjectHome({ params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
-  const project = getProjectByToken(token);
+  const project = await resolveAccessibleProjectForPage(token);
   if (!project) notFound();
 
   const requirements = getRequirements(project.id) as RequirementRow[];

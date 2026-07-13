@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getProjectByToken } from "@/lib/projects";
+import { resolveAccessibleProjectFromRequest } from "@/lib/project-access";
 import { getAutonomySettings, upsertAutonomySettings, appendAuditEvent } from "@/lib/autonomy";
 import { AutonomyMandateSchema, AutonomyPolicySchema, DEFAULT_MANDATE, DEFAULT_POLICY } from "@/lib/autonomy-policy";
 import { validateAutonomyProfileTransition, type AutonomyProfile } from "@/lib/validation/pipeline-control";
@@ -38,16 +38,16 @@ function toUi(settings: StoredSettings, companyName = "") {
   };
 }
 
-export async function GET(_req: NextRequest, { params }: { params: Promise<{ token: string }> }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
-  const project = getProjectByToken(token);
+  const project = resolveAccessibleProjectFromRequest(req, token);
   if (!project) return NextResponse.json({ error: "Invalid or expired project link" }, { status: 404 });
   return NextResponse.json(toUi(getAutonomySettings(project.id), project.company_name ?? ""));
 }
 
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
-  const project = getProjectByToken(token);
+  const project = resolveAccessibleProjectFromRequest(req, token);
   if (!project) return NextResponse.json({ error: "Invalid or expired project link" }, { status: 404 });
   const parsed = UiPayload.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: "Invalid autonomy settings", issues: parsed.error.issues }, { status: 400 });

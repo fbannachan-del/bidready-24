@@ -63,6 +63,19 @@ export function getProjectByToken(token: string) {
   return db.prepare(`SELECT * FROM projects WHERE secure_token = ? AND token_revoked = 0 AND julianday(token_expires_at) > julianday('now')`).get(token) as ProjectRow | undefined;
 }
 
+/** Match a non-revoked project by token, ignoring expiry (owner/admin fallback). */
+export function getProjectBySecureToken(token: string) {
+  return db.prepare(`SELECT * FROM projects WHERE secure_token = ? AND token_revoked = 0`).get(token) as ProjectRow | undefined;
+}
+
+/** Slide the token expiry forward — called when an owner/admin actively opens a project so their link never goes stale. */
+export function refreshProjectToken(id: string) {
+  const configuredHours = Number(process.env.PROJECT_TOKEN_TTL_HOURS || 168);
+  const ttlHours = Number.isFinite(configuredHours) && configuredHours >= 1 && configuredHours <= 24 * 30 ? configuredHours : 168;
+  const expires = new Date(Date.now() + 1000 * 60 * 60 * ttlHours).toISOString();
+  db.prepare(`UPDATE projects SET token_expires_at = ? WHERE id = ?`).run(expires, id);
+}
+
 export function getProjectById(id: string) {
   return db.prepare(`SELECT * FROM projects WHERE id = ?`).get(id) as ProjectRow | undefined;
 }
